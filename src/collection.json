@@ -1,0 +1,15 @@
+{
+  "$schema": "../node_modules/@angular-devkit/schematics/collection-schema.json",
+  "schematics": {
+    "devon4ng": {
+      "description": "Devon4ng CICD schematic. It will provide all changes related to CICD",
+      "factory": "./lib/devon4ng/index#devon4ngInitializer",
+      "schema": "./lib/devon4ng/schema.json"
+    },
+    "devon4j": {
+      "description": "Devon4j CICD schematic. It will provide all changes related to CICD",
+      "factory": "./lib/devon4j/index#devon4jInitializer",
+      "schema": "./lib/devon4j/schema.json"
+    }
+  }
+}

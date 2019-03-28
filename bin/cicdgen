@@ -1,0 +1,11 @@
+#!/usr/bin/env node
+
+'use strict';
+
+const cicd = require("../src/cmd/cicdgen");
+
+try {
+    cicd.executable();
+} catch (e) {
+    console.error(e);
+}

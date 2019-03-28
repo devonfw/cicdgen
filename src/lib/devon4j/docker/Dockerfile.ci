@@ -1,0 +1,5 @@
+FROM java:8
+WORKDIR /app
+COPY server/target/<%= appname %>-server-bootified.war /app/
+ENTRYPOINT ["java","-jar","/app/<%= appname %>-server-bootified.war"]
+EXPOSE 8080

@@ -1,0 +1,42 @@
+{
+    "$schema": "http://json-schema.org/schema",
+    "id": "Devon4ngInitializerSchema",
+    "title": "devon4ng cicd Schema",
+    "type": "object",
+    "properties": {
+        "docker": {
+            "type": "boolean",
+            "default": false,
+            "description": "Should generate code for docker deployment?"
+        },
+        "plurl": {
+            "type": "string",
+            "default": "devon.s2-eu.capgemini.com",
+            "description": "The production line url",
+            "examples": ["devon.s2-eu.capgemini.com"]
+        },
+        "groupid": {
+            "type": "string",
+            "examples": ["com.devonfw"],
+            "description": "The project groupId. It will be used for store the project in Nexus3"
+        },
+        "teams": {
+            "type": "boolean",
+            "default": false,
+            "description": "Do you want MS Teams notifications?"
+        },
+        "teamsname": {
+            "type": "string",
+            "default": "jenkins",
+            "description": "The name of the MS Teams webhook. Used only if 'teams' is true.",
+            "examples": ["jenkins"]
+        },
+        "teamsurl": {
+            "type": "string",
+            "default": "jenkins",
+            "description": "The url of the MS Teams webhook. Used only if 'teams' is true.",
+            "examples": ["jenkins"]
+        }
+    },
+    "required": ["groupid"]
+}
