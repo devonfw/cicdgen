@@ -19,7 +19,6 @@ import {
  * @returns {Rule} The rule to modify the file tree.
  */
 export function devon4ngInitializer(_options: any): Rule {
-  console.dir(_options);
   return chain([
     (host: Tree): Tree => {
       host.delete('src/karma.conf.js');

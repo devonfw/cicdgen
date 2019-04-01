@@ -1,7 +1,7 @@
 import * as yargs from 'yargs';
 import * as shelljs from 'shelljs';
 import { join } from 'path';
-import { unparseArguments } from '../utils/utils';
+import { unparseArguments, jsonSchemaToYargsOptions } from '../utils/utils';
 
 const options: any = {
   docker: {
@@ -50,7 +50,11 @@ const options: any = {
 export function devon4ngBuilder(yargs: yargs.Argv) {
   return yargs
     .usage('Usage: $0 devonfw-cicd generate devon4ng [Options]')
-    .options(options)
+    .options(
+      jsonSchemaToYargsOptions(
+        join(__dirname, '../../lib/devon4ng/schema.json'),
+      ),
+    )
     .example(
       '$0 devonfw-cicd generate devonfw4ng -d --groupid com.devonfw',
       'Generate all files for devonfw4ng, including also files related with docker.',
@@ -67,7 +71,7 @@ export function devon4ngBuilder(yargs: yargs.Argv) {
  */
 export function devon4ngHandler(argv: yargs.Arguments) {
   const executionResult = shelljs.exec(
-    join(__dirname, '../..', 'node_modules/.bin/schematics') +
+    join(__dirname, '../../..', 'node_modules/.bin/schematics') +
       ' @devonfw/cicd-schematics:devon4ng' +
       unparseArguments(argv, options),
   );

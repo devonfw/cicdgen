@@ -60,7 +60,7 @@ export function devon4jBuilder(yargs: yargs.Argv) {
  */
 export function devon4jHandler(argv: yargs.Arguments) {
   const executionResult = shelljs.exec(
-    join(__dirname, '../..', 'node_modules/.bin/schematics') +
+    join(__dirname, '../../..', 'node_modules/.bin/schematics') +
       ' @devonfw/cicd-schematics:devon4j' +
       unparseArguments(argv, options),
   );

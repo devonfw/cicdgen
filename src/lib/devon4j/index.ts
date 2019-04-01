@@ -81,7 +81,7 @@ function updatePomWithDistributionManagement(tree: Tree) {
     <repository>
       <id>pl-nexus</id>
       <name>PL Releases</name>
-      <url>http://nexus3-core:8081/nexus3/repository/maven-releases/</url>
+      <url>http://nexus3-core:8081/nexus3/repository/maven-releases</url>
     </repository>
     <snapshotRepository>
       <id>pl-nexus</id>

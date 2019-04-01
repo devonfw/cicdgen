@@ -1,3 +1,4 @@
+import { readFileSync } from 'fs';
 import * as yargs from 'yargs';
 /**
  * Function that recive the command line arguments as an object and return a string with all of those arguments.
@@ -22,4 +23,47 @@ export function unparseArguments(args: yargs.Arguments, options: any) {
   });
 
   return result;
+}
+
+export function jsonSchemaToYargsOptions(jsonFile: string): any {
+  const json = JSON.parse(readFileSync(jsonFile).toString());
+  const result: any = {};
+
+  Object.keys(json.properties).forEach(e => {
+    const newOption: any = {
+      type: schemaTypeToYargsType(json.properties[e].type),
+      description: json.properties[e].description,
+    };
+
+    if (json.properties[e].default) {
+      newOption.default = json.properties[e].default;
+    }
+
+    result[e] = newOption;
+  });
+
+  if (json.required) {
+    json.required.forEach((e: string) => {
+      result[e].demandOption = true;
+    });
+  }
+
+  return result;
+}
+
+function schemaTypeToYargsType(type: string) {
+  switch (type) {
+    case 'array':
+    case 'boolean':
+    case 'string':
+    case 'number':
+      return type;
+    case 'integer':
+      return 'number';
+    case 'object':
+    case 'null':
+    case 'enum':
+    default:
+      return 'string';
+  }
 }
