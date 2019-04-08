@@ -2,7 +2,7 @@
 
 'use strict';
 
-const cicd = require("../src/cmd/cicdgen");
+const cicd = require("../src/cicdgen");
 
 try {
     cicd.executable();

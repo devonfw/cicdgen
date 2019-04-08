@@ -1,6 +1,6 @@
 {
-  "name": "@devonfw/cicdgen",
-  "version": "0.1.0",
+  "name": "@devonfw/cicdgen-schematics",
+  "version": "0.4.0",
   "description": "Schematic collection for initialize project with CICD files.",
   "scripts": {
     "build": "tsc -p tsconfig.json",
@@ -23,13 +23,10 @@
   "dependencies": {
     "@angular-devkit/core": "^7.3.6",
     "@angular-devkit/schematics": "^7.3.6",
-    "@angular-devkit/schematics-cli": "^0.13.6",
     "@types/jasmine": "^3.0.0",
     "@types/node": "^8.0.31",
     "jasmine": "^3.0.0",
-    "shelljs": "^0.8.3",
-    "typescript": "~3.2.2",
-    "yargs": "^13.2.2"
+    "typescript": "~3.2.2"
   },
   "repository": {
     "type": "git",
@@ -38,12 +35,5 @@
   "bugs": {
     "url": "https://github.com/devonfw/cicdgen/issues"
   },
-  "homepage": "https://github.com/devonfw/cicdgen",
-  "bin": {
-    "cicdgen": "./bin/cicdgen"
-  },
-  "devDependencies": {
-    "@types/shelljs": "^0.8.3",
-    "@types/yargs": "^12.0.10"
-  }
+  "homepage": "https://github.com/devonfw/cicdgen"
 }

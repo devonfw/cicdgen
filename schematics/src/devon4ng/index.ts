@@ -11,6 +11,20 @@ import {
 } from '@angular-devkit/schematics';
 
 /**
+ * Interface for devon4ngInitializer options. It reflects the properties defined at schema.json
+ *
+ * @interface devon4ngOptions
+ */
+interface devon4ngOptions {
+  docker?: boolean;
+  plurl?: string;
+  groupid: string;
+  teams?: boolean;
+  teamsname?: string;
+  teamsurl?: string;
+}
+
+/**
  * Main function for the devon4ng schematic. It will add all files included at files folder.
  * Also, it will update the package.json and the angular.json files.
  *
@@ -18,7 +32,7 @@ import {
  * @param {*} _options The command line options parsed as an object.
  * @returns {Rule} The rule to modify the file tree.
  */
-export function devon4ngInitializer(_options: any): Rule {
+export function devon4ngInitializer(_options: devon4ngOptions): Rule {
   return chain([
     (host: Tree): Tree => {
       host.delete('src/karma.conf.js');
