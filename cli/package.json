@@ -1,7 +1,7 @@
 {
   "name": "@devonfw/cicdgen",
-  "version": "0.1.0",
-  "description": "Schematic collection for initialize project with CICD files.",
+  "version": "0.5.0",
+  "description": "CLI for generate code using @devonfw/cicdgen-schematics.",
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "test": "npm run build && jasmine src/**/*_spec.js"
@@ -21,9 +21,8 @@
   "license": "Apache-2.0",
   "schematics": "./src/collection.json",
   "dependencies": {
-    "@angular-devkit/core": "^7.3.6",
-    "@angular-devkit/schematics": "^7.3.6",
     "@angular-devkit/schematics-cli": "^0.13.6",
+    "@devonfw/cicdgen-schematics": "^0.4.0",
     "@types/jasmine": "^3.0.0",
     "@types/node": "^8.0.31",
     "jasmine": "^3.0.0",

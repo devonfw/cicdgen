@@ -1,0 +1,39 @@
+{
+  "name": "@devonfw/cicdgen-schematics",
+  "version": "0.5.0",
+  "description": "Schematic collection for initialize project with CICD files.",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "npm run build && jasmine src/**/*_spec.js"
+  },
+  "keywords": [
+    "schematics",
+    "CICD",
+    "devonfw"
+  ],
+  "author": {
+    "name": "Capgemini",
+    "url": "https://www.capgemini.com/"
+  },
+  "contributors": [
+    "Dario Rodriguez Gonzalez <dario.rodriguez-gonzalez@capgemini.com>"
+  ],
+  "license": "Apache-2.0",
+  "schematics": "./src/collection.json",
+  "dependencies": {
+    "@angular-devkit/core": "^7.3.6",
+    "@angular-devkit/schematics": "^7.3.6",
+    "@types/jasmine": "^3.0.0",
+    "@types/node": "^8.0.31",
+    "jasmine": "^3.0.0",
+    "typescript": "~3.2.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/devonfw/cicdgen.git"
+  },
+  "bugs": {
+    "url": "https://github.com/devonfw/cicdgen/issues"
+  },
+  "homepage": "https://github.com/devonfw/cicdgen"
+}

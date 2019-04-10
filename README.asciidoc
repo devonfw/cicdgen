@@ -2,6 +2,14 @@
 
 cicdgen is a devonfw tool for generate all code/files related to CICD. It's based on link:https://blog.angular.io/schematics-an-introduction-dc1dfbc2a2b2[angular schematics], so you can add it as a dependency into your project and generate the code using ng generate. In addition, it has its own CLI for those projects that are not angular based.
 
+=== Packages
+
+This repository contains multiple NPM packages. Each package is inside its folder.
+
+.Packages list
+* CLI. All code of the cicdgen command line interface.
+* Schematics. All code of the cicdgen schematics.
+
 === Documentation
 
 You can find all documentation in our link:https://github.com/devonfw/cicdgen/wiki[wiki]
