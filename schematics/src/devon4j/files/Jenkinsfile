@@ -47,9 +47,7 @@ pipeline{
                     def pom = readMavenPom file: './pom.xml';
                     version = pom.version
 
-                    if (!env.BRANCH_NAME.startsWith('release')) {
-                        sonarProjectKey = "-${env.BRANCH_NAME}"
-                    } else {
+                    if (env.BRANCH_NAME.startsWith('release')) {
                         dockerTag = "release"
                         sonarProjectKey = "-release"
                         dockerEnvironment = "_uat"
@@ -80,6 +78,7 @@ pipeline{
                         }
                     }
 
+                    // Put the correct version at pom.
                     pom.version = version
                     writeMavenPom model: pom, file: 'pom.xml'
 
@@ -106,6 +105,7 @@ pipeline{
                    branch 'release/*'
                    branch 'feature/*'
                    branch 'hotfix/*'
+                   changeRequest()
                }
             }
             steps {
@@ -123,6 +123,7 @@ pipeline{
                    branch 'release/*'
                    branch 'feature/*'
                    branch 'hotfix/*'
+                   changeRequest()
                }
             }
             steps {
@@ -138,8 +139,6 @@ pipeline{
                    branch 'master'
                    branch 'develop'
                    branch 'release/*'
-                   branch 'feature/*'
-                   branch 'hotfix/*'
                }
             }
             steps {
@@ -190,6 +189,13 @@ pipeline{
         }
         
         stage ('Deliver application into Nexus') {
+            when {
+               anyOf {
+                   branch 'master'
+                   branch 'develop'
+                   branch 'release/*'
+               }
+            }
             steps {
                 withMaven(globalMavenSettingsConfig: globalSettingsId, maven: mavenInstallation) {
                     sh "mvn deploy -Dmaven.test.skip=true"

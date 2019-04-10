@@ -63,6 +63,7 @@ pipeline{
                    branch 'release/*'
                    branch 'feature/*'
                    branch 'hotfix/*'
+                   changeRequest()
                }
             }
             steps {
@@ -71,26 +72,26 @@ pipeline{
 
 
                 script {
-                    if (!env.BRANCH_NAME.startsWith('release')) {
-                        sonarProjectKey = "-${env.BRANCH_NAME}"
-                    } else {
+                    if (env.BRANCH_NAME.startsWith('release')) {
                         dockerTag = "release"
                         repositoryName = 'maven-releases'
-                        sonarProjectKey = "-release"
                         dockerEnvironment = "_uat"
+                        sonarProjectKey = '-release'
                     }
 
                     if (env.BRANCH_NAME == 'develop') {
                         dockerTag = "latest"
                         repositoryName = 'maven-snapshots'
                         dockerEnvironment = "_dev"
+                        sonarProjectKey = '-develop'
                     }
 
                     if (env.BRANCH_NAME == 'master') {
-                        sonarProjectKey = ""
                         dockerTag = "production"
                         repositoryName = 'maven-releases'
-                        dockerEnvironment = "_prod"
+                        dockerEnvironment = '_prod'
+                        sonarProjectKey = ''
+                        
                     }
                 }
             }
@@ -104,6 +105,7 @@ pipeline{
                     branch 'release/*'
                     branch 'feature/*'
                     branch 'hotfix/*'
+                    changeRequest()
                 }
             }
             steps {
@@ -119,6 +121,7 @@ pipeline{
                     branch 'release/*'
                     branch 'feature/*'
                     branch 'hotfix/*'
+                    changeRequest()
                 }
             }
             steps {
@@ -134,6 +137,7 @@ pipeline{
                     branch 'release/*'
                     branch 'feature/*'
                     branch 'hotfix/*'
+                    changeRequest()
                 }
             }
             steps {
@@ -147,8 +151,6 @@ pipeline{
                     branch 'master'
                     branch 'develop'
                     branch 'release/*'
-                    branch 'feature/*'
-                    branch 'hotfix/*'
                 }
             }
             steps {
@@ -161,7 +163,8 @@ pipeline{
                                 -Dsonar.projectKey=${props.name}${sonarProjectKey} \
                                 -Dsonar.projectName=${props.name}${sonarProjectKey} \
                                 -Dsonar.projectVersion=${props.version} \
-                                -Dsonar.sources=${srcDir}
+                                -Dsonar.sources=${srcDir} \
+                                -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info
                         """
                     }
                     timeout(time: 1, unit: 'HOURS') {
@@ -180,6 +183,9 @@ pipeline{
                     branch 'master'
                     branch 'develop'
                     branch 'release/*'
+                    branch 'feature/*'
+                    branch 'hotfix/*'
+                    changeRequest()
                 }
             }
             steps {

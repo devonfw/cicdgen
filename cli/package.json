@@ -1,6 +1,6 @@
 {
   "name": "@devonfw/cicdgen",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "description": "CLI for generate code using @devonfw/cicdgen-schematics.",
   "scripts": {
     "build": "tsc -p tsconfig.json",
