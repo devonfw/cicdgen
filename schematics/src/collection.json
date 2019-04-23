@@ -6,6 +6,11 @@
       "factory": "./devon4ng/index#devon4ngInitializer",
       "schema": "./devon4ng/schema.json"
     },
+    "devon4node": {
+      "description": "Devon4node CICD schematic. It will provide all changes related to CICD",
+      "factory": "./devon4node/index#devon4nodeInitializer",
+      "schema": "./devon4node/schema.json"
+    },
     "devon4j": {
       "description": "Devon4j CICD schematic. It will provide all changes related to CICD",
       "factory": "./devon4j/index#devon4jInitializer",

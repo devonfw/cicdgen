@@ -11,6 +11,7 @@
         },
         "plurl": {
             "type": "string",
+            "default": "devon.s2-eu.capgemini.com",
             "description": "The production line url",
             "examples": ["devon.s2-eu.capgemini.com"]
         },

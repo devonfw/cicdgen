@@ -7,5 +7,5 @@ const cicd = require("../src/cicdgen");
 try {
     cicd.executable();
 } catch (e) {
-    console.error(e);
+    console.dir(e);
 }

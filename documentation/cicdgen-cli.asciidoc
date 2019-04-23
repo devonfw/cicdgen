@@ -1,0 +1,22 @@
+:toc: macro
+toc::[]
+
+== CICDGEN CLI
+
+=== Installation
+
+[source,bash]
+----
+$ npm i -g @devonfw/cicdgen
+----
+
+=== Usage
+
+==== Commands
+
+* Generate.
+  
+  Hello guys
+
+** devon4j
+** devon4ng

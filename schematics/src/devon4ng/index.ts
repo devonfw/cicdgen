@@ -33,6 +33,11 @@ interface devon4ngOptions {
  * @returns {Rule} The rule to modify the file tree.
  */
 export function devon4ngInitializer(_options: devon4ngOptions): Rule {
+  if (_options.docker && !_options.plurl) {
+    console.error('When docker is true, plurl is required.');
+    process.exit(1);
+  }
+
   return chain([
     (host: Tree): Tree => {
       host.delete('src/karma.conf.js');

@@ -1,0 +1,37 @@
+:toc: macro
+
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+toc::[]
+:idprefix:
+:idseparator: -
+:reproducible:
+:source-highlighter: rouge
+:listing-caption: Listing
+
+== CICDGEN
+
+cicdgen is a devonfw tool for generate all code/files related to CICD. It will include/modify into your project all files that the project needs run a Jenkins cicd pipeline, to create a docker image based on your project, etc. It’s based on angular schematics, so you can add it as a dependency into your project and generate the code using ng generate. In addition, it has its own CLI for those projects that are not angular based.
+
+=== What is angular schematics?
+
+Schematics are generators that transform an existing filesystem. They can create files, refactor existing files, or move files around.
+
+What distinguishes Schematics from other generators, such as Yeoman or Yarn Create, is that schematics are purely descriptive; no changes are applied to the actual filesystem until everything is ready to be committed. There is no side effect, by design, in Schematics.
+
+=== cicdgen CLI usage
+
+For know more about how to use the cicdgen CLI, you can check the link:cicdgen-cli[CLI page]
+
+=== cicdgen Schematics usage
+
+For know more about how to use the cicdgen schematics, you can check the link:cicdgen-schematics[schematics page]
+
+
+

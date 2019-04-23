@@ -23,7 +23,7 @@ pipeline{
         // Docker
         dockerFileName = 'Dockerfile.ci'
         dockerRegistryProtocol = 'https://'
-        dockerRegistry = 'docker-registry-devon.s2-eu.capgemini.com'
+        dockerRegistry = 'docker-registry-<%= plurl %>'
         dockerRegistryCredentials = 'nexus-docker'
         dockerTool = 'docker-global'
         containerName = 'java_application'
@@ -43,6 +43,9 @@ pipeline{
                }
             }
             steps {
+                <% if (docker) { %>
+                tool dockerTool
+                <% } %>
                 script {
                     def pom = readMavenPom file: './pom.xml';
                     version = pom.version

@@ -1,10 +1,12 @@
+import { readFileSync } from 'fs';
+import { join } from 'path';
 import * as yargs from 'yargs';
-import {
-  devon4ngBuilder,
-  devon4ngHandler,
-  devon4jHandler,
-  devon4jBuilder,
-} from './generate';
+import { generateBuilder, generateHandler } from './generate/generate';
+
+const schematicPath = join(
+  __dirname,
+  '../node_modules/@devonfw/cicdgen-schematics/src/',
+);
 
 /**
  * Main function of the program. It register the command line parser, called yargs, and parse the user input.
@@ -30,23 +32,29 @@ export function executable() {
  *
  * @param {yargs.Argv} yargs The yargs argv object.
  */
-const builder = (yargs: yargs.Argv) =>
-  yargs
+const builder = (yargs: yargs.Argv) => {
+  let newYargs = yargs
     .usage('Usage: $0 devonfw-cicd generate <technology> [Options]')
-    .command(
-      'devon4ng',
-      'Generate CICD files for a devon4ng project',
-      devon4ngBuilder,
-      devon4ngHandler,
-    )
-    .command(
-      'devon4j',
-      'Generate CICD files for a devon4j project',
-      devon4jBuilder,
-      devon4jHandler,
-    )
     .example(
-      '$0 devonfw-cicd generate devonfw4ng',
-      'Generate all files for devonfw4ng',
+      '$0 devonfw-cicd generate devon4ng',
+      'Generate all files for devon4ng',
     )
     .version(false);
+
+  const collection = JSON.parse(
+    readFileSync(join(schematicPath, 'collection.json')).toString(),
+  );
+
+  Object.keys(collection.schematics).forEach((element: string) => {
+    const schematic = collection.schematics[element];
+    const path = join(schematicPath, schematic.schema || '');
+    newYargs = newYargs.command(
+      element,
+      schematic.description,
+      generateBuilder(element, path),
+      generateHandler(element, path),
+    );
+  });
+
+  return newYargs;
+};

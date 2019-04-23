@@ -18,11 +18,9 @@ pipeline{
         // Script for lint the application. Defined at package.json
         lintScript = 'lint'
         // Script for test the application. Defined at package.json
-        testScript = 'test:ci'
+        testScript = 'test:cov'
         // SRC folder.
         srcDir = 'src'
-        // Name of the custom tool for chrome stable
-        chrome = 'Chrome-stable'
 
         // sonarQube
         // Name of the sonarQube tool
@@ -44,12 +42,12 @@ pipeline{
 
 <% if (docker) { %>
         // Docker
-        dockerFileName = 'Dockerfile.ci'
+        dockerFileName = 'Dockerfile'
         dockerRegistryProtocol = 'https://'
         dockerRegistry = 'docker-registry-<%= plurl %>'
         dockerRegistryCredentials = 'nexus-docker'
         dockerTool = 'docker-global'
-        containerName = 'angular_application'
+        containerName = 'node_application'
         networkName = 'application'
 <% } %>
     }
@@ -67,11 +65,9 @@ pipeline{
                }
             }
             steps {
-                tool chrome
                 <% if (docker) { %>
                 tool dockerTool
                 <% } %>
-
 
                 script {
                     if (env.BRANCH_NAME.startsWith('release')) {

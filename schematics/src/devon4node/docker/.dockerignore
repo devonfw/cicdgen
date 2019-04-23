@@ -1,0 +1,8 @@
+node_modules/
+dist/
+test/
+.vscode/
+nest-cli.json
+nodemon-debug.json
+nodemon.json
+README.md

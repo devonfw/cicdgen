@@ -3,3 +3,4 @@
 !*.d.ts
 .github/
 .vscode/
+yarn-error.log
