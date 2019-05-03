@@ -9,6 +9,7 @@ import {
   url,
   noop,
 } from '@angular-devkit/schematics';
+import { camelize } from '@angular-devkit/core/src/utils/strings';
 
 /**
  * Interface for devon4ngInitializer options. It reflects the properties defined at schema.json
@@ -96,8 +97,9 @@ function updatePackageJson(host: Tree): string {
 function updateAngularJson(host: Tree): string {
   const content = JSON.parse(host.read('angular.json')!.toString('utf-8'));
 
-  content.projects[getProjectName(host)].architect.build.options.outputPath =
-    'dist';
+  content.projects[
+    camelize(getProjectName(host))
+  ].architect.build.options.outputPath = 'dist';
 
   return JSON.stringify(content, null, 2);
 }
