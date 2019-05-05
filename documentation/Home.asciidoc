@@ -27,11 +27,11 @@ What distinguishes Schematics from other generators, such as Yeoman or Yarn Crea
 
 === cicdgen CLI usage
 
-For know more about how to use the cicdgen CLI, you can check the link:cicdgen-cli[CLI page]
+For know more about how to use the cicdgen CLI, you can check the link:cicdgen-cli.asciidoc[CLI page]
 
 === cicdgen Schematics usage
 
-For know more about how to use the cicdgen schematics, you can check the link:cicdgen-schematics[schematics page]
+For know more about how to use the cicdgen schematics, you can check the link:cicdgen-schematics.asciidoc[schematics page]
 
 
 

@@ -1,0 +1,88 @@
+pipeline {
+    agent any
+    
+    options {
+        buildDiscarder logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '1', daysToKeepStr: '', numToKeepStr: '15')
+        checkoutToSubdirectory 'cicdgen'
+    }
+
+    environment {
+        REPO_NAME = "cicdgen"
+    }
+    
+    // parameters {
+    //     string defaultValue: 'cicdgen', description: 'The name of the repository.', name: 'REPO_NAME', trim: true
+    // }
+
+    
+    stages {
+        // stage('Clone the repo'){
+        //     steps {
+        //         script {
+        //             dir(REPO_NAME){
+        //                 git branch: 'develop', credentialsId: 'github-devonfw-ci', url: "https://github.com/devonfw/${REPO_NAME}.git"
+        //             }   
+        //         }
+        //     }
+        // }
+        
+        stage('Clone the wiki'){
+            steps {
+                script {
+                    dir("${REPO_NAME}-wiki"){
+                        git branch: 'master', credentialsId: 'github-devonfw-ci', url: "https://github.com/devonfw/${REPO_NAME}.wiki.git"
+                    }   
+                }
+            }
+        }
+
+        stage('Copy files to wiki'){
+            steps {
+                script {
+                    dir("${REPO_NAME}-wiki"){
+                        sh "rm -r *"
+                        sh 'cp -R ../' + REPO_NAME + '/documentation/* .'
+                    }
+                }
+            }
+        }
+
+        stage('Remove .asciidoc from links'){
+            steps {
+                script {
+                    dir("${REPO_NAME}-wiki"){
+                        final foundFiles = findFiles(glob: '**/*.asciidoc')
+                        for (int i = 0; i < foundFiles.size(); i++) {
+                            def filename = readFile encoding: 'utf8', file: foundFiles[i].toString()
+                            filename = filename.replaceAll("(link|include)(:+)(?!http)([A-z\\/\\_\\-\\.]+)\\.(asciidoc|adoc)", '$1$2$3')
+                            writeFile encoding: 'utf8', file: foundFiles[i].toString(), text: filename
+                        }
+                        final foundFiles2 = findFiles(glob: '**/*.adoc')
+                        for (int i = 0; i < foundFiles2.size(); i++) {
+                            def filename = readFile encoding: 'utf8', file: foundFiles2[i].toString()
+                            filename = filename.replaceAll("(link|include)(:+)(?!http)([A-z\\/\\_\\-\\.]+)\\.(asciidoc|adoc)", '$1$2$3')
+                            writeFile encoding: 'utf8', file: foundFiles2[i].toString(), text: filename
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Push to wiki'){
+            steps {
+                script {
+                    dir("${REPO_NAME}-wiki"){
+                        sh 'git config user.email "devonfw-ci@capgemini.com"'
+                        sh 'git config user.name "devonfw-ci"'
+                        sh 'git add .'
+                        sh 'git commit -m "Updated documentation"'
+                        withCredentials([usernamePassword(credentialsId: 'jenkins-user-for-devon4j-github', passwordVariable: 'password', usernameVariable: 'username')]) {
+                            sh "git remote set-url origin https://${username}:${password}@github.com/devonfw/${REPO_NAME}.wiki.git"
+                            sh 'git push origin master'
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
