@@ -22,7 +22,7 @@ import { strings } from '@angular-devkit/core';
 export function devon4jInitializer(_options: any): Rule {
   return (tree: Tree, _context: SchematicContext) => {
     const appname = geProjectName(tree);
-    const docker = _options.docker
+    const dockerOrOpenshift = (_options.docker || _options.openshift)
       ? mergeWith(
           apply(url('./docker'), [
             template({
@@ -47,7 +47,7 @@ export function devon4jInitializer(_options: any): Rule {
       return tree;
     };
 
-    return chain([files, docker, pom]);
+    return chain([files, dockerOrOpenshift, pom]);
   };
 }
 

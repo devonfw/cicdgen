@@ -19,16 +19,26 @@ pipeline{
         // Maven tool id
         mavenInstallation = 'Maven3'
 
-<% if (docker) { %>
+        <% if (docker) { %>
         // Docker
-        dockerFileName = 'Dockerfile.ci'
         dockerRegistryProtocol = 'https://'
-        dockerRegistry = 'docker-registry-<%= plurl %>'
+        containerName = 'angular_application'
+        networkName = 'application'
+        <% } %>
+
+        <% if (docker || openshift) { %>
+        // Docker and openshift
+        dockerFileName = 'Dockerfile.ci'
+        dockerRegistry = 'docker-registry-<%= ocurl %>'
         dockerRegistryCredentials = 'nexus-docker'
         dockerTool = 'docker-global'
-        containerName = 'java_application'
-        networkName = 'application'
-<% } %>
+        <% } %>
+
+        <% if (openshift) { %>
+        // Openshift
+        openshiftUrl = '<%= opurl %>'
+        openShiftCredentials = 'nexus-docker'
+        <% } %>
     }
 
     stages {
@@ -205,7 +215,8 @@ pipeline{
                 }
             }
         }
-<% if (docker) { %>
+
+        <% if (docker) { %>
 
         stage ('Create the Docker image') {
             when {
@@ -252,7 +263,123 @@ pipeline{
                 }
             }
         }
-<% } %>
+        <% } %>
+
+        <% if (openshift) { %>
+        stage ('Create the Docker image') {
+            when {
+                anyOf {
+                    branch 'master'
+                    branch 'develop'
+                    branch 'release/*'
+
+                }
+            }
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: "${openShiftCredentials}", passwordVariable: 'pass', usernameVariable: 'user')]) {
+                        sh "oc login -u ${user} -p ${pass} ${openshiftUrl} --insecure-skip-tls-verify"
+                        try {
+                            sh "oc start-build ${props.name} --namespace=${openShiftNamespace} --from-dir=dist --wait"
+                            sh "oc import-image ${props.name} --namespace=${openShiftNamespace} --from=${dockerRegistry}/${props.name}:${dockerTag} --confirm"
+                        } catch (e) {
+                            sh """
+                                oc logs \$(oc get builds -l build=${props.name} --namespace=${openShiftNamespace} --sort-by=.metadata.creationTimestamp -o name | tail -n 1) --namespace=${namespace}
+                                throw e
+                            """
+                        }
+                    }
+                }
+            }
+        }
+
+        stage ('Deploy the new image') {
+            when {
+                anyOf {
+                    branch 'develop'
+                    branch 'release/*'
+                }
+            }
+            steps{
+                script {
+                    stagename = "${env.STAGE_NAME}"
+                    props = readJSON file: 'package.json'
+                    withCredentials([usernamePassword(credentialsId: "${openShiftCredentials}", passwordVariable: 'pass', usernameVariable: 'user')]) {
+                        sh "oc login -u ${user} -p ${pass} ${openshiftUrl} --insecure-skip-tls-verify"
+                        sh "oc project ${openShiftNamespace}"
+                        try {
+                            sh "oc import-image ${props.name} --namespace=${openShiftNamespace} --from=${dockerRegistry}/${props.name}:${dockerTag} --confirm"
+                        } catch (e) {
+                            sh """
+                                oc logs \$(oc get builds -l build=${props.name} --namespace=${openShiftNamespace} --sort-by=.metadata.creationTimestamp -o name | tail -n 1) --namespace=${openShiftNamespace}
+                                throw e
+                            """
+                        }
+                    }
+                }
+            }
+        }
+        
+        stage ('Check pod status') {
+            when {
+                anyOf {
+                    branch 'develop'
+                    branch 'release/*'
+                }
+            }
+            steps{
+                script {
+                    stagename = "${env.STAGE_NAME}"
+                    props = readJSON file: 'package.json'
+                    sleep 30
+                    withCredentials([usernamePassword(credentialsId: "${openShiftCredentials}", passwordVariable: 'pass', usernameVariable: 'user')]) {
+                        sh "oc login -u ${user} -p ${pass} ${openshiftUrl} --insecure-skip-tls-verify"
+                        sh "oc project ${openShiftNamespace}"
+                        
+                        def oldRetry = -1;
+                        def oldState = "";
+                        
+                        sh "oc get pods -l app=${props.name} > out"
+                        def status = sh (
+                            script: "sed 's/[\t ][\t ]*/ /g' < out | sed '2q;d' | cut -d' ' -f3",
+                            returnStdout: true
+                        ).trim()
+                        
+                        def retry = sh (
+                            script: "sed 's/[\t ][\t ]*/ /g' < out | sed '2q;d' | cut -d' ' -f4",
+                            returnStdout: true
+                        ).trim().toInteger();
+                        
+                        while (retry < 5 && (oldRetry != retry || oldState != status)) {
+                            sleep 30
+                            oldRetry = retry
+                            oldState = status
+                            
+                            sh """oc get pods -l app=${props.name} > out"""
+                            status = sh (
+                                script: "sed 's/[\t ][\t ]*/ /g' < out | sed '2q;d' | cut -d' ' -f3",
+                                returnStdout: true
+                            ).trim()
+                            
+                            retry = sh (
+                                script: "sed 's/[\t ][\t ]*/ /g' < out | sed '2q;d' | cut -d' ' -f4",
+                                returnStdout: true
+                            ).trim().toInteger();
+                        }
+                        
+                        if(status != "Running"){
+                            try {
+                                sh """oc logs \$(oc get pods -l app=${props.name} --sort-by=.metadata.creationTimestamp -o name | tail -n 1)"""
+                            } catch (e) {
+                                sh "echo error reading logs"
+                            }
+                            error("The pod is not running, cause: " + status)
+                        }
+                    }
+                }
+            }
+        }
+        <% } %>
     }
 
     post {

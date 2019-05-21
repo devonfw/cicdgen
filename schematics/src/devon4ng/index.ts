@@ -19,6 +19,8 @@ import { camelize } from '@angular-devkit/core/src/utils/strings';
 interface devon4ngOptions {
   docker?: boolean;
   plurl?: string;
+  openshift?: boolean;
+  ocurl?: boolean;
   groupid: string;
   teams?: boolean;
   teamsname?: string;
@@ -39,6 +41,11 @@ export function devon4ngInitializer(_options: devon4ngOptions): Rule {
     process.exit(1);
   }
 
+  if (_options.openshift && !_options.ocurl) {
+    console.error('When openshift is true, ocurl is required.');
+    process.exit(1);
+  }
+
   return chain([
     (host: Tree): Tree => {
       host.delete('src/karma.conf.js');
@@ -52,7 +59,7 @@ export function devon4ngInitializer(_options: devon4ngOptions): Rule {
         }),
       ]),
     ),
-    _options.docker
+    (_options.docker || _options.openshift)
       ? mergeWith(
           apply(url('./docker'), [
             template({
