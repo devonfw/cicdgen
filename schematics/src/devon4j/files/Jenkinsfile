@@ -307,7 +307,6 @@ pipeline{
                     props = readJSON file: 'package.json'
                     withCredentials([usernamePassword(credentialsId: "${openShiftCredentials}", passwordVariable: 'pass', usernameVariable: 'user')]) {
                         sh "oc login -u ${user} -p ${pass} ${openshiftUrl} --insecure-skip-tls-verify"
-                        sh "oc project ${openShiftNamespace}"
                         try {
                             sh "oc import-image ${props.name} --namespace=${openShiftNamespace} --from=${dockerRegistry}/${props.name}:${dockerTag} --confirm"
                         } catch (e) {
