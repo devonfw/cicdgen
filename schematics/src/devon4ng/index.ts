@@ -9,7 +9,6 @@ import {
   url,
   noop,
 } from '@angular-devkit/schematics';
-import { camelize } from '@angular-devkit/core/src/utils/strings';
 
 /**
  * Interface for devon4ngInitializer options. It reflects the properties defined at schema.json
@@ -21,6 +20,7 @@ interface devon4ngOptions {
   plurl?: string;
   openshift?: boolean;
   ocurl?: boolean;
+  ocn?: string;
   groupid: string;
   teams?: boolean;
   teamsname?: string;
@@ -41,8 +41,8 @@ export function devon4ngInitializer(_options: devon4ngOptions): Rule {
     process.exit(1);
   }
 
-  if (_options.openshift && !_options.ocurl) {
-    console.error('When openshift is true, ocurl is required.');
+  if (_options.openshift && (!_options.ocurl || !_options.ocn)) {
+    console.error('When openshift is true, ocurl and ocn parameters are required.');
     process.exit(1);
   }
 
@@ -105,7 +105,7 @@ function updateAngularJson(host: Tree): string {
   const content = JSON.parse(host.read('angular.json')!.toString('utf-8'));
 
   content.projects[
-    camelize(getProjectName(host))
+    getProjectName(host)
   ].architect.build.options.outputPath = 'dist';
 
   return JSON.stringify(content, null, 2);

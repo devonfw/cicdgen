@@ -11,6 +11,18 @@ import {
 } from '@angular-devkit/schematics';
 import { strings } from '@angular-devkit/core';
 
+interface devon4ngOptions {
+  docker?: boolean;
+  plurl?: string;
+  openshift?: boolean;
+  ocurl?: boolean;
+  ocn?: string;
+  groupid: string;
+  teams?: boolean;
+  teamsname?: string;
+  teamsurl?: string;
+}
+
 /**
  * Main function for the devon4ng schematic. It will add all files included at files folder.
  * Also, it will update the pom.xml in order to add the distributionManagement.
@@ -19,7 +31,18 @@ import { strings } from '@angular-devkit/core';
  * @param {*} _options The command line options parsed as an object.
  * @returns {Rule} The rule to modify the file tree.
  */
-export function devon4jInitializer(_options: any): Rule {
+export function devon4jInitializer(_options: devon4ngOptions): Rule {
+
+  if (_options.docker && !_options.plurl) {
+    console.error('When docker is true, plurl is required.');
+    process.exit(1);
+  }
+
+  if (_options.openshift && (!_options.ocurl || !_options.ocn)) {
+    console.error('When openshift is true, ocurl and ocn parameters are required.');
+    process.exit(1);
+  }
+
   return (tree: Tree, _context: SchematicContext) => {
     const appname = geProjectName(tree);
     const dockerOrOpenshift = (_options.docker || _options.openshift)

@@ -60,7 +60,8 @@ pipeline{
         <% if (openshift) { %>
         // Openshift
         openshiftUrl = '<%= ocurl %>'
-        openShiftCredentials = 'nexus-docker'
+        openShiftCredentials = 'openshift'
+        openShiftNamespace = '<%= ocn %>'
         <% } %>
     }
 
@@ -309,6 +310,7 @@ pipeline{
             }
             steps {
                 script {
+                    props = readJSON file: 'package.json'
                     withCredentials([usernamePassword(credentialsId: "${openShiftCredentials}", passwordVariable: 'pass', usernameVariable: 'user')]) {
                         sh "oc login -u ${user} -p ${pass} ${openshiftUrl} --insecure-skip-tls-verify"
                         try {
@@ -334,7 +336,6 @@ pipeline{
             }
             steps{
                 script {
-                    stagename = "${env.STAGE_NAME}"
                     props = readJSON file: 'package.json'
                     withCredentials([usernamePassword(credentialsId: "${openShiftCredentials}", passwordVariable: 'pass', usernameVariable: 'user')]) {
                         sh "oc login -u ${user} -p ${pass} ${openshiftUrl} --insecure-skip-tls-verify"
@@ -361,7 +362,6 @@ pipeline{
             }
             steps{
                 script {
-                    stagename = "${env.STAGE_NAME}"
                     props = readJSON file: 'package.json'
                     sleep 30
                     withCredentials([usernamePassword(credentialsId: "${openShiftCredentials}", passwordVariable: 'pass', usernameVariable: 'user')]) {
@@ -412,7 +412,6 @@ pipeline{
             }
         }
         <% } %>
-
     }
 
     post {
