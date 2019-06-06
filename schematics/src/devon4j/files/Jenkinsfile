@@ -278,15 +278,15 @@ pipeline{
             }
             steps {
                 script {
-                    props = readJSON file: 'package.json'
+                    def pom = readMavenPom file: 'pom.xml'
                     withCredentials([usernamePassword(credentialsId: "${openShiftCredentials}", passwordVariable: 'pass', usernameVariable: 'user')]) {
                         sh "oc login -u ${user} -p ${pass} ${openshiftUrl} --insecure-skip-tls-verify"
                         try {
-                            sh "oc start-build ${props.name} --namespace=${openShiftNamespace} --from-dir=dist --wait"
-                            sh "oc import-image ${props.name} --namespace=${openShiftNamespace} --from=${dockerRegistry}/${props.name}:${dockerTag} --confirm"
+                            sh "oc start-build ${pom.artifactId} --namespace=${openShiftNamespace} --from-dir=dist --wait"
+                            sh "oc import-image ${pom.artifactId} --namespace=${openShiftNamespace} --from=${dockerRegistry}/${pom.artifactId}:${dockerTag} --confirm"
                         } catch (e) {
                             sh """
-                                oc logs \$(oc get builds -l build=${props.name} --namespace=${openShiftNamespace} --sort-by=.metadata.creationTimestamp -o name | tail -n 1) --namespace=${namespace}
+                                oc logs \$(oc get builds -l build=${pom.artifactId} --namespace=${openShiftNamespace} --sort-by=.metadata.creationTimestamp -o name | tail -n 1) --namespace=${namespace}
                                 throw e
                             """
                         }
@@ -304,14 +304,14 @@ pipeline{
             }
             steps{
                 script {
-                    props = readJSON file: 'package.json'
+                    def pom = readMavenPom file: 'pom.xml'
                     withCredentials([usernamePassword(credentialsId: "${openShiftCredentials}", passwordVariable: 'pass', usernameVariable: 'user')]) {
                         sh "oc login -u ${user} -p ${pass} ${openshiftUrl} --insecure-skip-tls-verify"
                         try {
-                            sh "oc import-image ${props.name} --namespace=${openShiftNamespace} --from=${dockerRegistry}/${props.name}:${dockerTag} --confirm"
+                            sh "oc import-image ${pom.artifactId} --namespace=${openShiftNamespace} --from=${dockerRegistry}/${pom.artifactId}:${dockerTag} --confirm"
                         } catch (e) {
                             sh """
-                                oc logs \$(oc get builds -l build=${props.name} --namespace=${openShiftNamespace} --sort-by=.metadata.creationTimestamp -o name | tail -n 1) --namespace=${openShiftNamespace}
+                                oc logs \$(oc get builds -l build=${pom.artifactId} --namespace=${openShiftNamespace} --sort-by=.metadata.creationTimestamp -o name | tail -n 1) --namespace=${openShiftNamespace}
                                 throw e
                             """
                         }
@@ -329,8 +329,8 @@ pipeline{
             }
             steps{
                 script {
-                    props = readJSON file: 'package.json'
-                    sleep 30
+                    def pom = readMavenPom file: 'pom.xml'
+                    sleep 60
                     withCredentials([usernamePassword(credentialsId: "${openShiftCredentials}", passwordVariable: 'pass', usernameVariable: 'user')]) {
                         sh "oc login -u ${user} -p ${pass} ${openshiftUrl} --insecure-skip-tls-verify"
                         sh "oc project ${openShiftNamespace}"
@@ -338,7 +338,7 @@ pipeline{
                         def oldRetry = -1;
                         def oldState = "";
                         
-                        sh "oc get pods -l app=${props.name} > out"
+                        sh "oc get pods -l app=${pom.artifactId} > out"
                         def status = sh (
                             script: "sed 's/[\t ][\t ]*/ /g' < out | sed '2q;d' | cut -d' ' -f3",
                             returnStdout: true
@@ -354,7 +354,7 @@ pipeline{
                             oldRetry = retry
                             oldState = status
                             
-                            sh """oc get pods -l app=${props.name} > out"""
+                            sh """oc get pods -l app=${pom.artifactId} > out"""
                             status = sh (
                                 script: "sed 's/[\t ][\t ]*/ /g' < out | sed '2q;d' | cut -d' ' -f3",
                                 returnStdout: true
@@ -368,7 +368,7 @@ pipeline{
                         
                         if(status != "Running"){
                             try {
-                                sh """oc logs \$(oc get pods -l app=${props.name} --sort-by=.metadata.creationTimestamp -o name | tail -n 1)"""
+                                sh """oc logs \$(oc get pods -l app=${pom.artifactId} --sort-by=.metadata.creationTimestamp -o name | tail -n 1)"""
                             } catch (e) {
                                 sh "echo error reading logs"
                             }
