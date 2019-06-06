@@ -362,7 +362,7 @@ pipeline{
             steps{
                 script {
                     props = readJSON file: 'package.json'
-                    sleep 30
+                    sleep 60
                     withCredentials([usernamePassword(credentialsId: "${openShiftCredentials}", passwordVariable: 'pass', usernameVariable: 'user')]) {
                         sh "oc login -u ${user} -p ${pass} ${openshiftUrl} --insecure-skip-tls-verify"
                         sh "oc project ${openShiftNamespace}"
