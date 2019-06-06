@@ -14,6 +14,23 @@
             "description": "The production line url",
             "examples": ["devon.s2-eu.capgemini.com"]
         },
+        "openshift": {
+            "type": "boolean",
+            "default": false,
+            "description": "Should generate code for openshift deployment?"
+        },
+        "ocurl": {
+            "type": "string",
+            "default": "",
+            "description": "Openshift cluster url",
+            "examples": ["devon.s2-eu.capgemini.com"]
+        },
+        "ocn": {
+            "type": "string",
+            "default": "",
+            "description": "Openshift cluster namespace",
+            "examples": ["namespace"]
+        },
         "groupid": {
             "type": "string",
             "examples": ["com.devonfw"],

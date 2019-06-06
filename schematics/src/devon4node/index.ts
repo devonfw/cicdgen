@@ -18,6 +18,9 @@ import {
 interface devon4nodeOptions {
   docker?: boolean;
   plurl?: string;
+  openshift?: boolean;
+  ocurl?: boolean;
+  ocn?: string;
   groupid: string;
   teams?: boolean;
   teamsname?: string;
@@ -38,6 +41,11 @@ export function devon4nodeInitializer(_options: devon4nodeOptions): Rule {
     process.exit(1);
   }
 
+  if (_options.openshift && (!_options.ocurl || !_options.ocn)) {
+    console.error('When openshift is true, ocurl and ocn parameters are required.');
+    process.exit(1);
+  }
+
   return chain([
     mergeWith(
       apply(url('./files'), [
@@ -47,7 +55,7 @@ export function devon4nodeInitializer(_options: devon4nodeOptions): Rule {
         }),
       ]),
     ),
-    _options.docker
+    (_options.docker || _options.openshift)
       ? mergeWith(
           apply(url('./docker'), [
             template({
