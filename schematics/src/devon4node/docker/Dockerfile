@@ -10,4 +10,4 @@ RUN yarn build
 RUN yarn install --production=true
 EXPOSE 3000
 
-ENTRYPOINT [ "npm","run", "start:production" ]
+ENTRYPOINT [ "npm","run", "start:prod" ]

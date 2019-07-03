@@ -1,0 +1,21 @@
+FROM node:lts
+
+RUN npm install -g yarn
+
+WORKDIR /home/node
+COPY package*.json ./
+COPY yarn.lock ./
+
+RUN yarn install --production=true --network-timeout 180000
+
+COPY . .
+
+EXPOSE 3000
+
+RUN chown -R node /home/node && chmod -R 755 /home/node && chmod 777 /home/node
+RUN mkdir -p /home/node/logs
+RUN chmod -R 777 /home/node/logs
+
+USER node
+
+ENTRYPOINT [ "npm","run", "start:production" ]

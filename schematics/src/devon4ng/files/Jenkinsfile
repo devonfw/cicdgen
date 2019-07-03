@@ -202,7 +202,11 @@ pipeline{
                 }
             }
             steps {
-                sh """yarn ${buildScript}"""
+                sh """
+                    yarn ${buildScript}
+                    cp ${dockerFileName} dist/Dockerfile
+                    cp nginx.conf dist/nginx.conf
+                """
             }
         }
 
@@ -261,11 +265,13 @@ pipeline{
             }
             steps {
                 script {
-                    docker.withRegistry("""${dockerRegistryProtocol}${dockerRegistry}""", dockerRegistryCredentials) {
-                        def props = readJSON file: 'package.json'
-                        def customImage = docker.build("${props.name}:${props.version}", "-f ${dockerFileName} .")
-                        customImage.push()
-                        customImage.push(dockerTag);
+                    def props = readJSON file: 'package.json'
+                    dir('dist') {
+                        docker.withRegistry("""${dockerRegistryProtocol}${dockerRegistry}""", dockerRegistryCredentials) {
+                            def customImage = docker.build("${props.name}:${props.version}")
+                            customImage.push()
+                            customImage.push(dockerTag);
+                        }
                     }
                 }
             }
@@ -311,16 +317,18 @@ pipeline{
             steps {
                 script {
                     props = readJSON file: 'package.json'
-                    withCredentials([usernamePassword(credentialsId: "${openShiftCredentials}", passwordVariable: 'pass', usernameVariable: 'user')]) {
-                        sh "oc login -u ${user} -p ${pass} ${openshiftUrl} --insecure-skip-tls-verify"
-                        try {
-                            sh "oc start-build ${props.name} --namespace=${openShiftNamespace} --from-dir=dist --wait"
-                            sh "oc import-image ${props.name} --namespace=${openShiftNamespace} --from=${dockerRegistry}/${props.name}:${dockerTag} --confirm"
-                        } catch (e) {
-                            sh """
-                                oc logs \$(oc get builds -l build=${props.name} --namespace=${openShiftNamespace} --sort-by=.metadata.creationTimestamp -o name | tail -n 1) --namespace=${namespace}
-                                throw e
-                            """
+                    dir('dist') {
+                        withCredentials([usernamePassword(credentialsId: "${openShiftCredentials}", passwordVariable: 'pass', usernameVariable: 'user')]) {
+                        
+                            sh "oc login -u ${user} -p ${pass} ${openshiftUrl} --insecure-skip-tls-verify"
+                            try {
+                                sh "oc start-build ${props.name} --namespace=${openShiftNamespace} --from-dir=. --wait"
+                            } catch (e) {
+                                sh """
+                                    oc logs \$(oc get builds -l build=${props.name} --namespace=${openShiftNamespace} --sort-by=.metadata.creationTimestamp -o name | tail -n 1) --namespace=${namespace}
+                                    throw e
+                                """
+                            }
                         }
                     }
                 }
