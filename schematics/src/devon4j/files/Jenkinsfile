@@ -213,6 +213,9 @@ pipeline{
             steps {
                 withMaven(globalMavenSettingsConfig: globalSettingsId, maven: mavenInstallation) {
                     sh "mvn deploy -Dmaven.test.skip=true"
+                    sh """
+                        cp ${dockerFileName} server/target/Dockerfile
+                    """
                 }
             }
         }
@@ -229,11 +232,13 @@ pipeline{
             }
             steps{
                 script {
-                    docker.withRegistry("""${dockerRegistryProtocol}${dockerRegistry}""", dockerRegistryCredentials) {
-                        def pom = readMavenPom file: 'pom.xml'
-                        def customImage = docker.build("${pom.artifactId}:${pom.version}", "-f ${dockerFileName} .")
-                        customImage.push()
-                        customImage.push(dockerTag);
+                    def pom = readMavenPom file: 'pom.xml'
+                    dir('server/target') {
+                        docker.withRegistry("""${dockerRegistryProtocol}${dockerRegistry}""", dockerRegistryCredentials) {
+                            def customImage = docker.build("${pom.artifactId}:${pom.version}")
+                            customImage.push()
+                            customImage.push(dockerTag);
+                        }
                     }
                 }
             }
@@ -279,16 +284,17 @@ pipeline{
             steps {
                 script {
                     def pom = readMavenPom file: 'pom.xml'
-                    withCredentials([usernamePassword(credentialsId: "${openShiftCredentials}", passwordVariable: 'pass', usernameVariable: 'user')]) {
-                        sh "oc login -u ${user} -p ${pass} ${openshiftUrl} --insecure-skip-tls-verify"
-                        try {
-                            sh "oc start-build ${pom.artifactId} --namespace=${openShiftNamespace} --from-dir=dist --wait"
-                            sh "oc import-image ${pom.artifactId} --namespace=${openShiftNamespace} --from=${dockerRegistry}/${pom.artifactId}:${dockerTag} --confirm"
-                        } catch (e) {
-                            sh """
-                                oc logs \$(oc get builds -l build=${pom.artifactId} --namespace=${openShiftNamespace} --sort-by=.metadata.creationTimestamp -o name | tail -n 1) --namespace=${namespace}
-                                throw e
-                            """
+                    dir('server/target') {
+                        withCredentials([usernamePassword(credentialsId: "${openShiftCredentials}", passwordVariable: 'pass', usernameVariable: 'user')]) {
+                            sh "oc login -u ${user} -p ${pass} ${openshiftUrl} --insecure-skip-tls-verify"
+                            try {
+                                sh "oc start-build ${pom.artifactId} --namespace=${openShiftNamespace} --from-dir=. --wait"
+                            } catch (e) {
+                                sh """
+                                    oc logs \$(oc get builds -l build=${pom.artifactId} --namespace=${openShiftNamespace} --sort-by=.metadata.creationTimestamp -o name | tail -n 1) --namespace=${namespace}
+                                    throw e
+                                """
+                            }
                         }
                     }
                 }
@@ -308,7 +314,7 @@ pipeline{
                     withCredentials([usernamePassword(credentialsId: "${openShiftCredentials}", passwordVariable: 'pass', usernameVariable: 'user')]) {
                         sh "oc login -u ${user} -p ${pass} ${openshiftUrl} --insecure-skip-tls-verify"
                         try {
-                            sh "oc import-image ${pom.artifactId} --namespace=${openShiftNamespace} --from=${dockerRegistry}/${pom.artifactId}:${dockerTag} --confirm"
+                            sh "oc import-image ${pom.artifactId}:${dockerTag} --namespace=${openShiftNamespace} --from=${dockerRegistry}/${pom.artifactId}:${dockerTag} --confirm"
                         } catch (e) {
                             sh """
                                 oc logs \$(oc get builds -l build=${pom.artifactId} --namespace=${openShiftNamespace} --sort-by=.metadata.creationTimestamp -o name | tail -n 1) --namespace=${openShiftNamespace}
