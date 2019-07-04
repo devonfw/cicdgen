@@ -43,7 +43,7 @@ pipeline{
         <% if (docker) { %>
         // Docker
         dockerRegistryProtocol = 'https://'
-        containerName = 'angular_application'
+        containerName = 'node_application'
         networkName = 'application'
         <% } %>
 

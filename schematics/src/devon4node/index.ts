@@ -47,6 +47,10 @@ export function devon4nodeInitializer(_options: devon4nodeOptions): Rule {
   }
 
   return chain([
+    (host: Tree): Tree => {
+      host.delete('.gitignore');
+      return host;
+    },
     mergeWith(
       apply(url('./files'), [
         template({
