@@ -35,7 +35,7 @@ pipeline{
         <% if (openshift) { %>
         // Openshift
         openshiftUrl = '<%= ocurl %>'
-        openShiftCredentials = 'openshift'
+        openShiftCredentials = 'ocadmin'
         openShiftNamespace = '<%= ocn %>'
         <% } %>
     }
