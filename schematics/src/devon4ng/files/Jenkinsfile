@@ -42,18 +42,16 @@ pipeline{
         // Maven tool id
         mavenInstallation = 'Maven3'
 
-        <% if (docker) { %>
-        // Docker
-        dockerRegistryProtocol = 'https://'
-        containerName = 'angular_application'
-        networkName = 'application'
-        <% } %>
-
         <% if (docker || openshift) { %>
-        // Docker and openshift
+        // Docker
         dockerFileName = 'Dockerfile.ci'
         dockerRegistry = 'docker-registry-<%= plurl %>'
         dockerRegistryCredentials = 'nexus-docker'
+        <% } %>
+        <% if (docker) { %>
+        dockerRegistryProtocol = 'https://'
+        containerName = 'angular_application'
+        networkName = 'application'
         dockerTool = 'docker-global'
         <% } %>
 
