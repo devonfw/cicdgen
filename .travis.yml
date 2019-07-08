@@ -19,7 +19,7 @@ jobs:
   include:
     - stage: Docker
       script: 
-        - docker build -f Dockerfile.test
+        - docker build -f Dockerfile.test .
     - stage: Documentation
       script:
         # Clone repositories
