@@ -1,0 +1,21 @@
+FROM node:lts AS cli
+
+RUN npm install -g yarn
+
+USER node
+WORKDIR /home/node
+COPY ./cli .
+RUN yarn
+RUN yarn build
+RUN yarn test
+
+FROM node:lts AS schematics
+
+RUN npm install -g yarn
+
+USER node
+WORKDIR /home/node
+COPY ./schematics .
+RUN yarn
+RUN yarn test
+
