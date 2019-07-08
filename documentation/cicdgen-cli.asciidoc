@@ -30,7 +30,7 @@ $ npm i -g @devonfw/cicdgen
 
 * Generate.
   
-  Hello guys
+  TODO
 
 ** devon4j
 ** devon4ng
