@@ -5,9 +5,10 @@ RUN npm install -g yarn
 USER node
 WORKDIR /home/node
 COPY ./cli .
+RUN chown -R node /home/node && chmod -R 755 /home/node && chmod 777 /home/node
 RUN yarn
-RUN yarn build
 RUN yarn test
+
 
 FROM node:lts AS schematics
 
@@ -16,6 +17,7 @@ RUN npm install -g yarn
 USER node
 WORKDIR /home/node
 COPY ./schematics .
+RUN chown -R node /home/node && chmod -R 755 /home/node && chmod 777 /home/node
 RUN yarn
 RUN yarn test
 
