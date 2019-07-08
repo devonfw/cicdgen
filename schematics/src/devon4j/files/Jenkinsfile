@@ -8,6 +8,12 @@ pipeline{
         office365ConnectorWebhooks([[name: '<%= teamsname %>', notifyAborted: true, notifyBackToNormal: true, notifyFailure: true, notifySuccess: true, notifyUnstable: true, url: '<%= teamsurl %>']])<% } %>
     }
 
+    <% if (openshift) { %>
+    tools {
+        oc "OpenShiftv3.11.0"
+    }
+    <% } %>
+
     environment {
         // sonarQube
         // Name of the sonarQube environment
@@ -312,7 +318,7 @@ pipeline{
                     withCredentials([usernamePassword(credentialsId: "${openShiftCredentials}", passwordVariable: 'pass', usernameVariable: 'user')]) {
                         sh "oc login -u ${user} -p ${pass} ${openshiftUrl} --insecure-skip-tls-verify"
                         try {
-                            sh "oc import-image ${pom.artifactId}:${dockerTag} --namespace=${openShiftNamespace} --from=${dockerRegistry}/${pom.artifactId}:${dockerTag} --confirm"
+                            sh "oc import-image ${pom.artifactId}${dockerEnvironment}:${dockerTag} --namespace=${openShiftNamespace} --from=${dockerRegistry}/${pom.artifactId}:${dockerTag} --confirm"
                         } catch (e) {
                             sh """
                                 oc logs \$(oc get builds -l build=${pom.artifactId}${dockerEnvironment} --namespace=${openShiftNamespace} --sort-by=.metadata.creationTimestamp -o name | tail -n 1) --namespace=${openShiftNamespace}
