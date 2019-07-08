@@ -48,7 +48,7 @@ export function devon4ngInitializer(_options: devon4ngOptions): Rule {
 
   return chain([
     (host: Tree): Tree => {
-      host.delete('src/karma.conf.js');
+      host.delete('karma.conf.js');
       return host;
     },
     mergeWith(
