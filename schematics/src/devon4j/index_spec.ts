@@ -1,6 +1,4 @@
-import * as path from 'path';
-
-const collectionPath = path.join(__dirname, '../collection.json');
+// const collectionPath = path.join(__dirname, '../collection.json');
 
 // TODO: Implement this test properly
 describe('@devonfw/cicd-schematics', () => {
