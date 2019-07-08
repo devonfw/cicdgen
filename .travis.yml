@@ -3,8 +3,8 @@ env:
   global:
     - ORG="devonfw"
     - EMAIL="icsddevonfwsupport.apps2@capgemini.com"
-    - REPO_SOURCE="devon4ng"
-    - REPO_DEST="devon4ng.wiki"
+    - REPO_SOURCE="cicdgen"
+    - REPO_DEST="cicdgen.wiki"
     - REPO_CONSOLIDATE="devonfw-guide"
     - GH_REPO_SOURCE="github.com/${ORG}/${REPO_SOURCE}.git"
     - GH_REPO_DEST="github.com/${ORG}/${REPO_DEST}.git"
