@@ -69,7 +69,7 @@ export function devon4ngInitializer(_options: devon4ngOptions): Rule {
           ]),
         )
       : noop,
-      (_options.openshift)
+    (_options.openshift)
       ? mergeWith(
           apply(url('./docker/alpine-perl'), [
             template({
