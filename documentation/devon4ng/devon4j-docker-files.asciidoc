@@ -16,4 +16,3 @@ toc::[]
 :listing-caption: Listing
 
 == Devon4j Docker related files
-
