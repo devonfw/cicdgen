@@ -77,7 +77,7 @@ pipeline{
 
                     if (env.BRANCH_NAME == 'develop') {
                         dockerTag = "latest"
-                        repositoryName = 'maven-snapshots'
+                        sonarProjectKey = '-develop'
                         dockerEnvironment = "-dev"
 
                         if (!version.endsWith("-SNAPSHOT")) {
