@@ -9,7 +9,7 @@ env:
     - GH_REPO_SOURCE="github.com/${ORG}/${REPO_SOURCE}.git"
     - GH_REPO_DEST="github.com/${ORG}/${REPO_DEST}.git"
     - GH_REPO_CONSOLIDATE="github.com/${ORG}/${REPO_CONSOLIDATE}.git"
-    - secure: jVAmFKuu5otk322Jv2j1gx5ATN4+mhOlHwDYNFw97bQvh11xDi7D+4jvVTMtmVeDlrbTwDKPfUsSNwPkYd3wohHcFQvu04y5nlTgQNbM8bLhXvC/WHsZhlqFX6RLnT1s8smzFC4+mCf3gyzMDfIe0gu6g+nbFjYJMXthdSNn6hYwe3eCnZtYKJYZKAjjHzeCb8ZSbi52nRvgqjXxxd2zL3y7AcHQ+rdFg8AvKoucp7gCwfC++/qE+xX9S02NyyEQD39Hu8+toByUSQ65XAETb8m0+1nKO9B17ujK10FncbiCA7v7jc01flFXiZmooi3xF7AFVp8dHw2Po2VrveXZ8no1L8nzqAT/FZpFblgU2RbHRgiLbGmg3Ehim6rV4ByYgqmQdyz6k1mRu256N5PA+OMMx2QRKYBeBS1ngXQdWEpjE03u24HzbsqFHa+0COcOACxu5yqrWqyR3SS7nap2x/lhhYgIDam784saJbAxjMNGuVBmB1Ayq9dO20g+cTJfaNnxigcvzCewiynJunGH+pKuI1ebRQwJougGgen0QUf6n2wwFTVq7rQqpu757qNlsYglzKe2VNG7Iki5wGJLUu80QjnOrbP5TvVBuukVpoQuWmGrDngse4JdU1AdkVtIEB1SQNQUPzC1kJZB/06vWYRivK1i4wWqpyzOmfJEAHs=
+    - secure: T8AkwLwR8026W/nEzGKMU5aBA2gP0duMf53Nc/WCX5nQZ+aHJK3JbvdJzmyjD/x8JSgZsu4Enfg+B7AOPmarzH3ZQLXMDv8W/RjY1q1FBeqy0P0/qvctjzJSz3InhQ+7pqJWqf7kbQnlwXVgiTQOM65WHMftR4K1RaArAlUGfRFMO4Kr/q5ftzGETnQkU+q1hiQNZGGRYe8nwUi4aUUkUr0VJs/rjoyKBl+/gTlMjReCkhoV1uy0TrZdGmzxoFC8s9pZTndyL2cm1wQ13dGr2V0/ghUeT6AqbDZSWpLk458rdFhEPRn3t4haBQVLVGHOuDny3Qe5d77iuz0rUbO606HnFBdrRihkOOq8QUP0PXs8em//vN0kyKbYqac9eGO3OvTRuvzocXaIoYmjJ6lZ43k3NaXDDKUtMtFkMwkREEr20UN8//FQ9C2kyD1O5IglxTG2ukEWsazvUqslol/KhoZL0xgFpExAF2ugqfqeromvjz2VWpQSy9rFYZCWH0sY410mK207U0CLzcWabPfVvIHvK/Oi+M2XhwQHJw13H3UhEmIXbZUX4Ryporu1wmF2WgfmKxwx2mF9FSBMOHGMITGWlOwxfzrsBtCd/jLlUzbc6w/dFTss0fSX6DrbQSkXFT8aKvR8xy3ccFUPwaN6g0p1n2E48HrPD/xa0JMIYWA=
 stages:
   - name: Docker
     if: branch = develop
@@ -18,7 +18,7 @@ stages:
 jobs:
   include:
     - stage: Docker
-      script: 
+      script:
         - docker build -f Dockerfile.test .
     - stage: Documentation
       script:
@@ -44,16 +44,16 @@ jobs:
             git commit -m "${REPO_SOURCE} documentation | Travis CI build number $TRAVIS_BUILD_NUMBER"
             git remote add origin-wiki "https://${USER}:${GITHUB_TOKEN}@${GH_REPO_DEST}"
             git push origin-wiki master
-            # cd ../${REPO_CONSOLIDATE}
-            # if [ ! -d ${REPO_DEST} ]; then git submodule add https://${GH_REPO_DEST}; else return 0; fi;
-            # git submodule init
-            # git submodule update
-            # cd ${REPO_DEST}
-            # git checkout master
-            # git pull
-            # cd ..
-            # git add .
-            # git commit -m "${REPO_SOURCE} documentation | Travis CI build number $TRAVIS_BUILD_NUMBER"
-            # git remote add origin-wiki "https://${USER}:${GITHUB_TOKEN}@${GH_REPO_CONSOLIDATE}"
-            # git push origin-wiki master
+            cd ../${REPO_CONSOLIDATE}
+            if [ ! -d ${REPO_DEST} ]; then git submodule add https://${GH_REPO_DEST}; else return 0; fi;
+            git submodule init
+            git submodule update
+            cd ${REPO_DEST}
+            git checkout master
+            git pull
+            cd ..
+            git add .
+            git commit -m "${REPO_SOURCE} documentation | Travis CI build number $TRAVIS_BUILD_NUMBER"
+            git remote add origin-wiki "https://${USER}:${GITHUB_TOKEN}@${GH_REPO_CONSOLIDATE}"
+            git push origin-wiki master
           fi
