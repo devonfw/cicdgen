@@ -25,7 +25,7 @@ jobs:
         # Clone repositories
         - git clone -b develop --single-branch https://${GH_REPO_SOURCE}
         - git clone https://${GH_REPO_DEST}
-        # - git clone https://${GH_REPO_CONSOLIDATE}
+        - git clone https://${GH_REPO_CONSOLIDATE}
         # Update wiki repository with documentation folder contents
         - yes | cp -rf ${REPO_SOURCE}/documentation/* ${REPO_DEST}/
         - cd ${REPO_DEST}
