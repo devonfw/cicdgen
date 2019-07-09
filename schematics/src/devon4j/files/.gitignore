@@ -13,6 +13,8 @@ local.properties
 .settings/
 .loadpath
 .recommenders
+eclipse-target/
+.*.mv.db
 
 # External tool builders
 .externalToolBuilders/
