@@ -1,0 +1,24 @@
+:toc: macro
+
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+toc::[]
+:idprefix:
+:idseparator: -
+:reproducible:
+:source-highlighter: rouge
+:listing-caption: Listing
+
+== Devon4ng parameters
+
+When you execute the `cicdgen generate devon4ng` command you can also add some parameters in order to modify the behaviour of the command. Those parameters are:
+
+* --docker
++
+The type of this paramter if boolean. If it is present, docker related files and pipeline stage will be also generated. For more details see link:./devon4ng-files.asciidoc#jenkinsfile-docker[docker section of Jenkinsfile] and link:./devon4ng-docker-files.asciidoc[files generated for docker]

@@ -1,0 +1,26 @@
+= cicdgen ${project.version}
+The devonfw community
+${project.version}, ${buildtime}: Subtitle {doctitle}
+:description: comprehensive documentation for the devonfw shop floor.
+:sectnums:
+:toc:
+:toc-title: Table of Contents
+:toclevels: 3
+ifdef::backend-pdf[]
+:title-logo-image: image:./images/devonfw.png[pdfwidth=5in,align=center]
+endif::[]
+:imagesdir: ./
+:footnote: test footnote
+:productname: test productname
+
+
+[preface]
+include::home.asciidoc[leveloffset=0]
+
+:toc:
+
+== cicdgen CLI
+
+== cicdgenSchematics
+include::dsf-configure-nexus.asciidoc[leveloffset=2]
+include::dsf-configure-sonarqube.asciidoc[leveloffset=2]
