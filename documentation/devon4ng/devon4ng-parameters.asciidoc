@@ -21,7 +21,7 @@ When you execute the `cicdgen generate devon4ng` command you can also add some p
 
 * --docker
 +
-The type of this paramter if boolean. If it is present, docker related files and pipeline stage will be also generated. For more details see link:./devon4ng-files.asciidoc#jenkinsfile-docker[docker section of Jenkinsfile] and link:./devon4ng-docker-files.asciidoc[files generated for docker]
+The type of this paramter if boolean. If it is present, docker related files and pipeline stage will be also generated. For more details see <<./devon4ng-files.asciidoc#jenkinsfile-docker,docker section of Jenkinsfile>> and link:./devon4ng-docker-files.asciidoc[files generated for docker]
 
 * --plurl
 +
@@ -29,7 +29,7 @@ Url of Production Line. It is required when `--docker` is true, and it will be u
 
 * --openshift
 +
-The type of this paramter if boolean. If it is present, OpenShift related files and pipeline stage will be also generated. For more details see link:./devon4ng-files.asciidoc#jenkinsfile-openshift[OpenShift section of Jenkinsfile] and link:./devon4ng-docker-files.asciidoc[files generated for OpenShift] (same as `--docker`)
+The type of this paramter if boolean. If it is present, OpenShift related files and pipeline stage will be also generated. For more details see <<devon4ng-files.asciidoc#jenkinsfile-openshift,OpenShift section of Jenkinsfile>> and link:./devon4ng-docker-files.asciidoc[files generated for OpenShift] (same as `--docker`)
 
 * --ocurl
 +

@@ -22,5 +22,9 @@ include::home.asciidoc[leveloffset=0]
 == cicdgen CLI
 
 == cicdgenSchematics
-include::dsf-configure-nexus.asciidoc[leveloffset=2]
+include::cicdgen-schematics.asciidoc[leveloffset=2]
+include::./devon4ng/devon4ng-docker-files.asciidoc[leveloffset=2]
+include::./devon4ng/devon4ng-files.asciidoc[leveloffset=2]
+include::./devon4ng/devon4ng-parameters.asciidoc[leveloffset=2]
+include::cicdgen-cli.asciidoc[leveloffset=2]
 include::dsf-configure-sonarqube.asciidoc[leveloffset=2]
