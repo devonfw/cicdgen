@@ -68,7 +68,7 @@ If the teams option is passed to cicdgen, we add a new option in order to send n
 **** SonarQube code analysis: send the project to SonarQube in order to get the static code analysis of your project.
 **** Build Application: compile the application to be ready to deploy in a web server.
 **** Deliver application into Nexus: store all compiled files in Nexus3 as a zip file.
-[[jenkinsfile]]
+[[jenkinsfile-docker]]
 **** If `--docker` is present:
 ***** Create the Docker image: build a new docker image that contains the new version of the project.
 ***** Deploy the new image: deploy a new version of the application using the image created in the previous stage. The previous version is removed.
