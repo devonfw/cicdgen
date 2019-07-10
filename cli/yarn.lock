@@ -34,10 +34,10 @@
     "@angular-devkit/core" "7.3.8"
     rxjs "6.3.3"
 
-"@devonfw/cicdgen-schematics@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@devonfw/cicdgen-schematics/-/cicdgen-schematics-1.0.1.tgz#4557342b23de49227d50dbd7f9f18f4c7e7ce444"
-  integrity sha512-03KLdvbfgoC5RTVvg3Tqrhsw8qJ5ENiuQNYvkgb7t0fNK8yzrU3FnlVlDPRCit+1LJEJyYQozJ+xEZfTwvuSpQ==
+"@devonfw/cicdgen-schematics@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@devonfw/cicdgen-schematics/-/cicdgen-schematics-1.1.0.tgz#a360ccb6dce36fa1a34c64dd3eb54dec16066e6e"
+  integrity sha512-lbpXFLPMlNdnhf3GY+303CMeOAvYeOYAbj01X7VFBQD24/LEwRalUvrkejGcNDc6u9Cs/J1Dz2AUt/yXoHbI0g==
   dependencies:
     "@angular-devkit/core" "^7.3.6"
     "@angular-devkit/schematics" "^7.3.6"
