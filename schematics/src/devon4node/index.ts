@@ -86,6 +86,7 @@ export function devon4nodeInitializer(_options: devon4nodeOptions): Rule {
 function updatePackageJson(host: Tree): string {
   const content = JSON.parse(host.read('package.json')!.toString('utf-8'));
   content.scripts['start:production'] = 'node main.js';
-
+  content.scripts['prestart:prod'] = undefined;
+  
   return JSON.stringify(content, null, 2);
 }
