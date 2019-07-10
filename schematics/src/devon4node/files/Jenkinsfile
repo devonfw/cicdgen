@@ -10,6 +10,9 @@ pipeline{
 
     tools {
         nodejs "NodeJS 10.14.0"
+        <% if (openshift) { %>
+        oc "OpenShiftv3.11.0"
+        <% } %>
     }
 
     environment {
@@ -40,25 +43,23 @@ pipeline{
         // Maven tool id
         mavenInstallation = 'Maven3'
 
-        <% if (docker) { %>
-        // Docker
-        dockerRegistryProtocol = 'https://'
-        containerName = 'angular_application'
-        networkName = 'application'
-        <% } %>
-
         <% if (docker || openshift) { %>
-        // Docker and openshift
+        // Docker
         dockerFileName = 'Dockerfile.ci'
         dockerRegistry = 'docker-registry-<%= plurl %>'
         dockerRegistryCredentials = 'nexus-docker'
+        <% } %>
+        <% if (docker) { %>
+        dockerRegistryProtocol = 'https://'
+        containerName = 'node_application'
+        networkName = 'application'
         dockerTool = 'docker-global'
         <% } %>
 
         <% if (openshift) { %>
         // Openshift
         openshiftUrl = '<%= ocurl %>'
-        openShiftCredentials = 'openshift'
+        openShiftCredentials = 'ocadmin'
         openShiftNamespace = '<%= ocn %>'
         <% } %>
     }
@@ -84,21 +85,21 @@ pipeline{
                     if (env.BRANCH_NAME.startsWith('release')) {
                         dockerTag = "release"
                         repositoryName = 'maven-releases'
-                        dockerEnvironment = "_uat"
+                        dockerEnvironment = "-uat"
                         sonarProjectKey = '-release'
                     }
 
                     if (env.BRANCH_NAME == 'develop') {
                         dockerTag = "latest"
                         repositoryName = 'maven-snapshots'
-                        dockerEnvironment = "_dev"
+                        dockerEnvironment = "-dev"
                         sonarProjectKey = '-develop'
                     }
 
                     if (env.BRANCH_NAME == 'master') {
                         dockerTag = "production"
                         repositoryName = 'maven-releases'
-                        dockerEnvironment = '_prod'
+                        dockerEnvironment = '-prod'
                         sonarProjectKey = ''
                         
                     }
@@ -198,7 +199,12 @@ pipeline{
                 }
             }
             steps {
-                sh """yarn ${buildScript}"""
+                sh """
+                    yarn ${buildScript}
+                    cp ${dockerFileName} dist/Dockerfile
+                    cp package.json dist/package.json
+                    cp yarn.lock dist/yarn.lock
+                """
             }
         }
 
@@ -257,11 +263,13 @@ pipeline{
             }
             steps {
                 script {
-                    docker.withRegistry("""${dockerRegistryProtocol}${dockerRegistry}""", dockerRegistryCredentials) {
-                        def props = readJSON file: 'package.json'
-                        def customImage = docker.build("${props.name}:${props.version}", "-f ${dockerFileName} .")
-                        customImage.push()
-                        customImage.push(dockerTag);
+                    def props = readJSON file: 'package.json'
+                    dir('dist') {
+                        docker.withRegistry("""${dockerRegistryProtocol}${dockerRegistry}""", dockerRegistryCredentials) {
+                            def customImage = docker.build("${props.name}:${props.version}")
+                            customImage.push()
+                            customImage.push(dockerTag);
+                        }
                     }
                 }
             }
@@ -307,16 +315,17 @@ pipeline{
             steps {
                 script {
                     props = readJSON file: 'package.json'
-                    withCredentials([usernamePassword(credentialsId: "${openShiftCredentials}", passwordVariable: 'pass', usernameVariable: 'user')]) {
-                        sh "oc login -u ${user} -p ${pass} ${openshiftUrl} --insecure-skip-tls-verify"
-                        try {
-                            sh "oc start-build ${props.name} --namespace=${openShiftNamespace} --from-dir=dist --wait"
-                            sh "oc import-image ${props.name} --namespace=${openShiftNamespace} --from=${dockerRegistry}/${props.name}:${dockerTag} --confirm"
-                        } catch (e) {
-                            sh """
-                                oc logs \$(oc get builds -l build=${props.name} --namespace=${openShiftNamespace} --sort-by=.metadata.creationTimestamp -o name | tail -n 1) --namespace=${namespace}
-                                throw e
-                            """
+                    dir('dist') {
+                        withCredentials([usernamePassword(credentialsId: "${openShiftCredentials}", passwordVariable: 'pass', usernameVariable: 'user')]) {
+                            sh "oc login -u ${user} -p ${pass} ${openshiftUrl} --insecure-skip-tls-verify"
+                            try {
+                                sh "oc start-build ${props.name}${dockerEnvironment} --namespace=${openShiftNamespace} --from-dir=. --wait"
+                            } catch (e) {
+                                sh """
+                                    oc logs \$(oc get builds -l build=${props.name}${dockerEnvironment} --namespace=${openShiftNamespace} --sort-by=.metadata.creationTimestamp -o name | tail -n 1) --namespace=${namespace}
+                                    throw e
+                                """
+                            }
                         }
                     }
                 }
@@ -336,10 +345,10 @@ pipeline{
                     withCredentials([usernamePassword(credentialsId: "${openShiftCredentials}", passwordVariable: 'pass', usernameVariable: 'user')]) {
                         sh "oc login -u ${user} -p ${pass} ${openshiftUrl} --insecure-skip-tls-verify"
                         try {
-                            sh "oc import-image ${props.name} --namespace=${openShiftNamespace} --from=${dockerRegistry}/${props.name}:${dockerTag} --confirm"
+                            sh "oc import-image ${props.name}${dockerEnvironment}:${dockerTag} --namespace=${openShiftNamespace} --from=${dockerRegistry}/${props.name}:${dockerTag} --confirm"
                         } catch (e) {
                             sh """
-                                oc logs \$(oc get builds -l build=${props.name} --namespace=${openShiftNamespace} --sort-by=.metadata.creationTimestamp -o name | tail -n 1) --namespace=${openShiftNamespace}
+                                oc logs \$(oc get builds -l build=${props.name}${dockerEnvironment} --namespace=${openShiftNamespace} --sort-by=.metadata.creationTimestamp -o name | tail -n 1) --namespace=${openShiftNamespace}
                                 throw e
                             """
                         }
@@ -366,7 +375,7 @@ pipeline{
                         def oldRetry = -1;
                         def oldState = "";
                         
-                        sh "oc get pods -l app=${props.name} > out"
+                        sh "oc get pods -l app=${props.name}${dockerEnvironment} > out"
                         def status = sh (
                             script: "sed 's/[\t ][\t ]*/ /g' < out | sed '2q;d' | cut -d' ' -f3",
                             returnStdout: true
@@ -382,7 +391,7 @@ pipeline{
                             oldRetry = retry
                             oldState = status
                             
-                            sh """oc get pods -l app=${props.name} > out"""
+                            sh """oc get pods -l app=${props.name}${dockerEnvironment} > out"""
                             status = sh (
                                 script: "sed 's/[\t ][\t ]*/ /g' < out | sed '2q;d' | cut -d' ' -f3",
                                 returnStdout: true
@@ -396,7 +405,7 @@ pipeline{
                         
                         if(status != "Running"){
                             try {
-                                sh """oc logs \$(oc get pods -l app=${props.name} --sort-by=.metadata.creationTimestamp -o name | tail -n 1)"""
+                                sh """oc logs \$(oc get pods -l app=${props.name}${dockerEnvironment} --sort-by=.metadata.creationTimestamp -o name | tail -n 1)"""
                             } catch (e) {
                                 sh "echo error reading logs"
                             }

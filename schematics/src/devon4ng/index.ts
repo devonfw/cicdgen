@@ -36,8 +36,8 @@ interface devon4ngOptions {
  * @returns {Rule} The rule to modify the file tree.
  */
 export function devon4ngInitializer(_options: devon4ngOptions): Rule {
-  if (_options.docker && !_options.plurl) {
-    console.error('When docker is true, plurl is required.');
+  if ((_options.docker || _options.openshift) && !_options.plurl) {
+    console.error('When docker or openshift is true, plurl is required.');
     process.exit(1);
   }
 
@@ -48,7 +48,7 @@ export function devon4ngInitializer(_options: devon4ngOptions): Rule {
 
   return chain([
     (host: Tree): Tree => {
-      host.delete('src/karma.conf.js');
+      host.delete('karma.conf.js');
       return host;
     },
     mergeWith(
@@ -59,9 +59,19 @@ export function devon4ngInitializer(_options: devon4ngOptions): Rule {
         }),
       ]),
     ),
-    (_options.docker || _options.openshift)
+    (_options.docker)
       ? mergeWith(
-          apply(url('./docker'), [
+          apply(url('./docker/lts'), [
+            template({
+              ..._options,
+              ...strings,
+            }),
+          ]),
+        )
+      : noop,
+    (_options.openshift)
+      ? mergeWith(
+          apply(url('./docker/alpine-perl'), [
             template({
               ..._options,
               ...strings,

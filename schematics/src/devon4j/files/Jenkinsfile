@@ -8,6 +8,12 @@ pipeline{
         office365ConnectorWebhooks([[name: '<%= teamsname %>', notifyAborted: true, notifyBackToNormal: true, notifyFailure: true, notifySuccess: true, notifyUnstable: true, url: '<%= teamsurl %>']])<% } %>
     }
 
+    <% if (openshift) { %>
+    tools {
+        oc "OpenShiftv3.11.0"
+    }
+    <% } %>
+
     environment {
         // sonarQube
         // Name of the sonarQube environment
@@ -19,25 +25,23 @@ pipeline{
         // Maven tool id
         mavenInstallation = 'Maven3'
 
-        <% if (docker) { %>
-        // Docker
-        dockerRegistryProtocol = 'https://'
-        containerName = 'angular_application'
-        networkName = 'application'
-        <% } %>
-
         <% if (docker || openshift) { %>
-        // Docker and openshift
+        // Docker
         dockerFileName = 'Dockerfile.ci'
         dockerRegistry = 'docker-registry-<%= plurl %>'
         dockerRegistryCredentials = 'nexus-docker'
+        <% } %>
+        <% if (docker) { %>
+        dockerRegistryProtocol = 'https://'
+        containerName = 'java_application'
+        networkName = 'application'
         dockerTool = 'docker-global'
         <% } %>
 
         <% if (openshift) { %>
         // Openshift
         openshiftUrl = '<%= ocurl %>'
-        openShiftCredentials = 'openshift'
+        openShiftCredentials = 'ocadmin'
         openShiftNamespace = '<%= ocn %>'
         <% } %>
     }
@@ -64,7 +68,7 @@ pipeline{
                     if (env.BRANCH_NAME.startsWith('release')) {
                         dockerTag = "release"
                         sonarProjectKey = "-release"
-                        dockerEnvironment = "_uat"
+                        dockerEnvironment = "-uat"
                         
                         if (!version.endsWith("-RC")) {
                             version = "${version}-RC"
@@ -73,8 +77,8 @@ pipeline{
 
                     if (env.BRANCH_NAME == 'develop') {
                         dockerTag = "latest"
-                        repositoryName = 'maven-snapshots'
-                        dockerEnvironment = "_dev"
+                        sonarProjectKey = '-develop'
+                        dockerEnvironment = "-dev"
 
                         if (!version.endsWith("-SNAPSHOT")) {
                             version = "${version}-SNAPSHOT"
@@ -84,7 +88,7 @@ pipeline{
                     if (env.BRANCH_NAME == 'master') {
                         sonarProjectKey = ""
                         dockerTag = "production"
-                        dockerEnvironment = "_prod"
+                        dockerEnvironment = "-prod"
 
                         if (env.BRANCH_NAME == 'master' && (version.endsWith("-RC") || version.endsWith("-SNAPSHOT"))){
                             version = version.replace("-RC", "")
@@ -213,6 +217,9 @@ pipeline{
             steps {
                 withMaven(globalMavenSettingsConfig: globalSettingsId, maven: mavenInstallation) {
                     sh "mvn deploy -Dmaven.test.skip=true"
+                    sh """
+                        cp ${dockerFileName} server/target/Dockerfile
+                    """
                 }
             }
         }
@@ -229,11 +236,13 @@ pipeline{
             }
             steps{
                 script {
-                    docker.withRegistry("""${dockerRegistryProtocol}${dockerRegistry}""", dockerRegistryCredentials) {
-                        def pom = readMavenPom file: 'pom.xml'
-                        def customImage = docker.build("${pom.artifactId}:${pom.version}", "-f ${dockerFileName} .")
-                        customImage.push()
-                        customImage.push(dockerTag);
+                    def pom = readMavenPom file: 'pom.xml'
+                    dir('server/target') {
+                        docker.withRegistry("""${dockerRegistryProtocol}${dockerRegistry}""", dockerRegistryCredentials) {
+                            def customImage = docker.build("${pom.artifactId}:${pom.version}")
+                            customImage.push()
+                            customImage.push(dockerTag);
+                        }
                     }
                 }
             }
@@ -279,16 +288,17 @@ pipeline{
             steps {
                 script {
                     def pom = readMavenPom file: 'pom.xml'
-                    withCredentials([usernamePassword(credentialsId: "${openShiftCredentials}", passwordVariable: 'pass', usernameVariable: 'user')]) {
-                        sh "oc login -u ${user} -p ${pass} ${openshiftUrl} --insecure-skip-tls-verify"
-                        try {
-                            sh "oc start-build ${pom.artifactId} --namespace=${openShiftNamespace} --from-dir=dist --wait"
-                            sh "oc import-image ${pom.artifactId} --namespace=${openShiftNamespace} --from=${dockerRegistry}/${pom.artifactId}:${dockerTag} --confirm"
-                        } catch (e) {
-                            sh """
-                                oc logs \$(oc get builds -l build=${pom.artifactId} --namespace=${openShiftNamespace} --sort-by=.metadata.creationTimestamp -o name | tail -n 1) --namespace=${namespace}
-                                throw e
-                            """
+                    dir('server/target') {
+                        withCredentials([usernamePassword(credentialsId: "${openShiftCredentials}", passwordVariable: 'pass', usernameVariable: 'user')]) {
+                            sh "oc login -u ${user} -p ${pass} ${openshiftUrl} --insecure-skip-tls-verify"
+                            try {
+                                sh "oc start-build ${pom.artifactId}${dockerEnvironment} --namespace=${openShiftNamespace} --from-dir=. --wait"
+                            } catch (e) {
+                                sh """
+                                    oc logs \$(oc get builds -l build=${pom.artifactId}${dockerEnvironment} --namespace=${openShiftNamespace} --sort-by=.metadata.creationTimestamp -o name | tail -n 1) --namespace=${namespace}
+                                    throw e
+                                """
+                            }
                         }
                     }
                 }
@@ -308,10 +318,10 @@ pipeline{
                     withCredentials([usernamePassword(credentialsId: "${openShiftCredentials}", passwordVariable: 'pass', usernameVariable: 'user')]) {
                         sh "oc login -u ${user} -p ${pass} ${openshiftUrl} --insecure-skip-tls-verify"
                         try {
-                            sh "oc import-image ${pom.artifactId} --namespace=${openShiftNamespace} --from=${dockerRegistry}/${pom.artifactId}:${dockerTag} --confirm"
+                            sh "oc import-image ${pom.artifactId}${dockerEnvironment}:${dockerTag} --namespace=${openShiftNamespace} --from=${dockerRegistry}/${pom.artifactId}:${dockerTag} --confirm"
                         } catch (e) {
                             sh """
-                                oc logs \$(oc get builds -l build=${pom.artifactId} --namespace=${openShiftNamespace} --sort-by=.metadata.creationTimestamp -o name | tail -n 1) --namespace=${openShiftNamespace}
+                                oc logs \$(oc get builds -l build=${pom.artifactId}${dockerEnvironment} --namespace=${openShiftNamespace} --sort-by=.metadata.creationTimestamp -o name | tail -n 1) --namespace=${openShiftNamespace}
                                 throw e
                             """
                         }
@@ -338,7 +348,7 @@ pipeline{
                         def oldRetry = -1;
                         def oldState = "";
                         
-                        sh "oc get pods -l app=${pom.artifactId} > out"
+                        sh "oc get pods -l app=${pom.artifactId}${dockerEnvironment} > out"
                         def status = sh (
                             script: "sed 's/[\t ][\t ]*/ /g' < out | sed '2q;d' | cut -d' ' -f3",
                             returnStdout: true
@@ -354,7 +364,7 @@ pipeline{
                             oldRetry = retry
                             oldState = status
                             
-                            sh """oc get pods -l app=${pom.artifactId} > out"""
+                            sh """oc get pods -l app=${pom.artifactId}${dockerEnvironment} > out"""
                             status = sh (
                                 script: "sed 's/[\t ][\t ]*/ /g' < out | sed '2q;d' | cut -d' ' -f3",
                                 returnStdout: true
@@ -368,7 +378,7 @@ pipeline{
                         
                         if(status != "Running"){
                             try {
-                                sh """oc logs \$(oc get pods -l app=${pom.artifactId} --sort-by=.metadata.creationTimestamp -o name | tail -n 1)"""
+                                sh """oc logs \$(oc get pods -l app=${pom.artifactId}${dockerEnvironment} --sort-by=.metadata.creationTimestamp -o name | tail -n 1)"""
                             } catch (e) {
                                 sh "echo error reading logs"
                             }
