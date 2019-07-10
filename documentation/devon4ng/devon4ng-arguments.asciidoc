@@ -22,3 +22,27 @@ When you execute the `cicdgen generate devon4ng` command you can also add some p
 * --docker
 +
 The type of this paramter if boolean. If it is present, docker related files and pipeline stage will be also generated. For more details see link:./devon4ng-files.asciidoc#jenkinsfile-docker[docker section of Jenkinsfile] and link:./devon4ng-docker-files.asciidoc[files generated for docker]
+
+* --plurl
++
+Url of Production Line. It is required when `--docker` is true, and it will be used to know where the docker image will be uploaded.
+
+* --openshift
++
+The type of this paramter if boolean. If it is present, OpenShift related files and pipeline stage will be also generated. For more details see link:./devon4ng-files.asciidoc#jenkinsfile-openshift[OpenShift section of Jenkinsfile] and link:./devon4ng-docker-files.asciidoc[files generated for OpenShift] (same as `--docker`)
+
+* --ocurl
++
+OpenShift cluster url where the application will be builded and deployed.
+
+* --ocn
++
+Openshift cluster namespace
+
+* --groupid
++
+The project groupId. It will be used for store the project in a maven repository at Nexus 3. Why maven? Because is the kind of repository where we can upload/download a zip file easily. Npm repository needs a package.json file but, as we compile the angular application to static javascript and html files, the package.json is no needed anymore.
+
+* --teams
++
+With this parameter we can add the teams notification option in the link:devon4ng-files.asciidoc#jenkinsfile-teams[Jenkinsfile].
