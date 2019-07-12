@@ -139,7 +139,7 @@ pipeline{
             }
         }
 
-        stage ('Execute Angular tests') {
+        stage ('Execute tests') {
             when {
                 anyOf {
                     branch 'master'
