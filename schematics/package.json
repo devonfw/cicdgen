@@ -1,6 +1,6 @@
 {
   "name": "@devonfw/cicdgen-schematics",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Schematic collection for initialize project with CICD files.",
   "scripts": {
     "build": "tsc -p tsconfig.json",
