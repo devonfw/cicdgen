@@ -17,6 +17,8 @@ toc::[]
 
 == CICDGEN CLI
 
+cicdgen is a command line interface that helps you with some CICD in a devonfw project. At this moment we can only generate files related to CICD in a project but we plan to add more functionlity in a future.
+
 === Installation
 
 [source,bash]
@@ -26,11 +28,46 @@ $ npm i -g @devonfw/cicdgen
 
 === Usage
 
+==== Global arguments
+
+* --version
+
+    Prints the cicdgen version number
+
+* --help
+
+    Shows the usage of the command
+
 ==== Commands
 
-* Generate.
-  
-  TODO
+===== Generate.
 
-** devon4j
-** devon4ng
+This command wraps the usage of angular schematics CLI. With this we generate files in a easy way and also print a better help about usage.
+
+Available schematics that generate the code:
+
+* link:devon4j/devon4j-schematic.asciidoc[devon4j]
+* link:devon4j/devon4ng-schematic.asciidoc[devon4ng]
+* link:devon4j/devon4node-schematic.asciidoc[devon4node]
+
+==== Examples
+
+* Generate all CICD files related to a devon4j project
++
+----
+$ cicdgen generate devon4j
+----
+
+* Generate all CICD files related to a devon4ng project with docker deployment.
++
+----
+$ cicdgen generate devon4ng --groupid com.devonfw --docker --plurl devon.s2-eu.capgemini.com
+----
+
+* Generate all CICD files related to a devon4node project with OpenShift deployment.
++
+----
+$ cicdgen generate devon4ng --groupid com.devonfw --openshift --plurl devon.s2-eu.capgemini.com --ocurl ocp.itaas.s2-eu.capgemini.com --ocn devonfw
+----
+
+
