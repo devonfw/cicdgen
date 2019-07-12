@@ -19,6 +19,124 @@ toc::[]
 
 With the `cicdgen generate devon4j` command you can generate some files required for CICD. In this section we will explain the arguments of this command and also the files that will be generated.
 
-include::./devon4j-arguments.asciidoc[leveloffset=2]
-include::./devon4j-files.asciidoc[leveloffset=2]
-include::./devon4j-docker-files.asciidoc[leveloffset=2]
+=== Devon4j schematic arguments
+
+When you execute the `cicdgen generate devon4j` command you can also add some arguments in order to modify the behaviour of the command. Those arguments are:
+
+* --docker
++
+The type of this paramter if boolean. If it is present, docker related files and pipeline stage will be also generated. For more details see <<./devon4j-files.asciidoc#jenkinsfile-docker,docker section of Jenkinsfile>> and link:./devon4j-docker-files.asciidoc[files generated for docker]
+
+* --plurl
++
+Url of Production Line. It is required when `--docker` is true, and it will be used to know where the docker image will be uploaded.
+
+* --openshift
++
+The type of this paramter if boolean. If it is present, OpenShift related files and pipeline stage will be also generated. For more details see <<devon4j-files.asciidoc#jenkinsfile-openshift,OpenShift section of Jenkinsfile>> and link:./devon4j-docker-files.asciidoc[files generated for OpenShift] (same as `--docker`)
+
+* --ocurl
++
+OpenShift cluster url where the application will be builded and deployed.
+
+* --ocn
++
+Openshift cluster namespace
+
+* --teams
++
+With this argument we can add the teams notification option in the link:devon4j-files.asciidoc#jenkinsfile-teams[Jenkinsfile].
+
+* --teamsname
++
+The name of the Microsft Teams webhook. It is defined at Microsoft Teams connectors.
+
+* --teamsurl
++
+The url of the Microsft Teams webhook. It is returned by Microsoft Teams when you create a connector.
+
+=== Devon4ng generated files
+
+When you execute the generate devon4ng command, some files will be added/updated in your project. 
+
+==== Files
+
+* .gitignore
++
+Defines all files that git will ignore. e.g: compiled files, IDE configurations.
++
+* pom.xml
++
+The pom.xml is modified in order to add the distributionManagement.
+* Jenkinsfile
++
+The Jenkinsfile is the file which define the Jenkins pipeline of our project. With this we can execute the test, build the application and deploy it automatically following a CICD methodology. This file is prepared to work with the Production Line default values, but it is also fully configurable to your needs.
++
+** Prerequisites
+*** A Production Line instance. It can works also if you have a Jenkins, SonarQube and Nexus3, but in this case maybe you need to configure them properly.
+*** Java installed in Jenkins as a global tool.
+*** Google Chrome installed in Jenkins as a global custom tool.
+*** SonarQube installed in Jenkins as a global tool.
+*** Maven3 installed in Jenkins as a global tool.
+*** A maven global settings properly configured in Jenkins.
+*** If you will use docker to deploy:
+**** Docker installed in Jenkins as a global custom tool.
+**** The Nexus3 with a docker repository.
+**** A machine with docker installed where the build and deploy will happen.
+**** A docker network called application.
+*** If you will use OpenShift to deploy:
+**** An OpenShift instance
+**** The OpenShift projects created
+** The Jenkins syntax
++ 
+In this section we will  explain a little bit the syntax of the Jenkins, so if you need to change something you will be able to do it properly.
++
+*** agent: Here you can specify the Jenkins agente where the pipeline will be executed. The default value is any.
+*** options: Here you can set global options to the pipeline. By default, we add a build discarded to delete old artifacts/buils of the pipeline and also we disable the concurrent builds.
++
+[[jenkinsfile-teams]]
+If the teams option is passed to cicdgen, we add a new option in order to send notifications to Microsoft Teams with the status of the pipeline executions.
++
+*** environment: Here all environment variables are defined. All values defined here matches with the Production Line defaults. If you Jenkins has other values, you need to update it manually.
+*** stages: Here are defined all stages that our pipeline will execute. Those stages are:
+**** Setup pipeline: We set some variables depending on the git branch which you are executing. Also, we set properly the version number in all pom files. It means that if your branch is develop, your version should end with the word `-SNAPSHOT`, in order case, if `-SNAPSHOT` is present it will be removed.
+**** Fresh Dependency Installation: install all packages need to build/run your java project.
+**** Unit Tests: execute the `mvn test` command.
+**** SonarQube code analysis: send the project to SonarQube in order to get the static code analysis of your project.
+**** Deliver application into Nexus: build the project and send all bundle files to Nexsu3.
++
+[[jenkinsfile-docker]]
+**** If `--docker` is present:
+***** Create the Docker image: build a new docker image that contains the new version of the project.
+***** Deploy the new image: deploy a new version of the application using the image created in the previous stage. The previous version is removed.
++
+[[jenkinsfile-openshift]]
+**** If `--openshift` is present: 
+***** Create the Docker image: build a new docker image that contains the new version of the project using a OpenShift build config.
+***** Deploy the new image: deploy a new version of the application in OpenShift.
+***** Check pod status: checks that the application deployed in the previous stage is running properly. If the application does not run the pipeline will fail.
+*** post: actions that will be executed after the stages. We use it to clean up all files.
+
+=== Devon4j Docker generated files
+
+When you generate the files for a devon4ng you can also pass the option `--docker`. It will generate also some extra files related to docker.
+
+NOTE: If you pass the `--docker` option the option `--plurl` is also required. It will be used to upload the images to the Nexus3 inside Production Line. Example: if your PL url is `test.s2-eu.capgemini.com` you should execute the command in this way: `cicdgen generate devon4ng --groupid com.devonfw --docker --plurl test.s2-eu.capgemini.com`, and it will use docker-registry-test.s2-eu.capgemini.com as docker registry.
+
+==== Files
+
+* Dockerfile
++
+This file contains the instructions to build a docker image for you project. This Dockerfile is for local development purposes, you can use it in your machine executing:
++
+----
+$ cd <path-to-your-project>
+$ docker build -t <project-name>/<tag> .
+----
++
+This build is using a multi-stage build. First, it use a maven image in order to compile the source code, then it will use a java image to run the application. With the multi-stage build we keep the final image as clean as possible.
+
+* Dockerfile.ci
++
+This file contains the instructions to create a docker image for you project. The main difference with the Dockerfile is that this file will be only used in the Jenkins pipeline. Instead of compiling again the code, it takes the compiled war from Jenkins to the image.
+
