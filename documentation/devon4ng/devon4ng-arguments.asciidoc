@@ -8,16 +8,9 @@ ifdef::env-github[]
 :warning-caption: :warning:
 endif::[]
 
-toc::[]
-:idprefix:
-:idseparator: -
-:reproducible:
-:source-highlighter: rouge
-:listing-caption: Listing
+=== Devon4ng schematic arguments
 
-== Devon4ng parameters
-
-When you execute the `cicdgen generate devon4ng` command you can also add some parameters in order to modify the behaviour of the command. Those parameters are:
+When you execute the `cicdgen generate devon4ng` command you can also add some arguments in order to modify the behaviour of the command. Those arguments are:
 
 * --docker
 +
@@ -41,8 +34,16 @@ Openshift cluster namespace
 
 * --groupid
 +
-The project groupId. It will be used for store the project in a maven repository at Nexus 3. Why maven? Because is the kind of repository where we can upload/download a zip file easily. Npm repository needs a package.json file but, as we compile the angular application to static javascript and html files, the package.json is no needed anymore.
+The project groupId. This argument is required. It will be used for store the project in a maven repository at Nexus 3. Why maven? Because is the kind of repository where we can upload/download a zip file easily. Npm repository needs a package.json file but, as we compile the angular application to static javascript and html files, the package.json is no needed anymore.
 
 * --teams
 +
-With this parameter we can add the teams notification option in the link:devon4ng-files.asciidoc#jenkinsfile-teams[Jenkinsfile].
+With this argument we can add the teams notification option in the link:devon4ng-files.asciidoc#jenkinsfile-teams[Jenkinsfile].
+
+* --teamsname
++
+The name of the Microsft Teams webhook. It is defined at Microsoft Teams connectors.
+
+* --teamsurl
++
+The url of the Microsft Teams webhook. It is returned by Microsoft Teams when you create a connector.

@@ -8,20 +8,13 @@ ifdef::env-github[]
 :warning-caption: :warning:
 endif::[]
 
-toc::[]
-:idprefix:
-:idseparator: -
-:reproducible:
-:source-highlighter: rouge
-:listing-caption: Listing
-
-== Devon4ng Docker related files
+=== Devon4ng Docker generated files
 
 When you generate the files for a devon4ng you can also pass the option `--docker`. It will generate also some extra files related to docker.
 
 NOTE: If you pass the `--docker` option the option `--plurl` is also required. It will be used to upload the images to the Nexus3 inside Production Line. Example: if your PL url is `test.s2-eu.capgemini.com` you should execute the command in this way: `cicdgen generate devon4ng --groupid com.devonfw --docker --plurl test.s2-eu.capgemini.com`, and it will use docker-registry-test.s2-eu.capgemini.com as docker registry.
 
-=== Files
+==== Files
 
 * .dockerignore
 +

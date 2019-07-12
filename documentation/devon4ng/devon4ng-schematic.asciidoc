@@ -1,0 +1,24 @@
+:toc: macro
+
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+toc::[]
+:idprefix:
+:idseparator: -
+:reproducible:
+:source-highlighter: rouge
+:listing-caption: Listing
+
+== Devon4ng schematic
+
+With the `cicdgen generate devon4ng` command you can generate some files required for CICD. In this section we will explain the arguments of this command and also the files that will be generated.
+
+include::./devon4ng-arguments.asciidoc[leveloffset=2]
+include::./devon4ng-files.asciidoc[leveloffset=2]
+include::./devon4ng-docker-files.asciidoc[leveloffset=2]

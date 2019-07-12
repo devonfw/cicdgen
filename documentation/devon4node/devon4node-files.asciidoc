@@ -8,21 +8,20 @@ ifdef::env-github[]
 :warning-caption: :warning:
 endif::[]
 
-=== Devon4ng generated files
+=== Devon4node generated files
 
-When you execute the generate devon4ng command, some files will be added/updated in your project. 
+When you execute the generate devon4node command, some files will be added/updated in your project. 
 
 ==== Files
 
-* angular.json
-+
-The angular.json is modified in order to change the compiled files destination folder. Now, when you make a build of your project, the compiled files will be generated into dist folder instead of dist/<project-name> folder.
 * package.json
 +
-The package.json is modified in order to add a script for test the application using Chrome Headless instead of a regular chrome. This script is called `test:ci`.
-* karma.conf.js
+The package.json is modified in order to add a script to run the application in a docker container. It is necessary because we change a little bit the folder structure when we put all files in a docker image, so the script `start:prod` does not work.
 +
-The karma.conf.js is also modified in order to add the Chrome Headless as a browser to execute test. The coverage output folder is change to `./coverage` instead of `./coverage/<project-name>`
+* .gitignore
++
+Defines all files that git will ignore. e.g: compiled files, IDE configurations.
++
 * Jenkinsfile
 +
 The Jenkinsfile is the file which define the Jenkins pipeline of our project. With this we can execute the test, build the application and deploy it automatically following a CICD methodology. This file is prepared to work with the Production Line default values, but it is also fully configurable to your needs.
@@ -56,9 +55,9 @@ If the teams option is passed to cicdgen, we add a new option in order to send n
 *** environment: Here all environment variables are defined. All values defined here matches with the Production Line defaults. If you Jenkins has other values, you need to update it manually.
 *** stages: Here are defined all stages that our pipeline will execute. Those stages are:
 **** Loading Custom Tools: in this stage some custom tools are loaded. Also we set some variables depending on the git branch which you are executing.
-**** Fresh Dependency Installation: install all packages need to build/run your angular project.
+**** Fresh Dependency Installation: install all packages need to build/run your node project.
 **** Code Linting: execute the linter analysis.
-**** Execute Angular tests: execute the angular test in a Chrome Headless.
+**** Execute tests: execute the tests.
 **** SonarQube code analysis: send the project to SonarQube in order to get the static code analysis of your project.
 **** Build Application: compile the application to be ready to deploy in a web server.
 **** Deliver application into Nexus: store all compiled files in Nexus3 as a zip file.

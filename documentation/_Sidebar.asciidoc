@@ -1,1 +1,15 @@
+== cicdgen Guide
+
 * link:Home.asciidoc[Wiki Home]
+
+* cicdgen CLI
+
+** link:cicdgen-cli.asciidoc[cicdgen CLI]
+** link:usage-example.asciidoc[Usage example]
+
+* cicdgen Schematics
+
+** link:cicdgen-schematics.asciidoc[cicdgen Schematics]
+** link:devon4j-schematic.asciidoc[devon4j Schematic] 
+** link:devon4ng-schematic.asciidoc[devon4ng Schematic] 
+** link:devon4node-schematic.asciidoc[devon4node Schematic] 

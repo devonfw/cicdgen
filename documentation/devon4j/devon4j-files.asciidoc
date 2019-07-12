@@ -14,32 +14,30 @@ When you execute the generate devon4ng command, some files will be added/updated
 
 ==== Files
 
-* angular.json
+* .gitignore
 +
-The angular.json is modified in order to change the compiled files destination folder. Now, when you make a build of your project, the compiled files will be generated into dist folder instead of dist/<project-name> folder.
-* package.json
+Defines all files that git will ignore. e.g: compiled files, IDE configurations.
 +
-The package.json is modified in order to add a script for test the application using Chrome Headless instead of a regular chrome. This script is called `test:ci`.
-* karma.conf.js
+* pom.xml
 +
-The karma.conf.js is also modified in order to add the Chrome Headless as a browser to execute test. The coverage output folder is change to `./coverage` instead of `./coverage/<project-name>`
+The pom.xml is modified in order to add the distributionManagement.
 * Jenkinsfile
 +
 The Jenkinsfile is the file which define the Jenkins pipeline of our project. With this we can execute the test, build the application and deploy it automatically following a CICD methodology. This file is prepared to work with the Production Line default values, but it is also fully configurable to your needs.
 +
 ** Prerequisites
 *** A Production Line instance. It can works also if you have a Jenkins, SonarQube and Nexus3, but in this case maybe you need to configure them properly.
-*** NodeJS installed in Jenkins as a global tool.
+*** Java installed in Jenkins as a global tool.
 *** Google Chrome installed in Jenkins as a global custom tool.
 *** SonarQube installed in Jenkins as a global tool.
 *** Maven3 installed in Jenkins as a global tool.
 *** A maven global settings properly configured in Jenkins.
-*** If you will use docker :
+*** If you will use docker to deploy:
 **** Docker installed in Jenkins as a global custom tool.
 **** The Nexus3 with a docker repository.
 **** A machine with docker installed where the build and deploy will happen.
 **** A docker network called application.
-*** If you will use OpenShift :
+*** If you will use OpenShift to deploy:
 **** An OpenShift instance
 **** The OpenShift projects created
 ** The Jenkins syntax
@@ -47,21 +45,18 @@ The Jenkinsfile is the file which define the Jenkins pipeline of our project. Wi
 In this section we will  explain a little bit the syntax of the Jenkins, so if you need to change something you will be able to do it properly.
 +
 *** agent: Here you can specify the Jenkins agente where the pipeline will be executed. The default value is any.
-*** options: Here you can set global options for the pipeline. By default, we add a build discarded to delete old artifacts/buils of the pipeline and also we disable the concurrent builds.
+*** options: Here you can set global options to the pipeline. By default, we add a build discarded to delete old artifacts/buils of the pipeline and also we disable the concurrent builds.
 +
 [[jenkinsfile-teams]]
 If the teams option is passed to cicdgen, we add a new option in order to send notifications to Microsoft Teams with the status of the pipeline executions.
 +
-*** tools: Here we define the global tools configurations. By default a version of nodejs is added here.
 *** environment: Here all environment variables are defined. All values defined here matches with the Production Line defaults. If you Jenkins has other values, you need to update it manually.
 *** stages: Here are defined all stages that our pipeline will execute. Those stages are:
-**** Loading Custom Tools: in this stage some custom tools are loaded. Also we set some variables depending on the git branch which you are executing.
-**** Fresh Dependency Installation: install all packages need to build/run your angular project.
-**** Code Linting: execute the linter analysis.
-**** Execute Angular tests: execute the angular test in a Chrome Headless.
+**** Setup pipeline: We set some variables depending on the git branch which you are executing. Also, we set properly the version number in all pom files. It means that if your branch is develop, your version should end with the word `-SNAPSHOT`, in order case, if `-SNAPSHOT` is present it will be removed.
+**** Fresh Dependency Installation: install all packages need to build/run your java project.
+**** Unit Tests: execute the `mvn test` command.
 **** SonarQube code analysis: send the project to SonarQube in order to get the static code analysis of your project.
-**** Build Application: compile the application to be ready to deploy in a web server.
-**** Deliver application into Nexus: store all compiled files in Nexus3 as a zip file.
+**** Deliver application into Nexus: build the project and send all bundle files to Nexsu3.
 +
 [[jenkinsfile-docker]]
 **** If `--docker` is present:

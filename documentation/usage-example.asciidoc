@@ -1,0 +1,121 @@
+:toc: macro
+
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+toc::[]
+:idprefix:
+:idseparator: -
+:reproducible:
+:source-highlighter: rouge
+:listing-caption: Listing
+
+== cicdgen usage example
+
+In this example we are going to show how to use cicdgen step by step in a devon4ng project.
+
+. Install cicdgen
++
+cicdgen is already included in the devonfw distribution, but if you want to use it outside the devonfw console you can execute the following command:
++
+----
+$ npm i -g cicdgen
+----
++
+. Generate a new devon4ng project using devcon.
++
+image:images/example/devcon-example.png[]
++
+. Execute cicdgen generate command
++
+As we want to send notifications to MS Teams, we need to create de connector first:
++
+--
+* Go to a channel in teams and click at the connectors button. Then click at the jenkins configure button.
++
+image:images/example/teams-1.png[]
++
+* Put a name for the connector
++
+image:images/example/teams-2.png[]
++
+* Copy the name and the Webhook URL, we will use it later.
++
+image:images/example/teams-3.png[]
+--
+With the values that we get in the previous steps, we will execute the cicdgen command inside the project folder. If you have any doubt you can use the help.
++
+image:images/example/help-1.png[]
++
+image:images/example/help-2.png[]
++
+----
+$ cicdgen generate devon4ng --groupid com.devonfw --docker --plurl devon.s2-eu.capgemini.com --teams --teamsname devon4ng --teamsurl https://outlook.office.com/webhook/...
+----
++
+image:images/example/cicdgen-command.png[]
++
+. Create a git repository and upload the code
++
+image:images/example/gitlab.png[]
++
+image:images/example/gitlab-2.png[]
++
+----
+$ git remote add origin https://devon.s2-eu.capgemini.com/gitlab/darrodri/devon4ng.git
+$ git push -u origin master
+----
++
+image:images/example/push-code.png[]
++
+As you can see, no git init or git commit is required, cicdgen do it for you.
+. Create a multibranch-pipeline in Jenkins
++
+image:images/example/new-pipeline.png[]
++
+When you push the save button, it will download the repository and execute the pipeline defined in the Jenkinsfile. If you get any problem, check the environment variables defined in the Jenkinsfile. Here we show all variables related with Jenkins:
++
+--
+* chrome
++
+image:images/example/chrome-stable.png[]
++
+* sonarTool
++
+image:images/example/sonar-tool.png[]
++
+* sonarEnv
++
+image:images/example/sonar-env.png[]
++
+* repositoryId
++
+image:images/example/repository-id.png[]
++
+* globalSettingsId
++
+image:images/example/global-settings-id.png[]
++
+* mavenInstallation
++
+image:images/example/maven-installation.png[]
++
+* dockerTool
++
+image:images/example/docker-global.png[]
+--
++
+. Add a webhook in GitLab
++
+In order to run the pipeline every time that you push code to GitLab, you need to configure a webhook in your repository.
++
+image:images/example/gitlab-webhook.png[]
+
+Now your project is ready to work following a CICD strategy. 
+
+The last thing to take into account is the branch naming. We prepare the pipeline in order to work following the git-flow strategy. So all stages of the pipeline will be executed for the branchs: develop, release/{asterisk}, master. For the branchs: feature/{asterisk}, hotfix/{asterisk}, bugfix/{asterisk} only the steps related to unit testing will be executed.

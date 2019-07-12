@@ -17,3 +17,28 @@ toc::[]
 
 == CICDGEN SCHEMATICS
 
+We use angular schematics to create and update an existing devonfw project in order to adapt it to a CICD environment. All schematics are prepared to work with Production Line, a Capgemini CICD platform, but it can also work in other environment which have the following tools:
+
+* Jenkins
+* Nexus 3
+* SonarQube
+
+The list of available schematics are:
+
+* link:./devon4j/devon4j-schematic.asciidoc[devon4j]
+* link:./devon4ng/devon4ng-schematic.asciidoc[devon4ng]
+* link:./devon4node/devon4node-schematic.asciidoc[devon4node]
+
+=== How to run the schematics
+
+You can run the schematics using the schematic CLI provided by the angular team, but the easiest way to run it is using the link:cicdgen-cli.asciidoc[cicdgen CLI] which is a wrapper for the angular CLI in order to use it in a easy way.
+
+To generate files you only need to run the command
+
+----
+$ cicdgen generate <schematic-name> [arguments]
+----
+
+<schematic-name> is the name of the schematic that you want to execute.
+
+You can find all information about arguments in the schematic section.
