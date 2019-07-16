@@ -1,32 +1,19 @@
-= cicdgen ${project.version}
-The devonfw community
-${project.version}, ${buildtime}: Subtitle {doctitle}
-:description: comprehensive documentation for the devonfw shop floor.
-:sectnums:
-:toc:
-:toc-title: Table of Contents
-:toclevels: 3
-ifdef::backend-pdf[]
-:title-logo-image: image:./images/devonfw.png[pdfwidth=5in,align=center]
-endif::[]
-:imagesdir: ./
-:footnote: test footnote
-:productname: test productname
+= cicdgen
 
-
-[preface]
-include::home.asciidoc[leveloffset=0]
-
-:toc:
+include::home.asciidoc[leveloffset=1]
 
 == cicdgen CLI
+
 include::cicdgen-cli.asciidoc[leveloffset=2]
+
 include::usage-example.asciidoc[leveloffset=2]
 
 == cicdgen Schematics
+
 include::cicdgen-schematics.asciidoc[leveloffset=2] 
+
 include::devon4j/devon4j-schematic.asciidoc[leveloffset=2]
+
 include::devon4ng/devon4ng-schematic.asciidoc[leveloffset=2]
+
 include::devon4node/devon4node-schematic.asciidoc[leveloffset=2]
-
-
