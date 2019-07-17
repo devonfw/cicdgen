@@ -1,6 +1,6 @@
 = cicdgen
 
-include::home.asciidoc[leveloffset=1]
+include::Home.asciidoc[leveloffset=1]
 
 == cicdgen CLI
 
