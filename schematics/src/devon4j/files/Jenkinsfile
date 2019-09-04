@@ -41,8 +41,8 @@ pipeline{
         <% if (openshift) { %>
         // Openshift
         openshiftUrl = '<%= ocurl %>'
-        openShiftCredentials = 'ocadmin'
         openShiftNamespace = '<%= ocn %>'
+        timeToCheckApp = 5
         <% } %>
     }
 
@@ -288,16 +288,41 @@ pipeline{
             steps {
                 script {
                     def pom = readMavenPom file: 'pom.xml'
-                    dir('server/target') {
-                        withCredentials([usernamePassword(credentialsId: "${openShiftCredentials}", passwordVariable: 'pass', usernameVariable: 'user')]) {
-                            sh "oc login -u ${user} -p ${pass} ${openshiftUrl} --insecure-skip-tls-verify"
-                            try {
-                                sh "oc start-build ${pom.artifactId}${dockerEnvironment} --namespace=${openShiftNamespace} --from-dir=. --wait"
-                            } catch (e) {
-                                sh """
-                                    oc logs \$(oc get builds -l build=${pom.artifactId}${dockerEnvironment} --namespace=${openShiftNamespace} --sort-by=.metadata.creationTimestamp -o name | tail -n 1) --namespace=${namespace}
-                                    throw e
-                                """
+                    def appName = "${pom.artifactId}${dockerEnvironment}"
+                    dir('dist') {
+                        openshift.withCluster('default'){
+                            openshift.withProject(openShiftNamespace) {
+                                try {
+                                    openshift.startBuild("${appName} --from-dir=. --wait") 
+                                } catch (e) {
+                                    def latestBuildVersion = openshift.selector('bc',"${appName}").object().status.lastVersion
+                                    def buildName = "${appName}-${latestBuildVersion}"
+
+                                    echo "Checking ${buildName} build"
+                                    def build
+                                    def status
+                                    try {
+                                        build = openshift.selector("build ${buildName}")
+                                        status = build.object().status.phase
+                                    }catch (eLog) {
+                                        error ("[ERROR] - build or status not exist.\n" + e)
+                                    }
+
+                                    try {
+                                        sh "echo logs for ${build.name()}:"
+                                        build.logs()
+                                    } catch (eLog) {
+                                        sh "echo error reading logs"
+                                    }
+
+                                    if (!status) {
+                                        error ("" + e)
+                                    } else if (status == "Failed") {
+                                        error("[FAILED] - The build is not complete, status: " + status + ".\n" + e)
+                                    } else if (status) {
+                                        error("[TIMEOUT] - The build is not complete, status: " + status + ".\n" + e)
+                                    }
+                                }
                             }
                         }
                     }
@@ -315,24 +340,19 @@ pipeline{
             steps{
                 script {
                     def pom = readMavenPom file: 'pom.xml'
-                    withCredentials([usernamePassword(credentialsId: "${openShiftCredentials}", passwordVariable: 'pass', usernameVariable: 'user')]) {
-                        sh "oc login -u ${user} -p ${pass} ${openshiftUrl} --insecure-skip-tls-verify"
-                        try {
-                            sh "oc import-image ${pom.artifactId}${dockerEnvironment}:${dockerTag} --namespace=${openShiftNamespace} --from=${dockerRegistry}/${pom.artifactId}:${dockerTag} --confirm"
-                        } catch (e) {
-                            sh """
-                                oc logs \$(oc get builds -l build=${pom.artifactId}${dockerEnvironment} --namespace=${openShiftNamespace} --sort-by=.metadata.creationTimestamp -o name | tail -n 1) --namespace=${openShiftNamespace}
-                                throw e
-                            """
+                    openshift.withCluster('default'){
+                        openshift.withProject(openShiftNamespace) {
+                            openshift.raw("import-image ${pom.artifactId}${dockerEnvironment}:${dockerTag}")
                         }
                     }
                 }
             }
         }
-        
+
         stage ('Check pod status') {
             when {
                 anyOf {
+                    branch 'master'
                     branch 'develop'
                     branch 'release/*'
                 }
@@ -340,49 +360,62 @@ pipeline{
             steps{
                 script {
                     def pom = readMavenPom file: 'pom.xml'
-                    sleep 60
-                    withCredentials([usernamePassword(credentialsId: "${openShiftCredentials}", passwordVariable: 'pass', usernameVariable: 'user')]) {
-                        sh "oc login -u ${user} -p ${pass} ${openshiftUrl} --insecure-skip-tls-verify"
-                        sh "oc project ${openShiftNamespace}"
-                        
-                        def oldRetry = -1;
-                        def oldState = "";
-                        
-                        sh "oc get pods -l app=${pom.artifactId}${dockerEnvironment} > out"
-                        def status = sh (
-                            script: "sed 's/[\t ][\t ]*/ /g' < out | sed '2q;d' | cut -d' ' -f3",
-                            returnStdout: true
-                        ).trim()
-                        
-                        def retry = sh (
-                            script: "sed 's/[\t ][\t ]*/ /g' < out | sed '2q;d' | cut -d' ' -f4",
-                            returnStdout: true
-                        ).trim().toInteger();
-                        
-                        while (retry < 5 && (oldRetry != retry || oldState != status)) {
-                            sleep 30
-                            oldRetry = retry
-                            oldState = status
-                            
-                            sh """oc get pods -l app=${pom.artifactId}${dockerEnvironment} > out"""
-                            status = sh (
-                                script: "sed 's/[\t ][\t ]*/ /g' < out | sed '2q;d' | cut -d' ' -f3",
-                                returnStdout: true
-                            ).trim()
-                            
-                            retry = sh (
-                                script: "sed 's/[\t ][\t ]*/ /g' < out | sed '2q;d' | cut -d' ' -f4",
-                                returnStdout: true
-                            ).trim().toInteger();
-                        }
-                        
-                        if(status != "Running"){
+                    def appName = "${pom.artifactId}${dockerEnvironment}"
+                    openshift.withCluster('default'){
+                        openshift.withProject(openShiftNamespace) {
+                            def latestDeploymentVersion = openshift.selector('dc',"${appName}").object().status.latestVersion
+                            def deployment = "${appName}-${latestDeploymentVersion}"
+
+                            echo "Checking ${deployment} pod"
+                            def pod = openshift.selector('pod', [deployment: "${deployment}"])
+                            def status
                             try {
-                                sh """oc logs \$(oc get pods -l app=${pom.artifactId}${dockerEnvironment} --sort-by=.metadata.creationTimestamp -o name | tail -n 1)"""
+                                timeout(5) {
+                                    pod.untilEach(1) {
+                                        status = it.object().status.phase
+                                        echo "status of pod: ${status}"
+                                        return (status == "Running" || status == "Failed" || status == "Error" || status == "CrashLoopBackOff")
+                                    }
+                                }
+                                if (status != "Running") {
+                                    error("")
+                                }
+                                status = ''
+                                try {
+                                    timeout(timeToCheckApp) {
+                                        pod.untilEach(1) {
+                                            getPod = openshift.raw("get ${it.name()}")
+                                            sh """echo "${getPod.actions[0].out}" > out"""
+                                            status = sh (
+                                                script: "sed 's/[\t ][\t ]*/ /g' < out | sed '2q;d' | cut -d' ' -f3",
+                                                returnStdout: true
+                                            ).trim()
+                                            return (status == "Failed" || status == "Error" || status == "CrashLoopBackOff")
+                                        }
+                                    }
+                                    error("")
+                                } catch (checked) {
+                                    if (status == "Running") {
+                                        sh "echo Checked: pod running during ${timeToCheckApp} minutes."
+                                    } else {
+                                        error("")
+                                    }
+                                }
                             } catch (e) {
-                                sh "echo error reading logs"
+                                try {
+                                    sh "echo logs for ${pod.name()}:"
+                                    pod.logs()
+                                } catch (eLog) {
+                                    sh "echo error reading logs"
+                                }
+                                if (!status) {
+                                    error ("" + e)
+                                } else if (status == "Failed" || status == "Error" || status == "CrashLoopBackOff") {
+                                    error("[FAILED] - The pod is not running, status: " + status + ".\n" + e)
+                                } else {
+                                    error("[TIMEOUT] - The pod is not running, status: " + status + ".\n" + e)
+                                }
                             }
-                            error("The pod is not running, cause: " + status)
                         }
                     }
                 }
