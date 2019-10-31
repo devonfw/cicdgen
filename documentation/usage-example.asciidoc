@@ -27,9 +27,13 @@ cicdgen is already included in the devonfw distribution, but if you want to use 
 $ npm i -g cicdgen
 ----
 +
-. Generate a new devon4ng project using devcon.
+. Generate a new devon4ng project using devonfw ide.
 +
-image:images/example/devcon-example.png[]
+Inside a devonfw ide distrubution execute the command (`devon ng create <app-name>`):
++
+----
+$ devon ng create devon4ng
+----
 +
 . Execute cicdgen generate command
 +
