@@ -25,7 +25,7 @@ When you execute the `cicdgen generate devon4j` command you can also add some ar
 
 * --docker
 +
-The type of this paramter if boolean. If it is present, docker related files and pipeline stage will be also generated. For more details see <<./devon4j-files.asciidoc#jenkinsfile-docker,docker section of Jenkinsfile>> and link:./devon4j-docker-files.asciidoc[files generated for docker]
+The type of this paramter if boolean. If it is present, docker related files and pipeline stage will be also generated. For more details see docker section of Jenkinsfile and xref:devon4j-docker-generated-files[files generated for docker]
 
 * --plurl
 +
@@ -33,7 +33,7 @@ Url of Production Line. It is required when `--docker` is true, and it will be u
 
 * --openshift
 +
-The type of this paramter if boolean. If it is present, OpenShift related files and pipeline stage will be also generated. For more details see <<devon4j-files.asciidoc#jenkinsfile-openshift,OpenShift section of Jenkinsfile>> and link:./devon4j-docker-files.asciidoc[files generated for OpenShift] (same as `--docker`)
+The type of this paramter if boolean. If it is present, OpenShift related files and pipeline stage will be also generated. For more details see OpenShift section of Jenkinsfile and xref:devon4j-docker-generated-files[files generated for docker] (same as `--docker`)
 
 * --ocurl
 +
@@ -45,7 +45,7 @@ Openshift cluster namespace
 
 * --teams
 +
-With this argument we can add the teams notification option in the link:devon4j-files.asciidoc#jenkinsfile-teams[Jenkinsfile].
+With this argument we can add the teams notification option in the xref:jenkinsfile-teams[Jenkinsfile].
 
 * --teamsname
 +
