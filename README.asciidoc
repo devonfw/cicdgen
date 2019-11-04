@@ -16,13 +16,13 @@ You can find all documentation in our link:https://github.com/devonfw/cicdgen/wi
 
 === Code of conduct
 
-Visit link:https://github.com/devonfw/cicdgen/blob/develop/.github/CODE_OF_CONDUCT.asciidoc[code of conduct document.]
-
-=== Terms of use
-
-Visit link:https://github.com/devonfw/cicdgen/blob/develop/.github/TERMS_OF_USE.asciidoc[terms of use document.]
+Visit link:https://github.com/devonfw/.github/blob/master/CODE_OF_CONDUCT.md[code of conduct document].
 
 === Contributing guide
 
-Visit link:https://github.com/devonfw/cicdgen/blob/develop/.github/CONTRIBUTING_GUIDE.asciidoc[contributing guide document.]
+Visit link:https://github.com/devonfw/.github/blob/master/CONTRIBUTING.asciidoc[contributing guide document].
+
+=== Key Principles
+
+Visit link:https://github.com/devonfw/.github/blob/master/key-principles.asciidoc[key principles document].
  

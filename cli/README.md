@@ -8,13 +8,12 @@ You can find all documentation in our [wiki](https://github.com/devonfw/cicdgen/
 
 ## Code of conduct
 
-Visit [code of conduct document](https://github.com/devonfw/cicdgen/blob/develop/.github/CODE_OF_CONDUCT.asciidoc).
-
-## Terms of use
-
-Visit [terms of use document](https://github.com/devonfw/cicdgen/blob/develop/.github/TERMS_OF_USE.asciidoc).
+Visit [code of conduct document](https://github.com/devonfw/.github/blob/master/CODE_OF_CONDUCT.md).
 
 ## Contributing guide
 
-Visit [contributing guide document](https://github.com/devonfw/cicdgen/blob/develop/.github/CONTRIBUTING_GUIDE.asciidoc).
- 
+Visit [contributing guide document](https://github.com/devonfw/.github/blob/master/CONTRIBUTING.asciidoc).
+
+## Key Principles
+
+Visit [key principles document](https://github.com/devonfw/.github/blob/master/key-principles.asciidoc).
