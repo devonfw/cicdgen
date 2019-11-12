@@ -1,14 +1,4 @@
-import {
-  Rule,
-  SchematicContext,
-  Tree,
-  mergeWith,
-  apply,
-  url,
-  template,
-  noop,
-  chain,
-} from '@angular-devkit/schematics';
+import { Rule, SchematicContext, Tree, mergeWith, apply, url, template, noop, chain } from '@angular-devkit/schematics';
 import { strings } from '@angular-devkit/core';
 
 interface devon4ngOptions {
@@ -32,7 +22,6 @@ interface devon4ngOptions {
  * @returns {Rule} The rule to modify the file tree.
  */
 export function devon4jInitializer(_options: devon4ngOptions): Rule {
-
   if (_options.docker && !_options.plurl) {
     console.error('When docker is true, plurl is required.');
     process.exit(1);
@@ -44,18 +33,25 @@ export function devon4jInitializer(_options: devon4ngOptions): Rule {
   }
 
   return (tree: Tree, _context: SchematicContext) => {
+    if (!tree.exists('pom.xml')) {
+      console.error(
+        'You are not inside a devon4j folder. Please change to a devon4j folder and execute the command again.',
+      );
+      process.exit(1);
+    }
     const appname = geProjectName(tree);
-    const dockerOrOpenshift = (_options.docker || _options.openshift)
-      ? mergeWith(
-          apply(url('./docker'), [
-            template({
-              ..._options,
-              ...strings,
-              appname,
-            }),
-          ]),
-        )
-      : noop;
+    const dockerOrOpenshift =
+      _options.docker || _options.openshift
+        ? mergeWith(
+            apply(url('./docker'), [
+              template({
+                ..._options,
+                ...strings,
+                appname,
+              }),
+            ]),
+          )
+        : noop;
     const files = mergeWith(
       apply(url('./files'), [
         template({

@@ -1,14 +1,5 @@
 import { strings } from '@angular-devkit/core';
-import {
-  apply,
-  chain,
-  mergeWith,
-  Rule,
-  template,
-  Tree,
-  url,
-  noop,
-} from '@angular-devkit/schematics';
+import { apply, chain, mergeWith, Rule, template, Tree, url, noop } from '@angular-devkit/schematics';
 
 /**
  * Interface for devon4ngInitializer options. It reflects the properties defined at schema.json
@@ -46,48 +37,57 @@ export function devon4ngInitializer(_options: devon4ngOptions): Rule {
     process.exit(1);
   }
 
-  return chain([
-    (host: Tree): Tree => {
-      host.delete('karma.conf.js');
-      return host;
-    },
-    mergeWith(
-      apply(url('./files'), [
-        template({
-          ..._options,
-          ...strings,
-        }),
-      ]),
-    ),
-    (_options.docker)
-      ? mergeWith(
-          apply(url('./docker/lts'), [
-            template({
-              ..._options,
-              ...strings,
-            }),
-          ]),
-        )
-      : noop,
-    (_options.openshift)
-      ? mergeWith(
-          apply(url('./docker/alpine-perl'), [
-            template({
-              ..._options,
-              ...strings,
-            }),
-          ]),
-        )
-      : noop,
-    (host: Tree): Tree => {
-      host.overwrite('package.json', updatePackageJson(host));
-      return host;
-    },
-    (host: Tree): Tree => {
-      host.overwrite('angular.json', updateAngularJson(host));
-      return host;
-    },
-  ]);
+  return (tree: Tree): Rule => {
+    const packageJson = tree.read('package.json');
+    if (!packageJson || !packageJson.toString().includes('angular')) {
+      console.error(
+        'You are not inside a devon4ng folder. Please change to a devon4ng folder and execute the command again.',
+      );
+      process.exit(1);
+    }
+    return chain([
+      (host: Tree): Tree => {
+        host.delete('karma.conf.js');
+        return host;
+      },
+      mergeWith(
+        apply(url('./files'), [
+          template({
+            ..._options,
+            ...strings,
+          }),
+        ]),
+      ),
+      _options.docker
+        ? mergeWith(
+            apply(url('./docker/lts'), [
+              template({
+                ..._options,
+                ...strings,
+              }),
+            ]),
+          )
+        : noop,
+      _options.openshift
+        ? mergeWith(
+            apply(url('./docker/alpine-perl'), [
+              template({
+                ..._options,
+                ...strings,
+              }),
+            ]),
+          )
+        : noop,
+      (host: Tree): Tree => {
+        host.overwrite('package.json', updatePackageJson(host));
+        return host;
+      },
+      (host: Tree): Tree => {
+        host.overwrite('angular.json', updateAngularJson(host));
+        return host;
+      },
+    ]);
+  };
 }
 
 /**
@@ -99,8 +99,7 @@ export function devon4ngInitializer(_options: devon4ngOptions): Rule {
  */
 function updatePackageJson(host: Tree): string {
   const content = JSON.parse(host.read('package.json')!.toString('utf-8'));
-  content.scripts['test:ci'] =
-    'ng test --browsers ChromeHeadless --watch=false';
+  content.scripts['test:ci'] = 'ng test --browsers ChromeHeadless --watch=false';
 
   return JSON.stringify(content, null, 2);
 }
@@ -114,9 +113,7 @@ function updatePackageJson(host: Tree): string {
 function updateAngularJson(host: Tree): string {
   const content = JSON.parse(host.read('angular.json')!.toString('utf-8'));
 
-  content.projects[
-    getProjectName(host)
-  ].architect.build.options.outputPath = 'dist';
+  content.projects[getProjectName(host)].architect.build.options.outputPath = 'dist';
 
   return JSON.stringify(content, null, 2);
 }

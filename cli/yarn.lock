@@ -35,9 +35,9 @@
     rxjs "6.3.3"
 
 "@devonfw/cicdgen-schematics@^1.2.2":
-  version "1.2.2"
-  resolved "https://registry.yarnpkg.com/@devonfw/cicdgen-schematics/-/cicdgen-schematics-1.2.2.tgz#f25eb43d0430555ebbc1947ab6c24cb6f458cc2b"
-  integrity sha512-XZrV149S+IWXZKCASquhD/dfIV+SA7CVbnJiMZOXH6KJePyr8pn5Xggi/UCHF7h4D/5d6FWWXziqQ2vScQwdHw==
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/@devonfw/cicdgen-schematics/-/cicdgen-schematics-1.2.4.tgz#1d8e2d081e2aa84d9a39918e63687558cfacbff1"
+  integrity sha512-oa+tqmPEpJdGyWpY0N73kf69vY9WOm0Rj0D/0CrE7Jn2btenVdxyokhFmRuWu23DfzzoBEbjE2CkFRTbyOWTcQ==
   dependencies:
     "@angular-devkit/core" "^7.3.6"
     "@angular-devkit/schematics" "^7.3.6"
@@ -606,10 +606,22 @@ glob-parent@^3.1.0:
     is-glob "^3.1.0"
     path-dirname "^1.0.0"
 
-glob@^7.0.0, glob@^7.1.3, glob@^7.1.4:
+glob@^7.0.0, glob@^7.1.4:
   version "7.1.5"
   resolved "https://registry.yarnpkg.com/glob/-/glob-7.1.5.tgz#6714c69bee20f3c3e64c4dd905553e532b40cdc0"
   integrity sha512-J9dlskqUXK1OeTOYBEn5s8aMukWMwWfs+rPTn/jn50Ux4MNXVhubL1wu/j2t+H4NVI+cXEcCaYellqaPVGXNqQ==
+  dependencies:
+    fs.realpath "^1.0.0"
+    inflight "^1.0.4"
+    inherits "2"
+    minimatch "^3.0.4"
+    once "^1.3.0"
+    path-is-absolute "^1.0.0"
+
+glob@^7.1.3:
+  version "7.1.6"
+  resolved "https://registry.yarnpkg.com/glob/-/glob-7.1.6.tgz#141f33b81a7c2492e125594307480c46679278a6"
+  integrity sha512-LwaxwyZ72Lk7vZINtNNrywX0ZuLyStrdDtabefZKAY5ZGJhVtgdznluResxNmPitE0SAO+O26sWTHeKSI2wMBA==
   dependencies:
     fs.realpath "^1.0.0"
     inflight "^1.0.4"

@@ -1,14 +1,5 @@
 import { strings } from '@angular-devkit/core';
-import {
-  apply,
-  chain,
-  mergeWith,
-  Rule,
-  template,
-  Tree,
-  url,
-  noop,
-} from '@angular-devkit/schematics';
+import { apply, chain, mergeWith, Rule, template, Tree, url, noop } from '@angular-devkit/schematics';
 
 /**
  * Interface for devon4nodeInitializer options. It reflects the properties defined at schema.json
@@ -46,34 +37,43 @@ export function devon4nodeInitializer(_options: devon4nodeOptions): Rule {
     process.exit(1);
   }
 
-  return chain([
-    (host: Tree): Tree => {
-      host.delete('.gitignore');
-      return host;
-    },
-    mergeWith(
-      apply(url('./files'), [
-        template({
-          ..._options,
-          ...strings,
-        }),
-      ]),
-    ),
-    (_options.docker || _options.openshift)
-      ? mergeWith(
-          apply(url('./docker'), [
-            template({
-              ..._options,
-              ...strings,
-            }),
-          ]),
-        )
-      : noop,
-    (host: Tree): Tree => {
-      host.overwrite('package.json', updatePackageJson(host));
-      return host;
-    },
-  ]);
+  return (tree: Tree): Rule => {
+    const packageJson = tree.read('package.json');
+    if (!packageJson || !packageJson.toString().includes('nestjs')) {
+      console.error(
+        'You are not inside a devon4node folder. Please change to a devon4node folder and execute the command again.',
+      );
+      process.exit(1);
+    }
+    return chain([
+      (host: Tree): Tree => {
+        host.delete('.gitignore');
+        return host;
+      },
+      mergeWith(
+        apply(url('./files'), [
+          template({
+            ..._options,
+            ...strings,
+          }),
+        ]),
+      ),
+      _options.docker || _options.openshift
+        ? mergeWith(
+            apply(url('./docker'), [
+              template({
+                ..._options,
+                ...strings,
+              }),
+            ]),
+          )
+        : noop,
+      (host: Tree): Tree => {
+        host.overwrite('package.json', updatePackageJson(host));
+        return host;
+      },
+    ]);
+  };
 }
 
 /**
@@ -87,6 +87,6 @@ function updatePackageJson(host: Tree): string {
   const content = JSON.parse(host.read('package.json')!.toString('utf-8'));
   content.scripts['start:production'] = 'node main.js';
   content.scripts['prestart:prod'] = undefined;
-  
+
   return JSON.stringify(content, null, 2);
 }

@@ -1,6 +1,6 @@
 {
   "name": "@devonfw/cicdgen",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "CLI for generate code using @devonfw/cicdgen-schematics.",
   "scripts": {
     "build": "tsc -p tsconfig.json",
@@ -22,7 +22,7 @@
   "schematics": "./src/collection.json",
   "dependencies": {
     "@angular-devkit/schematics-cli": "^0.13.6",
-    "@devonfw/cicdgen-schematics": "^1.2.2",
+    "@devonfw/cicdgen-schematics": "^1.2.4",
     "@types/jasmine": "^3.0.0",
     "@types/node": "^8.0.31",
     "jasmine": "^3.0.0",
