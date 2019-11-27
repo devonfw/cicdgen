@@ -3,4 +3,7 @@
 !*.d.ts
 .github/
 .vscode/
+*_spec.js
+*.js.map
 yarn-error.log
+coverage/

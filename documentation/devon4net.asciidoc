@@ -15,29 +15,45 @@ toc::[]
 :source-highlighter: rouge
 :listing-caption: Listing
 
-== Devon4ng schematic
+== devon4net schematic
 
-With the `cicdgen generate devon4ng` command you can generate some files required for CICD. In this section we will explain the arguments of this command and also the files that will be generated.
+With the `cicdgen generate devon4net` command you can generate some files required for CICD. In this section we will explain the arguments of this command and also the files that will be generated.
 
-=== Devon4ng schematic arguments
+=== devon4net schematic arguments
 
-When you execute the `cicdgen generate devon4ng` command you can also add some arguments in order to modify the behaviour of the command. Those arguments are:
+When you execute the `cicdgen generate devon4net` command you can also add some arguments in order to modify the behaviour of the command. Those arguments are:
+
+* --appname
++
+The name of your devon4net application.
+
+* --appversion
++
+The initial version of your devon4net application
 
 * --docker
 +
-The type of this paramter if boolean. If it is present, docker related files and pipeline stage will be also generated. For more details see docker section of Jenkinsfile and xref:devon4ng-docker-generated-files[files generated for docker]
+The type of this paramter if boolean. If it is present, docker related files and pipeline stage will be also generated. For more details see docker section of Jenkinsfile and xref:devon4net-docker-generated-files[files generated for docker]
 
-* --plurl
+* --dockerurl
 +
-Url of Production Line. It is required when `--docker` is true, and it will be used to know where the docker image will be uploaded.
+The URL of your external docker daemon. Example: tcp://127.0.0.1:2376
+
+* --dockercertid
++
+The Jenkins credential id for your docker daemon certificate. It is only required when your docker daemon is secure.
+
+* --registryurl
++
+Your docker registry URL. It is required when `--docker` is true, and it will be used to know where the docker image will be uploaded.
 
 * --openshift
 +
-The type of this paramter if boolean. If it is present, OpenShift related files and pipeline stage will be also generated. For more details see OpenShift section of Jenkinsfile and xref:devon4ng-docker-generated-files[files generated for OpenShift] (same as `--docker`)
+The type of this paramter if boolean. If it is present, OpenShift related files and pipeline stage will be also generated. For more details see OpenShift section of Jenkinsfile and xref:devon4net-docker-generated-files[files generated for OpenShift] (same as `--docker`)
 
-* --ocurl
+* --ocname
 +
-OpenShift cluster url where the application will be builded and deployed.
+The name used for register your Openshift cluster in Jenkins.
 
 * --ocn
 +
@@ -59,29 +75,19 @@ The name of the Microsft Teams webhook. It is defined at Microsoft Teams connect
 +
 The url of the Microsft Teams webhook. It is returned by Microsoft Teams when you create a connector.
 
-=== Devon4ng generated files
+=== devon4net generated files
 
-When you execute the generate devon4ng command, some files will be added/updated in your project. 
+When you execute the generate devon4net command, some files will be added/updated in your project. 
 
 ==== Files
 
-* angular.json
-+
-The angular.json is modified in order to change the compiled files destination folder. Now, when you make a build of your project, the compiled files will be generated into dist folder instead of dist/<project-name> folder.
-* package.json
-+
-The package.json is modified in order to add a script for test the application using Chrome Headless instead of a regular chrome. This script is called `test:ci`.
-* karma.conf.js
-+
-The karma.conf.js is also modified in order to add the Chrome Headless as a browser to execute test. The coverage output folder is change to `./coverage` instead of `./coverage/<project-name>`
 * Jenkinsfile
 +
 The Jenkinsfile is the file which define the Jenkins pipeline of our project. With this we can execute the test, build the application and deploy it automatically following a CICD methodology. This file is prepared to work with the Production Line default values, but it is also fully configurable to your needs.
 +
 ** Prerequisites
 *** A Production Line instance. It can works also if you have a Jenkins, SonarQube and Nexus3, but in this case maybe you need to configure them properly.
-*** NodeJS installed in Jenkins as a global tool.
-*** Google Chrome installed in Jenkins as a global custom tool.
+*** dotnet core installed in Jenkins as a global tool.
 *** SonarQube installed in Jenkins as a global tool.
 *** Maven3 installed in Jenkins as a global tool.
 *** A maven global settings properly configured in Jenkins.
@@ -89,7 +95,6 @@ The Jenkinsfile is the file which define the Jenkins pipeline of our project. Wi
 **** Docker installed in Jenkins as a global custom tool.
 **** The Nexus3 with a docker repository.
 **** A machine with docker installed where the build and deploy will happen.
-**** A docker network called application.
 *** If you will use OpenShift :
 **** An OpenShift instance
 **** The OpenShift projects created
@@ -107,9 +112,8 @@ If the teams option is passed to cicdgen, we add a new option in order to send n
 *** environment: Here all environment variables are defined. All values defined here matches with the Production Line defaults. If you Jenkins has other values, you need to update it manually.
 *** stages: Here are defined all stages that our pipeline will execute. Those stages are:
 **** Loading Custom Tools: in this stage some custom tools are loaded. Also we set some variables depending on the git branch which you are executing.
-**** Fresh Dependency Installation: install all packages need to build/run your angular project.
-**** Code Linting: execute the linter analysis.
-**** Execute Angular tests: execute the angular test in a Chrome Headless.
+**** Fresh Dependency Installation: install all dependencies need to build/run your dotnet project.
+**** Execute dotnet tests: execute the tests.
 **** SonarQube code analysis: send the project to SonarQube in order to get the static code analysis of your project.
 **** Build Application: compile the application to be ready to deploy in a web server.
 **** Deliver application into Nexus: store all compiled files in Nexus3 as a zip file.
@@ -126,11 +130,11 @@ If the teams option is passed to cicdgen, we add a new option in order to send n
 ***** Check pod status: checks that the application deployed in the previous stage is running properly. If the application does not run the pipeline will fail.
 *** post: actions that will be executed after the stages. We use it to clean up all files.
 
-=== Devon4ng Docker generated files
+=== devon4net Docker generated files
 
-When you generate the files for a devon4ng you can also pass the option `--docker`. It will generate also some extra files related to docker.
+When you generate the files for devon4net you can also pass the option `--docker`. It will generate also some extra files related to docker.
 
-NOTE: If you pass the `--docker` option the option `--plurl` is also required. It will be used to upload the images to the Nexus3 inside Production Line. Example: if your PL url is `test.s2-eu.capgemini.com` you should execute the command in this way: `cicdgen generate devon4ng --groupid com.devonfw --docker --plurl test.s2-eu.capgemini.com`, and it will use docker-registry-test.s2-eu.capgemini.com as docker registry.
+NOTE: If you pass the `--docker` option the option `--registryurl` is also required. It will be used to upload the images to a docker registry. Example: if your registry url is `docker-registry-test.s2-eu.capgemini.com` you should execute the command in this way: `cicdgen generate devon4net --groupid com.devonfw --docker --registryurl docker-registry-test.s2-eu.capgemini.com`.
 
 ==== Files
 
@@ -140,20 +144,13 @@ In this files are defined the folders that will not be copied to the docker imag
 
 * Dockerfile
 +
-This file contains the instructions to build a docker image for you project. This Dockerfile is for local development purposes, you can use it in your machine executing:
+This file contains the instructions to build a docker image for your project. This Dockerfile is for local development purposes, you can use it in your machine executing:
 +
 ----
 $ cd <path-to-your-project>
 $ docker build -t <project-name>/<tag> .
 ----
-+
-This build is using a multi-stage build. First, it use a node image in order to compile the source code, then it will use a nginx image as a web server for our devon4ng application. With the multi-stage build we avoid everything related to node.js in our final image, where we only have a nginx with our application compiled.
 
 * Dockerfile.ci
 +
-This file contains the instructions to create a docker image for you project. The main difference with the Dockerfile is that this file will be only used in the Jenkins pipeline. Instead of compiling again the code, it takes all compiled files and the nginx.conf from Jenkins to the image.
-
-* nginx.conf
-+
-Configuration file for our nginx server. It defines the root folder of our application where docker copy the files to. Also it defines a fallback route to the index as described in the link:https://angular.io/guide/deployment#routed-apps-must-fallback-to-indexhtml[angular deployment guide] in oder to enable the angular routes.
-
+This file contains the instructions to create a docker image for you project. The main difference with the Dockerfile is that this file will be only used in the Jenkins pipeline. Instead of compiling again the code, it takes all compiled files from Jenkins to the image.

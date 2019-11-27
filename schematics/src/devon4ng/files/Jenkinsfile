@@ -9,7 +9,7 @@ pipeline{
     }
 
     tools {
-        nodejs "NodeJS 10.16.0"
+        nodejs "NodeJS 10.17.0"
         <% if (openshift) { %>
         oc "OpenShiftv3.11.0"
         <% } %>
@@ -48,20 +48,20 @@ pipeline{
         <% if (docker || openshift) { %>
         // Docker
         dockerFileName = 'Dockerfile.ci'
-        dockerRegistry = 'docker-registry-<%= plurl %>'
-        dockerRegistryCredentials = 'nexus-docker'
+        dockerRegistry = '<%= registryurl %>'
+        dockerRegistryCredentials = 'nexus-api'
         <% } %>
         <% if (docker) { %>
+        dockerDaemonUrl = '<%= dockerurl %>'
+        dockerCertificateId = '<%= dockercertid %>'
         dockerRegistryProtocol = 'https://'
         containerName = 'angular_application'
-        networkName = 'application'
         dockerTool = 'docker-global'
         <% } %>
 
         <% if (openshift) { %>
         // Openshift
-        openshiftUrl = '<%= ocurl %>'
-        openShiftNamespace = '<%= ocn %>'
+        openshiftClusterName = '<%= ocname %>'
         timeToCheckApp = 5
         <% } %>
     }
@@ -84,27 +84,26 @@ pipeline{
                 tool dockerTool
                 <% } %>
 
-
                 script {
                     if (env.BRANCH_NAME.startsWith('release')) {
                         dockerTag = "release"
-                        repositoryName = 'maven-releases'
-                        dockerEnvironment = "-uat"
-                        sonarProjectKey = '-release'
+                        repositoryName = "maven-releases"
+                        deployEnvironment = "-uat"
+                        sonarProjectKey = "-release"
                     }
 
                     if (env.BRANCH_NAME == 'develop') {
                         dockerTag = "latest"
-                        repositoryName = 'maven-snapshots'
-                        dockerEnvironment = "-dev"
-                        sonarProjectKey = '-develop'
+                        repositoryName = "maven-snapshots"
+                        deployEnvironment = "-dev"
+                        sonarProjectKey = "-develop"
                     }
 
                     if (env.BRANCH_NAME == 'master') {
                         dockerTag = "production"
-                        repositoryName = 'maven-releases'
-                        dockerEnvironment = '-prod'
-                        sonarProjectKey = ''
+                        repositoryName = "maven-releases"
+                        deployEnvironment = "-stage"
+                        sonarProjectKey = ""
                         
                     }
                 }
@@ -123,7 +122,15 @@ pipeline{
                 }
             }
             steps {
-                sh "yarn"
+                // Download dependencies from nexus
+                sh """
+                    if [[ -f "yarn.lock" ]]; then
+                        sed -i s_https://registry.yarnpkg.com_http://nexus3-core:8081/nexus3/repository/npm_g yarn.lock
+                    fi
+                """
+                sh "yarn config set registry http://nexus3-core:8081/nexus3/repository/npm && yarn"
+                // Revert, probably docker or Openshift do not have access to nexus
+                sh "sed -i s_http://nexus3-core:8081/nexus3/repository/npm_https://registry.yarnpkg.com_g yarn.lock"
             }
         }
 
@@ -206,7 +213,7 @@ pipeline{
                 sh """
                     yarn ${buildScript}
                     cp ${dockerFileName} dist/Dockerfile
-                    cp nginx.conf dist/nginx.conf
+                    cp .dockerignore dist/.dockerignore
                 """
             }
         }
@@ -268,10 +275,12 @@ pipeline{
                 script {
                     def props = readJSON file: 'package.json'
                     dir('dist') {
-                        docker.withRegistry("""${dockerRegistryProtocol}${dockerRegistry}""", dockerRegistryCredentials) {
-                            def customImage = docker.build("${props.name}:${props.version}")
-                            customImage.push()
-                            customImage.push(dockerTag);
+                        docker.withDockerServer(dockerDaemonUrl<% if(dockercertid){ %>, dockerCertificateId <%}%>) {
+                            docker.withRegistry("""${dockerRegistryProtocol}${dockerRegistry}""", dockerRegistryCredentials) {
+                                def customImage = docker.build("${props.name}:${props.version}")
+                                customImage.push()
+                                customImage.push(dockerTag);
+                            }
                         }
                     }
                 }
@@ -288,21 +297,35 @@ pipeline{
             }
             steps{
                 script {
-                    docker.withRegistry("""${dockerRegistryProtocol}${dockerRegistry}""", dockerRegistryCredentials) {
-                        def props = readJSON file: 'package.json'
-                        docker.image("${props.name}:${props.version}").pull()
+                    docker.withDockerServer(dockerDaemonUrl<% if(dockercertid){ %>, dockerCertificateId <%}%>) {
+                        docker.withRegistry("""${dockerRegistryProtocol}${dockerRegistry}""", dockerRegistryCredentials) {
+                            def props = readJSON file: 'package.json'
+                            // Create the docker network
+                            def dockerNetworkName = props.name.split('-')[0].trim()
+                            def network = sh returnStdout: true, script: """docker network ls -f name="^${dockerNetworkName}${deployEnvironment}\$" | sed '2q;d' """
+                            if (network?.trim() == '') {
+                                sh "docker network create ${dockerNetworkName}${deployEnvironment}"
+                            } else {
+                                println "${dockerNetworkName}${deployEnvironment} network already exists"
+                            }
+                            // Deploy the docker container
+                            docker.image("${dockerRegistry}/${props.name}:${dockerTag}").pull()
 
-                        def containerId = sh returnStdout: true, script: """docker ps -aqf "name=${containerName}${dockerEnvironment}" """
-                        if (containerId?.trim()) {
-                            sh "docker rm -f ${containerId.trim()}"
+                            def containerId = sh returnStdout: true, script: """docker ps -aqf network=${dockerNetworkName}${deployEnvironment} -f "ancestor=${dockerRegistry}/${props.name}:${dockerTag}" """
+                            if (containerId?.trim()) {
+                                sh "docker rm -f ${containerId.trim()}"
+                            }
+
+                            println """docker run -d --restart unless-stopped --network=${dockerNetworkName}${deployEnvironment} --network-alias=${containerName} ${dockerRegistry}/${props.name}:${dockerTag}"""
+                            sh """docker run -d --restart unless-stopped --network=${dockerNetworkName}${deployEnvironment} --network-alias=${containerName} ${dockerRegistry}/${props.name}:${dockerTag}"""
                         }
-
-                        println """docker run -d --name ${containerName}${dockerEnvironment} --network=${networkName} ${dockerRegistry}/${props.name}:${props.version}"""
-                        sh """docker run -d --name ${containerName}${dockerEnvironment} --network=${networkName} ${dockerRegistry}/${props.name}:${props.version}"""
                     }
                 }
             }
         }
+
+        // TODO: Check container status stage
+
         <% } %>
 
         <% if (openshift) { %>
@@ -318,10 +341,10 @@ pipeline{
             steps {
                 script {
                     def props = readJSON file: 'package.json'
-                    def appName = "${props.name}${dockerEnvironment}"
+                    def appName = "${props.name}${deployEnvironment}"
                     dir('dist') {
-                        openshift.withCluster('default'){
-                            openshift.withProject(openShiftNamespace) {
+                        openshift.withCluster(openshiftClusterName){
+                            openshift.withProject() {
                                 try {
                                     openshift.startBuild("${appName} --from-dir=. --wait") 
                                 } catch (e) {
@@ -363,6 +386,7 @@ pipeline{
         stage ('Deploy the new image') {
             when {
                 anyOf {
+                    branch 'master'
                     branch 'develop'
                     branch 'release/*'
                 }
@@ -370,9 +394,9 @@ pipeline{
             steps{
                 script {
                     def props = readJSON file: 'package.json'
-                    openshift.withCluster('default'){
-                        openshift.withProject(openShiftNamespace) {
-                            openshift.raw("import-image ${props.name}${dockerEnvironment}:${dockerTag}")
+                    openshift.withCluster(openshiftClusterName){
+                        openshift.withProject() {
+                            openshift.raw("import-image ${props.name}${deployEnvironment}:${dockerTag}")
                         }
                     }
                 }
@@ -389,10 +413,10 @@ pipeline{
             }
             steps{
                 script {
-                    props = readJSON file: 'package.json'
-                    def appName = "${props.name}${dockerEnvironment}"
-                    openshift.withCluster('default'){
-                        openshift.withProject(openShiftNamespace) {
+                    def props = readJSON file: 'package.json'
+                    def appName = "${props.name}${deployEnvironment}"
+                    openshift.withCluster(openshiftClusterName){
+                        openshift.withProject() {
                             def latestDeploymentVersion = openshift.selector('dc',"${appName}").object().status.latestVersion
                             def deployment = "${appName}-${latestDeploymentVersion}"
 

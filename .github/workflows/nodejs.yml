@@ -1,11 +1,11 @@
 name: Node CI
 
-on: 
+on:
   push:
-    branches: 
+    branches:
       - develop
   pull_request:
-    branches: 
+    branches:
       - develop
 
 jobs:
@@ -13,47 +13,44 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [8.x, 10.x, 12.x]
+        node-version: [10.x, 12.x]
     steps:
-    - uses: actions/checkout@v1
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-    - name: install
-      working-directory: './cli'
-      run: yarn
-    - name: lint
-      working-directory: './cli'
-      run: yarn lint
-    - name: test
-      working-directory: './cli'
-      run: yarn test
-    - name: build
-      working-directory: './cli'
-      run: yarn build
+      - uses: actions/checkout@v1
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: install
+        working-directory: "./cli"
+        run: yarn
+      - name: lint
+        working-directory: "./cli"
+        run: yarn lint
+      - name: build
+        working-directory: "./cli"
+        run: yarn build
   schematics:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [8.x, 10.x, 12.x]
+        node-version: [10.x, 12.x]
 
     steps:
-    - uses: actions/checkout@v1
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-    - name: install
-      working-directory: './cli'
-      run: yarn
-    - name: lint
-      working-directory: './cli'
-      run: yarn lint
-    - name: test
-      working-directory: './cli'
-      run: yarn test
-    - name: build
-      working-directory: './cli'
-      run: yarn build
+      - uses: actions/checkout@v1
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: install
+        working-directory: "./schematics"
+        run: yarn
+      - name: lint
+        working-directory: "./schematics"
+        run: yarn lint
+      - name: test
+        working-directory: "./schematics"
+        run: yarn test
+      - name: build
+        working-directory: "./schematics"
+        run: yarn build

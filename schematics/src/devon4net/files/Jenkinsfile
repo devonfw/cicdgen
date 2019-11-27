@@ -8,22 +8,28 @@ pipeline{
         office365ConnectorWebhooks([[name: '<%= teamsname %>', notifyAborted: true, notifyBackToNormal: true, notifyFailure: true, notifySuccess: true, notifyUnstable: true, url: '<%= teamsurl %>']])<% } %>
     }
 
+    <% if (openshift) { %>
     tools {
-        nodejs "NodeJS 10.17.0"
-        <% if (openshift) { %>
         oc "OpenShiftv3.11.0"
-        <% } %>
     }
+    <% } %>
 
     environment {
+        appName = '<%= appname %>'
+        appVersion = '<%= appversion %>'
+
         // Script for build the application. Defined at package.json
         buildScript = 'build'
         // Script for lint the application. Defined at package.json
         lintScript = 'lint'
         // Script for test the application. Defined at package.json
-        testScript = 'test:cov'
+        testScript = 'test:ci'
         // SRC folder.
         srcDir = 'src'
+        // dotnet custom tool name
+        dotnet = 'Chrome-stable'
+        // WebAPI folder
+        webApiFolder = 'Devon4Net.Application.WebAPI'
 
         // sonarQube
         // Name of the sonarQube tool
@@ -46,7 +52,6 @@ pipeline{
         <% if (docker || openshift) { %>
         // Docker
         dockerFileName = 'Dockerfile.ci'
-        dockerIgnoreName = '.dockerignore.ci'
         dockerRegistry = '<%= registryurl %>'
         dockerRegistryCredentials = 'nexus-api'
         <% } %>
@@ -54,7 +59,7 @@ pipeline{
         dockerDaemonUrl = '<%= dockerurl %>'
         dockerCertificateId = '<%= dockercertid %>'
         dockerRegistryProtocol = 'https://'
-        containerName = 'node_application'
+        containerName = 'angular_application'
         dockerTool = 'docker-global'
         <% } %>
 
@@ -78,6 +83,7 @@ pipeline{
                }
             }
             steps {
+                tool dotnet
                 <% if (docker) { %>
                 tool dockerTool
                 <% } %>
@@ -120,19 +126,13 @@ pipeline{
                 }
             }
             steps {
-                // Download dependencies from nexus
-                sh """
-                    if [[ -f "yarn.lock" ]]; then
-                        sed -i s_https://registry.yarnpkg.com_http://nexus3-core:8081/nexus3/repository/npm_g yarn.lock
-                    fi
-                """
-                sh "yarn config set registry http://nexus3-core:8081/nexus3/repository/npm && yarn"
-                // Revert, probably docker or Openshift do not have access to nexus
-                sh "sed -i s_http://nexus3-core:8081/nexus3/repository/npm_https://registry.yarnpkg.com_g yarn.lock"
+                dir(webApiFolder){
+                    sh "dotnet restore"
+                }
             }
         }
 
-        stage ('Code Linting') {
+        stage ('Execute dotnet tests') {
             when {
                 anyOf {
                     branch 'master'
@@ -144,23 +144,9 @@ pipeline{
                 }
             }
             steps {
-                sh """yarn ${lintScript}"""
-            }
-        }
-
-        stage ('Execute tests') {
-            when {
-                anyOf {
-                    branch 'master'
-                    branch 'develop'
-                    branch 'release/*'
-                    branch 'feature/*'
-                    branch 'hotfix/*'
-                    changeRequest()
+                dir(webApiFolder){
+                    sh "dotnet test"
                 }
-            }
-            steps {
-                sh """yarn ${testScript}"""
             }
         }
 
@@ -175,15 +161,13 @@ pipeline{
             steps {
                 script {
                     def scannerHome = tool sonarTool
-                    def props = readJSON file: 'package.json'
                     withSonarQubeEnv(sonarEnv) {
                         sh """
                             ${scannerHome}/bin/sonar-scanner \
-                                -Dsonar.projectKey=${props.name}${sonarProjectKey} \
-                                -Dsonar.projectName=${props.name}${sonarProjectKey} \
-                                -Dsonar.projectVersion=${props.version} \
-                                -Dsonar.sources=${srcDir} \
-                                -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info
+                                -Dsonar.projectKey=${appName}${sonarProjectKey} \
+                                -Dsonar.projectName=${appName}${sonarProjectKey} \
+                                -Dsonar.projectVersion=${appVersion} \
+                                -Dsonar.sources=.
                         """
                     }
                     timeout(time: 1, unit: 'HOURS') {
@@ -208,13 +192,13 @@ pipeline{
                 }
             }
             steps {
-                sh """
-                    yarn ${buildScript}
-                    rm Dockerfile
-                    rm .dockerignore
-                    mv ${dockerFileName} Dockerfile
-                    mv ${dockerIgnoreName} .dockerignore
-                """
+                dir(webApiFolder){
+                    sh """
+                        dotnet publish -r linux-x64 -c Release -o out --self-contained
+                        cp ../${dockerFileName} out/Dockerfile
+                        cp ../.dockerignore out/.dockerignore
+                    """
+                }
             }
         }
 
@@ -228,35 +212,36 @@ pipeline{
             }
             steps {
                 script {
-                    def props = readJSON file: 'package.json'
-                    zip dir: '.', glob: 'dist/**, .dockerignore, Dockerfile, package.json, yarn.lock, tsconfig*, nest-cli.json, ormconfig.json', zipFile: """${props.name}.zip"""
-                    version = props.version
-                    if (!version.endsWith("-SNAPSHOT") && env.BRANCH_NAME == 'develop') {
-                        version = "${version}-SNAPSHOT"
-                        version = version.replace("-RC", "")
-                    }
+                    dir(webApiFolder){
+                        zip dir: 'out/', zipFile: """${appName}.zip"""
+                        version = appVersion
+                        if (!version.endsWith("-SNAPSHOT") && env.BRANCH_NAME == 'develop') {
+                            version = "${version}-SNAPSHOT"
+                            version = version.replace("-RC", "")
+                        }
 
-                    if (!version.endsWith("-RC") && env.BRANCH_NAME.startsWith('release')) {
-                        version = "${version}-RC"
-                        version = version.replace("-SNAPSHOT", "")
-                    }
+                        if (!version.endsWith("-RC") && env.BRANCH_NAME.startsWith('release')) {
+                            version = "${version}-RC"
+                            version = version.replace("-SNAPSHOT", "")
+                        }
 
-                    if (env.BRANCH_NAME == 'master' && (version.endsWith("-RC") || version.endsWith("-SNAPSHOT"))){
-                        version = version.replace("-RC", "")
-                        version = version.replace("-SNAPSHOT", "")
-                    }
+                        if (env.BRANCH_NAME == 'master' && (version.endsWith("-RC") || version.endsWith("-SNAPSHOT"))){
+                            version = version.replace("-RC", "")
+                            version = version.replace("-SNAPSHOT", "")
+                        }
 
-                    withMaven(globalMavenSettingsConfig: globalSettingsId, maven: mavenInstallation) {
-                        sh """
-                            mvn deploy:deploy-file \
-                                -DgroupId=${groupId} \
-                                -DartifactId=${props.name} \
-                                -Dversion=${version} \
-                                -Dpackaging=zip \
-                                -Dfile=${props.name}.zip \
-                                -DrepositoryId=${repositoryId} \
-                                -Durl=${repositoryUrl}${repositoryName}
-                        """
+                        withMaven(globalMavenSettingsConfig: globalSettingsId, maven: mavenInstallation) {
+                            sh """
+                                mvn deploy:deploy-file \
+                                    -DgroupId=${groupId} \
+                                    -DartifactId=${appName} \
+                                    -Dversion=${version} \
+                                    -Dpackaging=zip \
+                                    -Dfile=${appName}.zip \
+                                    -DrepositoryId=${repositoryId} \
+                                    -Durl=${repositoryUrl}${repositoryName}
+                            """
+                        }
                     }
                 }
             }
@@ -273,12 +258,13 @@ pipeline{
             }
             steps {
                 script {
-                    def props = readJSON file: 'package.json'
-                    docker.withDockerServer(dockerDaemonUrl<% if(dockercertid){ %>, dockerCertificateId <%}%>) {
-                        docker.withRegistry("""${dockerRegistryProtocol}${dockerRegistry}""", dockerRegistryCredentials) {
-                            def customImage = docker.build("${props.name}:${props.version}")
-                            customImage.push()
-                            customImage.push(dockerTag);
+                    dir("${webApiFolder}/out") {
+                        docker.withDockerServer(dockerDaemonUrl<% if(dockercertid){ %>, dockerCertificateId <%}%>) {
+                            docker.withRegistry("""${dockerRegistryProtocol}${dockerRegistry}""", dockerRegistryCredentials) {
+                                def customImage = docker.build("${appName}:${appVersion}")
+                                customImage.push()
+                                customImage.push(dockerTag);
+                            }
                         }
                     }
                 }
@@ -297,9 +283,9 @@ pipeline{
                 script {
                     docker.withDockerServer(dockerDaemonUrl<% if(dockercertid){ %>, dockerCertificateId <%}%>) {
                         docker.withRegistry("""${dockerRegistryProtocol}${dockerRegistry}""", dockerRegistryCredentials) {
-                            def props = readJSON file: 'package.json'
+                            
                             // Create the docker network
-                            def dockerNetworkName = props.name.split('-')[0].trim()
+                            def dockerNetworkName = appName.split('-')[0].trim()
                             def network = sh returnStdout: true, script: """docker network ls -f name="^${dockerNetworkName}${deployEnvironment}\$" | sed '2q;d' """
                             if (network?.trim() == '') {
                                 sh "docker network create ${dockerNetworkName}${deployEnvironment}"
@@ -307,20 +293,23 @@ pipeline{
                                 println "${dockerNetworkName}${deployEnvironment} network already exists"
                             }
                             // Deploy the docker container
-                            docker.image("${dockerRegistry}/${props.name}:${dockerTag}").pull()
+                            docker.image("${dockerRegistry}/${appName}:${dockerTag}").pull()
 
-                            def containerId = sh returnStdout: true, script: """docker ps -aqf network=${dockerNetworkName}${deployEnvironment} -f "ancestor=${dockerRegistry}/${props.name}:${dockerTag}" """
+                            def containerId = sh returnStdout: true, script: """docker ps -aqf network=${dockerNetworkName}${deployEnvironment} -f "ancestor=${dockerRegistry}/${appName}:${dockerTag}" """
                             if (containerId?.trim()) {
                                 sh "docker rm -f ${containerId.trim()}"
                             }
 
-                            println """docker run -d --restart unless-stopped --network=${dockerNetworkName}${deployEnvironment} --network-alias=${containerName} ${dockerRegistry}/${props.name}:${dockerTag}"""
-                            sh """docker run -d --restart unless-stopped --network=${dockerNetworkName}${deployEnvironment} --network-alias=${containerName} ${dockerRegistry}/${props.name}:${dockerTag}"""
+                            println """docker run -d --restart unless-stopped --network=${dockerNetworkName}${deployEnvironment} --network-alias=${containerName} ${dockerRegistry}/${appName}:${dockerTag}"""
+                            sh """docker run -d --restart unless-stopped --network=${dockerNetworkName}${deployEnvironment} --network-alias=${containerName} ${dockerRegistry}/${appName}:${dockerTag}"""
                         }
                     }
                 }
             }
         }
+
+        // TODO: Check container status stage
+
         <% } %>
 
         <% if (openshift) { %>
@@ -335,39 +324,40 @@ pipeline{
             }
             steps {
                 script {
-                    def props = readJSON file: 'package.json'
-                    def appName = "${props.name}${deployEnvironment}"
-                    openshift.withCluster(openshiftClusterName){
-                        openshift.withProject() {
-                            try {
-                                openshift.startBuild("""${appName} --from-archive=${props.name}.zip --wait""") 
-                            } catch (e) {
-                                def latestBuildVersion = openshift.selector('bc',"${appName}").object().status.lastVersion
-                                def buildName = "${appName}-${latestBuildVersion}"
-
-                                echo "Checking ${buildName} build"
-                                def build
-                                def status
+                    def appName = "${appName}${deployEnvironment}"
+                    dir(webApiFolder) {
+                        openshift.withCluster(openshiftClusterName){
+                            openshift.withProject() {
                                 try {
-                                    build = openshift.selector("build ${buildName}")
-                                    status = build.object().status.phase
-                                }catch (eLog) {
-                                    error ("[ERROR] - build or status not exist.\n" + e)
-                                }
+                                    openshift.startBuild("${appName} --from-dir=out --wait") 
+                                } catch (e) {
+                                    def latestBuildVersion = openshift.selector('bc',"${appName}").object().status.lastVersion
+                                    def buildName = "${appName}-${latestBuildVersion}"
 
-                                try {
-                                    sh "echo logs for ${build.name()}:"
-                                    build.logs()
-                                } catch (eLog) {
-                                    sh "echo error reading logs"
-                                }
+                                    echo "Checking ${buildName} build"
+                                    def build
+                                    def status
+                                    try {
+                                        build = openshift.selector("build ${buildName}")
+                                        status = build.object().status.phase
+                                    }catch (eLog) {
+                                        error ("[ERROR] - build or status not exist.\n" + e)
+                                    }
 
-                                if (!status) {
-                                    error ("" + e)
-                                } else if (status == "Failed") {
-                                    error("[FAILED] - The build is not complete, status: " + status + ".\n" + e)
-                                } else if (status) {
-                                    error("[TIMEOUT] - The build is not complete, status: " + status + ".\n" + e)
+                                    try {
+                                        sh "echo logs for ${build.name()}:"
+                                        build.logs()
+                                    } catch (eLog) {
+                                        sh "echo error reading logs"
+                                    }
+
+                                    if (!status) {
+                                        error ("" + e)
+                                    } else if (status == "Failed") {
+                                        error("[FAILED] - The build is not complete, status: " + status + ".\n" + e)
+                                    } else if (status) {
+                                        error("[TIMEOUT] - The build is not complete, status: " + status + ".\n" + e)
+                                    }
                                 }
                             }
                         }
@@ -386,10 +376,9 @@ pipeline{
             }
             steps{
                 script {
-                    def props = readJSON file: 'package.json'
                     openshift.withCluster(openshiftClusterName){
                         openshift.withProject() {
-                            openshift.raw("import-image ${props.name}${deployEnvironment}:${dockerTag}")
+                            openshift.raw("import-image ${appName}${deployEnvironment}:${dockerTag}")
                         }
                     }
                 }
@@ -406,8 +395,7 @@ pipeline{
             }
             steps{
                 script {
-                    def props = readJSON file: 'package.json'
-                    def appName = "${props.name}${deployEnvironment}"
+                    def appName = "${appName}${deployEnvironment}"
                     openshift.withCluster(openshiftClusterName){
                         openshift.withProject() {
                             def latestDeploymentVersion = openshift.selector('dc',"${appName}").object().status.latestVersion

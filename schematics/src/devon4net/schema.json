@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/schema",
-  "id": "Devon4ngInitializerSchema",
-  "title": "devon4ng cicd Schema",
+  "id": "Devon4netInitializerSchema",
+  "title": "devon4net cicd Schema",
   "type": "object",
   "properties": {
     "docker": {
@@ -29,6 +29,16 @@
       "default": false,
       "description": "Should generate code for openshift deployment?"
     },
+    "appname": {
+      "type": "string",
+      "default": "",
+      "description": "The application name"
+    },
+    "appversion": {
+      "type": "string",
+      "default": "0.0.1",
+      "description": "The application version"
+    },
     "ocname": {
       "type": "string",
       "default": "",
@@ -38,7 +48,7 @@
     "ocn": {
       "type": "string",
       "default": "",
-      "description": "Openshift project. If empty it will take the default project defined in the cluster.",
+      "description": "Openshift cluster namespace",
       "examples": ["namespace"]
     },
     "groupid": {
@@ -64,5 +74,5 @@
       "examples": ["jenkins"]
     }
   },
-  "required": ["groupid"]
+  "required": ["groupid", "appname"]
 }

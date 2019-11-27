@@ -15,11 +15,11 @@ toc::[]
 :source-highlighter: rouge
 :listing-caption: Listing
 
-== Devon4j schematic
+== devon4j schematic
 
 With the `cicdgen generate devon4j` command you can generate some files required for CICD. In this section we will explain the arguments of this command and also the files that will be generated.
 
-=== Devon4j schematic arguments
+=== devon4j schematic arguments
 
 When you execute the `cicdgen generate devon4j` command you can also add some arguments in order to modify the behaviour of the command. Those arguments are:
 
@@ -27,17 +27,25 @@ When you execute the `cicdgen generate devon4j` command you can also add some ar
 +
 The type of this paramter if boolean. If it is present, docker related files and pipeline stage will be also generated. For more details see docker section of Jenkinsfile and xref:devon4j-docker-generated-files[files generated for docker]
 
-* --plurl
+* --dockerurl
 +
-Url of Production Line. It is required when `--docker` is true, and it will be used to know where the docker image will be uploaded.
+The URL of your external docker daemon. Example: tcp://127.0.0.1:2376
+
+* --dockercertid
++
+The Jenkins credential id for your docker daemon certificate. It is only required when your docker daemon is secure.
+
+* --registryurl
++
+Your docker registry URL. It is required when `--docker` is true, and it will be used to know where the docker image will be uploaded.
 
 * --openshift
 +
 The type of this paramter if boolean. If it is present, OpenShift related files and pipeline stage will be also generated. For more details see OpenShift section of Jenkinsfile and xref:devon4j-docker-generated-files[files generated for docker] (same as `--docker`)
 
-* --ocurl
+* --ocname
 +
-OpenShift cluster url where the application will be builded and deployed.
+The name used for register your Openshift cluster in Jenkins.
 
 * --ocn
 +
@@ -63,19 +71,18 @@ When you execute the generate devon4ng command, some files will be added/updated
 
 * .gitignore
 +
-Defines all files that git will ignore. e.g: compiled files, IDE configurations.
+Defines all files that git will ignore. e.g: compiled files, IDE configurations. It will download the content from: https://gitignore.io/api/java,maven,eclipse,intellij,intellij+all,intellij+iml,visualstudiocode
 +
 * pom.xml
 +
-The pom.xml is modified in order to add the distributionManagement.
+The pom.xml is modified in order to add, if needed, the distributionManagement.
 * Jenkinsfile
 +
 The Jenkinsfile is the file which define the Jenkins pipeline of our project. With this we can execute the test, build the application and deploy it automatically following a CICD methodology. This file is prepared to work with the Production Line default values, but it is also fully configurable to your needs.
 +
 ** Prerequisites
 *** A Production Line instance. It can works also if you have a Jenkins, SonarQube and Nexus3, but in this case maybe you need to configure them properly.
-*** Java installed in Jenkins as a global tool.
-*** Google Chrome installed in Jenkins as a global custom tool.
+*** Java 11 installed in Jenkins as a global tool.
 *** SonarQube installed in Jenkins as a global tool.
 *** Maven3 installed in Jenkins as a global tool.
 *** A maven global settings properly configured in Jenkins.
@@ -99,7 +106,7 @@ If the teams option is passed to cicdgen, we add a new option in order to send n
 +
 *** environment: Here all environment variables are defined. All values defined here matches with the Production Line defaults. If you Jenkins has other values, you need to update it manually.
 *** stages: Here are defined all stages that our pipeline will execute. Those stages are:
-**** Setup pipeline: We set some variables depending on the git branch which you are executing. Also, we set properly the version number in all pom files. It means that if your branch is develop, your version should end with the word `-SNAPSHOT`, in order case, if `-SNAPSHOT` is present it will be removed.
+**** Loading Custom Tools: Load some custom tools that can not be loaded in the tools section. Also set some variables depending on the git branch which you are executing. Also, we set properly the version number in all pom files. It means that if your branch is develop, your version should end with the word `-SNAPSHOT`, in order case, if `-SNAPSHOT` is present it will be removed.
 **** Fresh Dependency Installation: install all packages need to build/run your java project.
 **** Unit Tests: execute the `mvn test` command.
 **** SonarQube code analysis: send the project to SonarQube in order to get the static code analysis of your project.
@@ -117,11 +124,11 @@ If the teams option is passed to cicdgen, we add a new option in order to send n
 ***** Check pod status: checks that the application deployed in the previous stage is running properly. If the application does not run the pipeline will fail.
 *** post: actions that will be executed after the stages. We use it to clean up all files.
 
-=== Devon4j Docker generated files
+=== devon4j Docker generated files
 
 When you generate the files for a devon4ng you can also pass the option `--docker`. It will generate also some extra files related to docker.
 
-NOTE: If you pass the `--docker` option the option `--plurl` is also required. It will be used to upload the images to the Nexus3 inside Production Line. Example: if your PL url is `test.s2-eu.capgemini.com` you should execute the command in this way: `cicdgen generate devon4ng --groupid com.devonfw --docker --plurl test.s2-eu.capgemini.com`, and it will use docker-registry-test.s2-eu.capgemini.com as docker registry.
+NOTE: If you pass the `--docker` option the option `--registryurl` is also required. It will be used to upload the images to a docker registry. Example: if your registry url is `docker-registry-test.s2-eu.capgemini.com` you should execute the command in this way: `cicdgen generate devon4node --groupid com.devonfw --docker --registryurl docker-registry-test.s2-eu.capgemini.com`.
 
 ==== Files
 

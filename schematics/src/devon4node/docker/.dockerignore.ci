@@ -1,12 +1,12 @@
 node_modules/
-dist/
+src/
 test/
 .vscode/
 nodemon-debug.json
 nodemon.json
 README.md
-Dockerfile*
-.dockerignore*
+Dockerfile
+.dockerignore
 yarn-error.log
 .prettierrc
 docker-compose.yml

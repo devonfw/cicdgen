@@ -3,18 +3,23 @@
   "schematics": {
     "devon4ng": {
       "description": "Devon4ng CICD schematic. It will provide all changes related to CICD",
-      "factory": "./devon4ng/index#devon4ngInitializer",
+      "factory": "./devon4ng/devon4ng.factory#devon4ngInitializer",
       "schema": "./devon4ng/schema.json"
     },
     "devon4node": {
       "description": "Devon4node CICD schematic. It will provide all changes related to CICD",
-      "factory": "./devon4node/index#devon4nodeInitializer",
+      "factory": "./devon4node/devon4node.factory#devon4nodeInitializer",
       "schema": "./devon4node/schema.json"
     },
     "devon4j": {
       "description": "Devon4j CICD schematic. It will provide all changes related to CICD",
-      "factory": "./devon4j/index#devon4jInitializer",
+      "factory": "./devon4j/devon4j.factory#devon4jInitializer",
       "schema": "./devon4j/schema.json"
+    },
+    "devon4net": {
+      "description": "Devon4net CICD schematic. It will provide all changes related to CICD",
+      "factory": "./devon4net/devon4net.factory#devon4netInitializer",
+      "schema": "./devon4net/schema.json"
     }
   }
 }

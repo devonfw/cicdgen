@@ -61,13 +61,13 @@ $ cicdgen generate devon4j
 * Generate all CICD files related to a devon4ng project with docker deployment.
 +
 ----
-$ cicdgen generate devon4ng --groupid com.devonfw --docker --plurl devon.s2-eu.capgemini.com
+$ cicdgen generate devon4ng --groupid com.devonfw --docker --registryurl docker-registry-devon.s2-eu.capgemini.com
 ----
 
 * Generate all CICD files related to a devon4node project with OpenShift deployment.
 +
 ----
-$ cicdgen generate devon4ng --groupid com.devonfw --openshift --plurl devon.s2-eu.capgemini.com --ocurl ocp.itaas.s2-eu.capgemini.com --ocn devonfw
+$ cicdgen generate devon4ng --groupid com.devonfw --openshift --registryurl docker-registry-devon.s2-eu.capgemini.com --ocname default --ocn devonfw
 ----
 
 
