@@ -1,5 +1,7 @@
-FROM java:8
+FROM adoptopenjdk/openjdk11:jre-11.0.4_11-alpine
+
 WORKDIR /app
 COPY ./<%= appname %>-server-bootified.war /app/
+EXPOSE 8081
+
 ENTRYPOINT ["java","-jar","/app/<%= appname %>-server-bootified.war"]
-EXPOSE 8080

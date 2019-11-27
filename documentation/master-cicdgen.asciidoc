@@ -12,8 +12,10 @@ include::usage-example.asciidoc[leveloffset=2]
 
 include::cicdgen-schematics.asciidoc[leveloffset=2] 
 
-include::devon4j/devon4j-schematic.asciidoc[leveloffset=2]
+include::devon4j-schematic.asciidoc[leveloffset=2]
 
-include::devon4ng/devon4ng-schematic.asciidoc[leveloffset=2]
+include::devon4ng-schematic.asciidoc[leveloffset=2]
 
-include::devon4node/devon4node-schematic.asciidoc[leveloffset=2]
+include::devon4net-schematic.asciidoc[leveloffset=2]
+
+include::devon4node-schematic.asciidoc[leveloffset=2]

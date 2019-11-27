@@ -8,11 +8,12 @@ pipeline{
         office365ConnectorWebhooks([[name: '<%= teamsname %>', notifyAborted: true, notifyBackToNormal: true, notifyFailure: true, notifySuccess: true, notifyUnstable: true, url: '<%= teamsurl %>']])<% } %>
     }
 
-    <% if (openshift) { %>
     tools {
+        jdk 'OpenJDK11'
+        <% if (openshift) { %>
         oc "OpenShiftv3.11.0"
+        <% } %>
     }
-    <% } %>
 
     environment {
         // sonarQube
@@ -28,26 +29,26 @@ pipeline{
         <% if (docker || openshift) { %>
         // Docker
         dockerFileName = 'Dockerfile.ci'
-        dockerRegistry = 'docker-registry-<%= plurl %>'
-        dockerRegistryCredentials = 'nexus-docker'
+        dockerRegistry = '<%= registryurl %>'
+        dockerRegistryCredentials = 'nexus-api'
         <% } %>
         <% if (docker) { %>
+        dockerDaemonUrl = '<%= dockerurl %>'
+        dockerCertificateId = '<%= dockercertid %>'
         dockerRegistryProtocol = 'https://'
         containerName = 'java_application'
-        networkName = 'application'
         dockerTool = 'docker-global'
         <% } %>
 
         <% if (openshift) { %>
         // Openshift
-        openshiftUrl = '<%= ocurl %>'
-        openShiftNamespace = '<%= ocn %>'
+        openshiftClusterName = '<%= ocname %>'
         timeToCheckApp = 5
         <% } %>
     }
 
     stages {
-        stage ('Setup pipeline') {
+        stage ('Loading Custom Tools') {
             when {
                anyOf {
                    branch 'master'
@@ -55,6 +56,7 @@ pipeline{
                    branch 'release/*'
                    branch 'feature/*'
                    branch 'hotfix/*'
+                   changeRequest()
                }
             }
             steps {
@@ -67,8 +69,8 @@ pipeline{
 
                     if (env.BRANCH_NAME.startsWith('release')) {
                         dockerTag = "release"
+                        deployEnvironment = "-uat"
                         sonarProjectKey = "-release"
-                        dockerEnvironment = "-uat"
                         
                         if (!version.endsWith("-RC")) {
                             version = "${version}-RC"
@@ -77,8 +79,8 @@ pipeline{
 
                     if (env.BRANCH_NAME == 'develop') {
                         dockerTag = "latest"
-                        sonarProjectKey = '-develop'
-                        dockerEnvironment = "-dev"
+                        deployEnvironment = "-dev"
+                        sonarProjectKey = "-develop"
 
                         if (!version.endsWith("-SNAPSHOT")) {
                             version = "${version}-SNAPSHOT"
@@ -86,9 +88,9 @@ pipeline{
                     }
 
                     if (env.BRANCH_NAME == 'master') {
-                        sonarProjectKey = ""
                         dockerTag = "production"
-                        dockerEnvironment = "-prod"
+                        deployEnvironment = "-stage"
+                        sonarProjectKey = ""
 
                         if (env.BRANCH_NAME == 'master' && (version.endsWith("-RC") || version.endsWith("-SNAPSHOT"))){
                             version = version.replace("-RC", "")
@@ -225,7 +227,6 @@ pipeline{
         }
 
         <% if (docker) { %>
-
         stage ('Create the Docker image') {
             when {
                 anyOf {
@@ -238,10 +239,12 @@ pipeline{
                 script {
                     def pom = readMavenPom file: 'pom.xml'
                     dir('server/target') {
-                        docker.withRegistry("""${dockerRegistryProtocol}${dockerRegistry}""", dockerRegistryCredentials) {
-                            def customImage = docker.build("${pom.artifactId}:${pom.version}")
-                            customImage.push()
-                            customImage.push(dockerTag);
+                        docker.withDockerServer(dockerDaemonUrl<% if(dockercertid){ %>, dockerCertificateId <%}%>) {
+                            docker.withRegistry("""${dockerRegistryProtocol}${dockerRegistry}""", dockerRegistryCredentials) {
+                                def customImage = docker.build("${pom.artifactId}:${pom.version}")
+                                customImage.push()
+                                customImage.push(dockerTag);
+                            }
                         }
                     }
                 }
@@ -258,17 +261,28 @@ pipeline{
             }
             steps{
                 script {
-                    docker.withRegistry("""${dockerRegistryProtocol}${dockerRegistry}""", dockerRegistryCredentials) {
-                        def pom = readMavenPom file: 'pom.xml'
-                        docker.image("${pom.artifactId}:${pom.version}").pull()
+                    docker.withDockerServer(dockerDaemonUrl<% if(dockercertid){ %>, dockerCertificateId <%}%>) {
+                        docker.withRegistry("""${dockerRegistryProtocol}${dockerRegistry}""", dockerRegistryCredentials) {
+                            def pom = readMavenPom file: 'pom.xml'
+                            // Create the docker network
+                            def dockerNetworkName = pom.artifactId.split('-')[0].trim()
+                            def network = sh returnStdout: true, script: """docker network ls -f name="^${dockerNetworkName}${deployEnvironment}\$" | sed '2q;d' """
+                            if (network?.trim() == '') {
+                                sh "docker network create ${dockerNetworkName}${deployEnvironment}"
+                            } else {
+                                println "${dockerNetworkName}${deployEnvironment} network already exists"
+                            }
+                            // Deploy the docker container
+                            docker.image("${dockerRegistry}/${pom.artifactId}:${dockerTag}").pull()
 
-                        def containerId = sh returnStdout: true, script: """docker ps -aqf "name=${containerName}${dockerEnvironment}" """
-                        if (containerId?.trim()) {
-                            sh "docker rm -f ${containerId.trim()}"
+                            def containerId = sh returnStdout: true, script: """docker ps -aqf network=${dockerNetworkName}${deployEnvironment} -f "ancestor=${dockerRegistry}/${pom.artifactId}:${dockerTag}" """
+                            if (containerId?.trim()) {
+                                sh "docker rm -f ${containerId.trim()}"
+                            }
+
+                            println """docker run -d --restart unless-stopped --network=${dockerNetworkName}${deployEnvironment} --network-alias=${containerName} ${dockerRegistry}/${pom.artifactId}:${dockerTag}"""
+                            sh """docker run -d --restart unless-stopped --network=${dockerNetworkName}${deployEnvironment} --network-alias=${containerName} ${dockerRegistry}/${pom.artifactId}:${dockerTag}"""
                         }
-
-                        println """docker run -d --name ${containerName}${dockerEnvironment} --network=${networkName} ${dockerRegistry}/${pom.artifactId}:${pom.version}"""
-                        sh """docker run -d --name ${containerName}${dockerEnvironment} --network=${networkName} ${dockerRegistry}/${pom.artifactId}:${pom.version}"""
                     }
                 }
             }
@@ -288,10 +302,10 @@ pipeline{
             steps {
                 script {
                     def pom = readMavenPom file: 'pom.xml'
-                    def appName = "${pom.artifactId}${dockerEnvironment}"
-                    dir('dist') {
-                        openshift.withCluster('default'){
-                            openshift.withProject(openShiftNamespace) {
+                    def appName = "${pom.artifactId}${deployEnvironment}"
+                    dir('server/target') {
+                        openshift.withCluster(openshiftClusterName){
+                            openshift.withProject() {
                                 try {
                                     openshift.startBuild("${appName} --from-dir=. --wait") 
                                 } catch (e) {
@@ -333,6 +347,7 @@ pipeline{
         stage ('Deploy the new image') {
             when {
                 anyOf {
+                    branch 'master'
                     branch 'develop'
                     branch 'release/*'
                 }
@@ -340,9 +355,9 @@ pipeline{
             steps{
                 script {
                     def pom = readMavenPom file: 'pom.xml'
-                    openshift.withCluster('default'){
-                        openshift.withProject(openShiftNamespace) {
-                            openshift.raw("import-image ${pom.artifactId}${dockerEnvironment}:${dockerTag}")
+                    openshift.withCluster(openshiftClusterName){
+                        openshift.withProject() {
+                            openshift.raw("import-image ${pom.artifactId}${deployEnvironment}:${dockerTag}")
                         }
                     }
                 }
@@ -360,9 +375,9 @@ pipeline{
             steps{
                 script {
                     def pom = readMavenPom file: 'pom.xml'
-                    def appName = "${pom.artifactId}${dockerEnvironment}"
-                    openshift.withCluster('default'){
-                        openshift.withProject(openShiftNamespace) {
+                    def appName = "${pom.artifactId}${deployEnvironment}"
+                    openshift.withCluster(openshiftClusterName){
+                        openshift.withProject() {
                             def latestDeploymentVersion = openshift.selector('dc',"${appName}").object().status.latestVersion
                             def deployment = "${appName}-${latestDeploymentVersion}"
 

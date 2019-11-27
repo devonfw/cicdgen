@@ -25,9 +25,10 @@ We use angular schematics to create and update an existing devonfw project in or
 
 The list of available schematics are:
 
-* link:./devon4j/devon4j-schematic.asciidoc[devon4j]
-* link:./devon4ng/devon4ng-schematic.asciidoc[devon4ng]
-* link:./devon4node/devon4node-schematic.asciidoc[devon4node]
+* link:./devon4j-schematic.asciidoc[devon4j]
+* link:./devon4ng-schematic.asciidoc[devon4ng]
+* link:./devon4net-schematic.asciidoc[devon4net]
+* link:./devon4node-schematic.asciidoc[devon4node]
 
 === How to run the schematics
 

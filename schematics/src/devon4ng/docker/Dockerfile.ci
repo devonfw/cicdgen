@@ -1,0 +1,3 @@
+FROM devonfwforge/nginx4ng:latest
+
+COPY . /var/www/

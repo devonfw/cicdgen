@@ -1,54 +1,63 @@
 {
-    "$schema": "http://json-schema.org/schema",
-    "id": "Devon4jInitializerSchema",
-    "title": "devon4j cicd Schema",
-    "type": "object",
-    "properties": {
-        "docker": {
-            "type": "boolean",
-            "default": false,
-            "description": "Should generate code for docker deployment?"
-        },
-        "plurl": {
-            "type": "string",
-            "default": "devon.s2-eu.capgemini.com",
-            "description": "The production line url",
-            "examples": ["devon.s2-eu.capgemini.com"]
-        },
-        "openshift": {
-            "type": "boolean",
-            "default": false,
-            "description": "Should generate code for openshift deployment?"
-        },
-        "ocurl": {
-            "type": "string",
-            "default": "",
-            "description": "Openshift cluster url",
-            "examples": ["devon.s2-eu.capgemini.com"]
-        },
-        "ocn": {
-            "type": "string",
-            "default": "",
-            "description": "Openshift cluster namespace",
-            "examples": ["namespace"]
-        },
-        "teams": {
-            "type": "boolean",
-            "default": false,
-            "description": "Do you want MS Teams notifications?"
-        },
-        "teamsname": {
-            "type": "string",
-            "default": "jenkins",
-            "description": "The name of the MS Teams webhook. Used only if 'teams' is true.",
-            "examples": ["jenkins"]
-        },
-        "teamsurl": {
-            "type": "string",
-            "default": "jenkins",
-            "description": "The url of the MS Teams webhook. Used only if 'teams' is true.",
-            "examples": ["jenkins"]
-        }
+  "$schema": "http://json-schema.org/schema",
+  "id": "Devon4jInitializerSchema",
+  "title": "devon4j cicd Schema",
+  "type": "object",
+  "properties": {
+    "docker": {
+      "type": "boolean",
+      "default": false,
+      "description": "Should generate code for docker deployment?"
     },
-    "required": []
+    "dockerurl": {
+      "type": "string",
+      "examples": ["tcp://127.0.0.1:2376"],
+      "description": "The external docker daemon URL"
+    },
+    "dockercertid": {
+      "type": "string",
+      "examples": ["docker-certificate"],
+      "description": "The Jenkins secret id where the docker certificate is stored"
+    },
+    "registryurl": {
+      "type": "string",
+      "description": "The docker registry URL (without protocol)",
+      "examples": ["docker-registry-devon.s2-eu.capgemini.com"]
+    },
+    "openshift": {
+      "type": "boolean",
+      "default": false,
+      "description": "Should generate code for openshift deployment?"
+    },
+    "ocname": {
+      "type": "string",
+      "default": "",
+      "description": "Openshift cluster name defined in Jenkins",
+      "examples": ["default"]
+    },
+    "ocn": {
+      "type": "string",
+      "default": "",
+      "description": "Openshift cluster namespace",
+      "examples": ["namespace"]
+    },
+    "teams": {
+      "type": "boolean",
+      "default": false,
+      "description": "Do you want MS Teams notifications?"
+    },
+    "teamsname": {
+      "type": "string",
+      "default": "jenkins",
+      "description": "The name of the MS Teams webhook. Used only if 'teams' is true.",
+      "examples": ["jenkins"]
+    },
+    "teamsurl": {
+      "type": "string",
+      "default": "jenkins",
+      "description": "The url of the MS Teams webhook. Used only if 'teams' is true.",
+      "examples": ["jenkins"]
+    }
+  },
+  "required": []
 }

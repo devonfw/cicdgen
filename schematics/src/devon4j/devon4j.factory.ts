@@ -1,17 +1,15 @@
 import { Rule, SchematicContext, Tree, mergeWith, apply, url, template, noop, chain } from '@angular-devkit/schematics';
 import { strings } from '@angular-devkit/core';
+import { IBaseOptions } from '../util/index';
+import { validateOptions, validateDevon4jProject } from '../util/validations';
+import { generateGitIgnoreRule } from '../util/utils';
 
-interface devon4ngOptions {
-  docker?: boolean;
-  plurl?: string;
-  openshift?: boolean;
-  ocurl?: boolean;
-  ocn?: string;
-  groupid: string;
-  teams?: boolean;
-  teamsname?: string;
-  teamsurl?: string;
-}
+/**
+ * Interface for devon4netInitializer options. It reflects the properties defined at schema.json
+ *
+ * @interface IDevon4jOptions
+ */
+interface IDevon4jOptions extends IBaseOptions {}
 
 /**
  * Main function for the devon4ng schematic. It will add all files included at files folder.
@@ -21,26 +19,22 @@ interface devon4ngOptions {
  * @param {*} _options The command line options parsed as an object.
  * @returns {Rule} The rule to modify the file tree.
  */
-export function devon4jInitializer(_options: devon4ngOptions): Rule {
-  if (_options.docker && !_options.plurl) {
-    console.error('When docker is true, plurl is required.');
-    process.exit(1);
-  }
-
-  if (_options.openshift && (!_options.ocurl || !_options.ocn)) {
-    console.error('When openshift is true, ocurl and ocn parameters are required.');
-    process.exit(1);
-  }
+export function devon4jInitializer(_options: IDevon4jOptions): Rule {
+  validateOptions(_options);
 
   return (tree: Tree, _context: SchematicContext) => {
-    if (!tree.exists('pom.xml')) {
-      console.error(
-        'You are not inside a devon4j folder. Please change to a devon4j folder and execute the command again.',
-      );
-      process.exit(1);
-    }
+    validateDevon4jProject(tree);
     const appname = geProjectName(tree);
-    const dockerOrOpenshift =
+    return chain([
+      mergeWith(
+        apply(url('./files'), [
+          template({
+            ..._options,
+            ...strings,
+            appname,
+          }),
+        ]),
+      ),
       _options.docker || _options.openshift
         ? mergeWith(
             apply(url('./docker'), [
@@ -51,22 +45,13 @@ export function devon4jInitializer(_options: devon4ngOptions): Rule {
               }),
             ]),
           )
-        : noop;
-    const files = mergeWith(
-      apply(url('./files'), [
-        template({
-          ..._options,
-          ...strings,
-          appname,
-        }),
-      ]),
-    );
-    const pom = (tree: Tree): Tree => {
-      tree.overwrite('pom.xml', updatePomWithDistributionManagement(tree));
-      return tree;
-    };
-
-    return chain([files, dockerOrOpenshift, pom]);
+        : noop,
+      (host: Tree): Tree => {
+        tree.overwrite('pom.xml', updatePomWithDistributionManagement(host));
+        return host;
+      },
+      generateGitIgnoreRule('java,maven,eclipse,intellij,intellij+all,intellij+iml,visualstudiocode'),
+    ]);
   };
 }
 

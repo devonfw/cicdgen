@@ -1,10 +1,19 @@
 {
   "name": "@devonfw/cicdgen-schematics",
-  "version": "1.2.4",
+  "version": "1.5.0",
   "description": "Schematic collection for initialize project with CICD files.",
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "npm run build && jasmine src/**/*_spec.js"
+    "format": "prettier --write \"src/**/*.ts\" \"!src/**/files/**/*\" \"test/**/*.ts\"",
+    "lint": "tslint -p tsconfig.json -c tslint.json",
+    "pretest": "sh ./scripts/remove_compiled_files.sh",
+    "test": "jest -w 1",
+    "pretest:cov": "sh ./scripts/remove_compiled_files.sh",
+    "test:cov": "jest -w 1 --coverage",
+    "prepublish:npm": "yarn build",
+    "publish:npm": "npm publish --access public",
+    "prepublish:next": "yarn build",
+    "publish:next": "npm publish --access public --tag next"
   },
   "keywords": [
     "schematics",
@@ -21,12 +30,20 @@
   "license": "Apache-2.0",
   "schematics": "./src/collection.json",
   "dependencies": {
-    "@angular-devkit/core": "^7.3.6",
-    "@angular-devkit/schematics": "^7.3.6",
-    "@types/jasmine": "^3.0.0",
-    "@types/node": "^8.0.31",
-    "jasmine": "^3.0.0",
-    "typescript": "~3.2.2"
+    "@angular-devkit/core": "^8.3.21",
+    "@angular-devkit/schematics": "^8.3.21",
+    "node-fetch": "^2.6.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.25",
+    "@types/node": "^13.1.4",
+    "@types/node-fetch": "^2.5.4",
+    "jest": "^24.9.0",
+    "prettier": "^1.19.1",
+    "ts-jest": "^24.2.0",
+    "ts-node": "^8.5.4",
+    "tslint": "^5.20.1",
+    "typescript": "~3.7.4"
   },
   "repository": {
     "type": "git",
@@ -35,5 +52,30 @@
   "bugs": {
     "url": "https://github.com/devonfw/cicdgen/issues"
   },
-  "homepage": "https://github.com/devonfw/cicdgen"
+  "homepage": "https://github.com/devonfw/cicdgen",
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "ts"
+    ],
+    "rootDir": "src",
+    "testEnvironment": "node",
+    "testRegex": "_(test|spec).ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "coverageDirectory": "../coverage",
+    "collectCoverageFrom": [
+      "**/*.ts",
+      "!**/*_spec.ts",
+      "!**/*.d.ts",
+      "!**/node_modules/**",
+      "!**/files/**"
+    ],
+    "verbose": true,
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "files"
+    ]
+  }
 }

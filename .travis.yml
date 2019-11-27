@@ -11,15 +11,10 @@ env:
     - GH_REPO_CONSOLIDATE="github.com/${ORG}/${REPO_CONSOLIDATE}.git"
     - secure: T8AkwLwR8026W/nEzGKMU5aBA2gP0duMf53Nc/WCX5nQZ+aHJK3JbvdJzmyjD/x8JSgZsu4Enfg+B7AOPmarzH3ZQLXMDv8W/RjY1q1FBeqy0P0/qvctjzJSz3InhQ+7pqJWqf7kbQnlwXVgiTQOM65WHMftR4K1RaArAlUGfRFMO4Kr/q5ftzGETnQkU+q1hiQNZGGRYe8nwUi4aUUkUr0VJs/rjoyKBl+/gTlMjReCkhoV1uy0TrZdGmzxoFC8s9pZTndyL2cm1wQ13dGr2V0/ghUeT6AqbDZSWpLk458rdFhEPRn3t4haBQVLVGHOuDny3Qe5d77iuz0rUbO606HnFBdrRihkOOq8QUP0PXs8em//vN0kyKbYqac9eGO3OvTRuvzocXaIoYmjJ6lZ43k3NaXDDKUtMtFkMwkREEr20UN8//FQ9C2kyD1O5IglxTG2ukEWsazvUqslol/KhoZL0xgFpExAF2ugqfqeromvjz2VWpQSy9rFYZCWH0sY410mK207U0CLzcWabPfVvIHvK/Oi+M2XhwQHJw13H3UhEmIXbZUX4Ryporu1wmF2WgfmKxwx2mF9FSBMOHGMITGWlOwxfzrsBtCd/jLlUzbc6w/dFTss0fSX6DrbQSkXFT8aKvR8xy3ccFUPwaN6g0p1n2E48HrPD/xa0JMIYWA=
 stages:
-  - name: Docker
-    if: branch = develop
   - name: Documentation
     if: (branch = develop) AND (type = push)
 jobs:
   include:
-    - stage: Docker
-      script:
-        - docker build -f Dockerfile.test .
     - stage: Documentation
       if: (type = push) AND (branch = develop)
       script:

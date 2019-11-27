@@ -1,22 +1,14 @@
 import { strings } from '@angular-devkit/core';
 import { apply, chain, mergeWith, Rule, template, Tree, url, noop } from '@angular-devkit/schematics';
+import { IExtendedOptions } from '../util/index';
+import { validateOptions, validateDevon4ngProject } from '../util/validations';
 
 /**
  * Interface for devon4ngInitializer options. It reflects the properties defined at schema.json
  *
- * @interface devon4ngOptions
+ * @interface IDevon4ngOptions
  */
-interface devon4ngOptions {
-  docker?: boolean;
-  plurl?: string;
-  openshift?: boolean;
-  ocurl?: boolean;
-  ocn?: string;
-  groupid: string;
-  teams?: boolean;
-  teamsname?: string;
-  teamsurl?: string;
-}
+interface IDevon4ngOptions extends IExtendedOptions {}
 
 /**
  * Main function for the devon4ng schematic. It will add all files included at files folder.
@@ -26,28 +18,16 @@ interface devon4ngOptions {
  * @param {*} _options The command line options parsed as an object.
  * @returns {Rule} The rule to modify the file tree.
  */
-export function devon4ngInitializer(_options: devon4ngOptions): Rule {
-  if ((_options.docker || _options.openshift) && !_options.plurl) {
-    console.error('When docker or openshift is true, plurl is required.');
-    process.exit(1);
-  }
-
-  if (_options.openshift && (!_options.ocurl || !_options.ocn)) {
-    console.error('When openshift is true, ocurl and ocn parameters are required.');
-    process.exit(1);
-  }
+export function devon4ngInitializer(_options: IDevon4ngOptions): Rule {
+  validateOptions(_options);
 
   return (tree: Tree): Rule => {
-    const packageJson = tree.read('package.json');
-    if (!packageJson || !packageJson.toString().includes('angular')) {
-      console.error(
-        'You are not inside a devon4ng folder. Please change to a devon4ng folder and execute the command again.',
-      );
-      process.exit(1);
-    }
+    validateDevon4ngProject(tree);
     return chain([
       (host: Tree): Tree => {
-        host.delete('karma.conf.js');
+        if (host.exists('karma.conf.js')) {
+          host.delete('karma.conf.js');
+        }
         return host;
       },
       mergeWith(
@@ -58,19 +38,9 @@ export function devon4ngInitializer(_options: devon4ngOptions): Rule {
           }),
         ]),
       ),
-      _options.docker
+      _options.docker || _options.openshift
         ? mergeWith(
-            apply(url('./docker/lts'), [
-              template({
-                ..._options,
-                ...strings,
-              }),
-            ]),
-          )
-        : noop,
-      _options.openshift
-        ? mergeWith(
-            apply(url('./docker/alpine-perl'), [
+            apply(url('./docker'), [
               template({
                 ..._options,
                 ...strings,
@@ -99,7 +69,7 @@ export function devon4ngInitializer(_options: devon4ngOptions): Rule {
  */
 function updatePackageJson(host: Tree): string {
   const content = JSON.parse(host.read('package.json')!.toString('utf-8'));
-  content.scripts['test:ci'] = 'ng test --browsers ChromeHeadless --watch=false';
+  content.scripts['test:ci'] = 'ng test --browsers ChromeHeadless --watch=false --code-coverage';
 
   return JSON.stringify(content, null, 2);
 }
