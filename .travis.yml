@@ -21,6 +21,7 @@ jobs:
       script:
         - docker build -f Dockerfile.test .
     - stage: Documentation
+      if: (type = push) AND (branch = develop)
       script:
         # Clone repositories
         - git clone -b develop --single-branch https://${GH_REPO_SOURCE}
