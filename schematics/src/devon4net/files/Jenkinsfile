@@ -259,7 +259,7 @@ pipeline{
             steps {
                 script {
                     dir("${webApiFolder}/out") {
-                        docker.withDockerServer(dockerDaemonUrl<% if(dockercertid){ %>, dockerCertificateId <%}%>) {
+                        docker.withServer(dockerDaemonUrl<% if(dockercertid){ %>, dockerCertificateId <%}%>) {
                             docker.withRegistry("""${dockerRegistryProtocol}${dockerRegistry}""", dockerRegistryCredentials) {
                                 def customImage = docker.build("${appName}:${appVersion}")
                                 customImage.push()
@@ -281,7 +281,7 @@ pipeline{
             }
             steps{
                 script {
-                    docker.withDockerServer(dockerDaemonUrl<% if(dockercertid){ %>, dockerCertificateId <%}%>) {
+                    docker.withServer(dockerDaemonUrl<% if(dockercertid){ %>, dockerCertificateId <%}%>) {
                         docker.withRegistry("""${dockerRegistryProtocol}${dockerRegistry}""", dockerRegistryCredentials) {
                             
                             // Create the docker network

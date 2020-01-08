@@ -239,7 +239,7 @@ pipeline{
                 script {
                     def pom = readMavenPom file: 'pom.xml'
                     dir('server/target') {
-                        docker.withDockerServer(dockerDaemonUrl<% if(dockercertid){ %>, dockerCertificateId <%}%>) {
+                        docker.withServer(dockerDaemonUrl<% if(dockercertid){ %>, dockerCertificateId <%}%>) {
                             docker.withRegistry("""${dockerRegistryProtocol}${dockerRegistry}""", dockerRegistryCredentials) {
                                 def customImage = docker.build("${pom.artifactId}:${pom.version}")
                                 customImage.push()
@@ -261,7 +261,7 @@ pipeline{
             }
             steps{
                 script {
-                    docker.withDockerServer(dockerDaemonUrl<% if(dockercertid){ %>, dockerCertificateId <%}%>) {
+                    docker.withServer(dockerDaemonUrl<% if(dockercertid){ %>, dockerCertificateId <%}%>) {
                         docker.withRegistry("""${dockerRegistryProtocol}${dockerRegistry}""", dockerRegistryCredentials) {
                             def pom = readMavenPom file: 'pom.xml'
                             // Create the docker network

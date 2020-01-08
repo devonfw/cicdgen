@@ -50,10 +50,10 @@
     esutils "^2.0.2"
     js-tokens "^4.0.0"
 
-"@devonfw/cicdgen-schematics@^1.5.0":
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/@devonfw/cicdgen-schematics/-/cicdgen-schematics-1.5.0.tgz#69fb5391547b11b053375b56581b07a2059e0def"
-  integrity sha512-MyDA+J9CVGzkurlotHCTRjkV3DyualPKXLnn0AN5vt4KUCDtyStCq5ZS7laufQ2P06VKRh8rKS1sQ/b15w19Mg==
+"@devonfw/cicdgen-schematics@^1.5.1":
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/@devonfw/cicdgen-schematics/-/cicdgen-schematics-1.5.1.tgz#a24013d479f64f66add5655b4eeaa28918c1829a"
+  integrity sha512-jpXusmRfDTe3Zwc6FCDZL6VpxmyTxFaYjW3Tw61gmSg4MgzoeeX+PMZLrTXmvEsFmN3pXIDhQhiSBg/qgP7HDg==
   dependencies:
     "@angular-devkit/core" "^8.3.21"
     "@angular-devkit/schematics" "^8.3.21"
@@ -564,9 +564,9 @@ require-main-filename@^2.0.0:
   integrity sha512-NKN5kMDylKuldxYLSUfrbo5Tuzh4hd+2E8NPPX02mZtn1VuREQToYe/ZdlJy+J3uCpfaiGF05e7B8W0iXbQHmg==
 
 resolve@^1.1.6, resolve@^1.3.2:
-  version "1.14.1"
-  resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.14.1.tgz#9e018c540fcf0c427d678b9931cbf45e984bcaff"
-  integrity sha512-fn5Wobh4cxbLzuHaE+nphztHy43/b++4M6SsGFC2gB8uYwf0C8LcarfCz1un7UTW8OFQg9iNjZ4xpcFVGebDPg==
+  version "1.14.2"
+  resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.14.2.tgz#dbf31d0fa98b1f29aa5169783b9c290cb865fea2"
+  integrity sha512-EjlOBLBO1kxsUxsKjLt7TAECyKW6fOh1VRkykQkKGzcBbjjPIxBqGh0jf7GJ3k/f5mxMqW3htMD3WdTUVtW8HQ==
   dependencies:
     path-parse "^1.0.6"
 
