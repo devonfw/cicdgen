@@ -16,6 +16,13 @@ describe('validations', () => {
       }).not.toThrow();
     });
 
+    it('should return an error if docker and openshift are true', () => {
+      const options: IBaseOptions = { docker: true, openshift: true };
+      expect(() => {
+        validateOptions(options);
+      }).toThrow(SchematicsException);
+    });
+
     it('should work if docker, registryurl and dockerurl are passed', () => {
       const options: IBaseOptions = { docker: true, registryurl: 'fake url', dockerurl: 'fake docker url' };
       expect(() => {

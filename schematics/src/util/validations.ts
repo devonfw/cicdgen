@@ -7,6 +7,10 @@ import { Tree, SchematicsException } from '@angular-devkit/schematics';
  * @param options The options passed as arguments
  */
 export function validateOptions(options: IBaseOptions) {
+  if (options.docker && options.openshift) {
+    throw new SchematicsException('You can not use docker and openshift at the same time.');
+  }
+
   if (options.docker && (!options.registryurl || !options.dockerurl)) {
     throw new SchematicsException('When docker is true, registryurl and dockerurl are required.');
   }

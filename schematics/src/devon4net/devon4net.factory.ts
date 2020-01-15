@@ -44,6 +44,16 @@ export function devon4netInitializer(_options: IDevon4netOptions): Rule {
           )
         : noop,
       generateGitIgnoreRule('rider,dotnetcore,visualstudio,visualstudiocode'),
+      (host: Tree): Tree => {
+        const gitignore = host
+          .read('.gitignore')
+          ?.toString()
+          .replace('*.pfx', '');
+        if (gitignore) {
+          host.overwrite('.gitignore', gitignore);
+        }
+        return host;
+      },
     ]);
   };
 }
