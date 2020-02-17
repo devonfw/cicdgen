@@ -9,7 +9,7 @@ pipeline{
     }
 
     tools {
-        nodejs "NodeJS 10.17.0"
+        nodejs "NodeJS 12.16.0"
         <% if (openshift) { %>
         oc "OpenShiftv3.11.0"
         <% } %>
@@ -128,9 +128,9 @@ pipeline{
                         sed -i s_https://registry.yarnpkg.com_http://nexus3-core:8081/nexus3/repository/npm_g yarn.lock
                     fi
                 """
-                sh "yarn config set registry http://nexus3-core:8081/nexus3/repository/npm && yarn"
+                sh "yarn --registry http://nexus3-core:8081/nexus3/repository/npm"
                 // Revert, probably docker or Openshift do not have access to nexus
-                sh "sed -i s_http://nexus3-core:8081/nexus3/repository/npm_https://registry.yarnpkg.com_g yarn.lock"
+                sh "sed -i s_http://nexus3-core:8081/nexus3/repository/npm_https://registry.npmjs.com_g yarn.lock"
             }
         }
 
@@ -275,7 +275,7 @@ pipeline{
                 script {
                     def props = readJSON file: 'package.json'
                     dir('dist') {
-                        docker.withDockerServer(dockerDaemonUrl<% if(dockercertid){ %>, dockerCertificateId <%}%>) {
+                        docker.withServer(dockerDaemonUrl<% if(dockercertid){ %>, dockerCertificateId <%}%>) {
                             docker.withRegistry("""${dockerRegistryProtocol}${dockerRegistry}""", dockerRegistryCredentials) {
                                 def customImage = docker.build("${props.name}:${props.version}")
                                 customImage.push()
@@ -297,7 +297,7 @@ pipeline{
             }
             steps{
                 script {
-                    docker.withDockerServer(dockerDaemonUrl<% if(dockercertid){ %>, dockerCertificateId <%}%>) {
+                    docker.withServer(dockerDaemonUrl<% if(dockercertid){ %>, dockerCertificateId <%}%>) {
                         docker.withRegistry("""${dockerRegistryProtocol}${dockerRegistry}""", dockerRegistryCredentials) {
                             def props = readJSON file: 'package.json'
                             // Create the docker network
