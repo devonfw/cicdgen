@@ -27,7 +27,7 @@ pipeline{
         // SRC folder.
         srcDir = 'src'
         // dotnet custom tool name
-        dotnet = 'Chrome-stable'
+        dotnet = 'dotnet'
         // WebAPI folder
         webApiFolder = 'Devon4Net.Application.WebAPI'
 

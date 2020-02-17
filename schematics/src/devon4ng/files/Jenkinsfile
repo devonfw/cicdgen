@@ -9,7 +9,7 @@ pipeline{
     }
 
     tools {
-        nodejs "NodeJS 10.17.0"
+        nodejs "NodeJS 12.16.0"
         <% if (openshift) { %>
         oc "OpenShiftv3.11.0"
         <% } %>
