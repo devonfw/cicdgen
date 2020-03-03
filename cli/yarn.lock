@@ -50,10 +50,10 @@
     esutils "^2.0.2"
     js-tokens "^4.0.0"
 
-"@devonfw/cicdgen-schematics@^1.5.1":
-  version "1.5.1"
-  resolved "https://registry.yarnpkg.com/@devonfw/cicdgen-schematics/-/cicdgen-schematics-1.5.1.tgz#a24013d479f64f66add5655b4eeaa28918c1829a"
-  integrity sha512-jpXusmRfDTe3Zwc6FCDZL6VpxmyTxFaYjW3Tw61gmSg4MgzoeeX+PMZLrTXmvEsFmN3pXIDhQhiSBg/qgP7HDg==
+"@devonfw/cicdgen-schematics@~1.5.0":
+  version "1.5.5"
+  resolved "https://registry.yarnpkg.com/@devonfw/cicdgen-schematics/-/cicdgen-schematics-1.5.5.tgz#a10533949b54695e5d416bf6d98232334104876c"
+  integrity sha512-4mUQX0XApRrkazRFQC06gErAbN4skel0fhUNiyYavYjMniOLh9gbm1svgoEkg0i7XOu0uQIBkOk4lM+7qJ8S0Q==
   dependencies:
     "@angular-devkit/core" "^8.3.21"
     "@angular-devkit/schematics" "^8.3.21"

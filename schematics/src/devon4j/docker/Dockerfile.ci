@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk11:jre-11.0.4_11-alpine
+FROM adoptopenjdk/openjdk11:jre-11.0.6_10-alpine
 
 WORKDIR /app
 COPY ./<%= appname %>-server-bootified.war /app/
