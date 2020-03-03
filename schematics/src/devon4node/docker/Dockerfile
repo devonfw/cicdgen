@@ -8,6 +8,8 @@ RUN yarn
 COPY . .
 RUN yarn build
 
+# Start again in order to remove unnecessary layers
+# with development modules.
 FROM node:lts
 
 WORKDIR /usr/src/app
