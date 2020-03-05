@@ -48,6 +48,12 @@ export function jsonSchemaToYargsOptions(jsonFile: string): any {
     });
   }
 
+  result.commit = {
+    type: 'boolean',
+    description: 'If true, all changes will be commited at the end of the process (if possible).',
+    default: true,
+  };
+
   return result;
 }
 

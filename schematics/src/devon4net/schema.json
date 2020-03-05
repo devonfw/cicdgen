@@ -72,6 +72,13 @@
       "default": "jenkins",
       "description": "The url of the MS Teams webhook. Used only if 'teams' is true.",
       "examples": ["jenkins"]
+    },
+    "merge": {
+      "type": "string",
+      "description": "The merge strategy. Check the documentation for more information",
+      "enum": ["error", "keep", "override", "combine"],
+      "default": "error",
+      "examples": ["error"]
     }
   },
   "required": ["groupid", "appname"]

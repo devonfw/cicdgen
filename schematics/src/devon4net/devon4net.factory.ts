@@ -1,6 +1,7 @@
-import { Rule, Tree, SchematicContext, chain, mergeWith, apply, template, url, noop } from '@angular-devkit/schematics';
 import { strings } from '@angular-devkit/core';
-import { IExtendedOptions, generateGitIgnoreRule, validateOptions, validateDevon4netProject } from '../util';
+import { apply, chain, mergeWith, noop, Rule, template, Tree, url } from '@angular-devkit/schematics';
+import { generateGitIgnoreRule, IExtendedOptions, validateDevon4netProject, validateOptions } from '../util';
+import { mergeFiles, mergeStrategies } from '../util/merge';
 
 /**
  * Interface for devon4netInitializer options. It reflects the properties defined at schema.json
@@ -22,26 +23,33 @@ interface IDevon4netOptions extends IExtendedOptions {
  */
 export function devon4netInitializer(_options: IDevon4netOptions): Rule {
   validateOptions(_options);
-  return (tree: Tree, _context: SchematicContext) => {
+  const strategy: mergeStrategies = mergeStrategies[_options.merge];
+  return (tree: Tree): Rule => {
     validateDevon4netProject(tree);
     return chain([
-      mergeWith(
-        apply(url('./files'), [
-          template({
-            ..._options,
-            ...strings,
-          }),
-        ]),
-      ),
+      (host: Tree): Rule => {
+        return mergeWith(
+          apply(url('./files'), [
+            template({
+              ..._options,
+              ...strings,
+            }),
+            mergeFiles(host, strategy),
+          ]),
+        );
+      },
       _options.docker || _options.openshift
-        ? mergeWith(
-            apply(url('./docker'), [
-              template({
-                ..._options,
-                ...strings,
-              }),
-            ]),
-          )
+        ? (host: Tree): Rule => {
+            return mergeWith(
+              apply(url('./docker'), [
+                template({
+                  ..._options,
+                  ...strings,
+                }),
+                mergeFiles(host, strategy),
+              ]),
+            );
+          }
         : noop,
       generateGitIgnoreRule('rider,dotnetcore,visualstudio,visualstudiocode'),
       (host: Tree): Tree => {

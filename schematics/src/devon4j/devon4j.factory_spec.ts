@@ -1,7 +1,9 @@
+/* eslint-disable no-console */
 import { join } from 'path';
 import { Tree, SchematicsException } from '@angular-devkit/schematics';
 import { SchematicTestRunner, UnitTestTree } from '@angular-devkit/schematics/testing';
 import { Observable } from 'rxjs';
+import { mergeStrategies } from '../util/merge';
 
 const collectionPath = join(__dirname, '../collection.json');
 
@@ -48,6 +50,103 @@ describe('devon4j', () => {
       expect(content.includes(`stage ('Check pod status')`)).toStrictEqual(false);
       done();
     });
+  });
+
+  it('should throw an error if there is a conflict', done => {
+    const runner = new SchematicTestRunner('schematics', collectionPath);
+    const baseTree: Tree = Tree.empty();
+    baseTree.create('pom.xml', '<artifactId>devon4j</artifactId></project>');
+    baseTree.create('Jenkinsfile', '');
+    const tree: Observable<UnitTestTree> = runner.runSchematicAsync('devon4j', {}, baseTree);
+
+    tree.subscribe(
+      value => {
+        expect(value).toBeUndefined();
+        done(new Error(''));
+      },
+      error => {
+        expect(error).toBeDefined();
+        done();
+      },
+    );
+  });
+
+  it('should keep the files when merge strategy is equals to keep', done => {
+    const runner = new SchematicTestRunner('schematics', collectionPath);
+    const baseTree: Tree = Tree.empty();
+    baseTree.create('pom.xml', '<artifactId>devon4j</artifactId></project>');
+    baseTree.create('Jenkinsfile', 'stupid content');
+    const tree: Observable<UnitTestTree> = runner.runSchematicAsync(
+      'devon4j',
+      { merge: mergeStrategies[mergeStrategies.keep] },
+      baseTree,
+    );
+
+    tree.subscribe(
+      value => {
+        const content = value.readContent('/Jenkinsfile');
+        expect(value.files).toStrictEqual(['/pom.xml', '/Jenkinsfile', '/.gitignore']);
+        expect(content).toStrictEqual('stupid content');
+        done();
+      },
+      error => {
+        done(error);
+      },
+    );
+  });
+
+  it('should override the files when merge strategy is equals to override', done => {
+    const runner = new SchematicTestRunner('schematics', collectionPath);
+    const baseTree: Tree = Tree.empty();
+    baseTree.create('pom.xml', '<artifactId>devon4j</artifactId></project>');
+    baseTree.create('Jenkinsfile', 'stupid content');
+    const tree: Observable<UnitTestTree> = runner.runSchematicAsync(
+      'devon4j',
+      { merge: mergeStrategies[mergeStrategies.override] },
+      baseTree,
+    );
+
+    tree.subscribe(
+      value => {
+        const content = value.readContent('/Jenkinsfile');
+        expect(value.files).toStrictEqual(['/pom.xml', '/Jenkinsfile', '/.gitignore']);
+        expect(content.includes('pipeline')).toStrictEqual(true);
+      },
+      error => {
+        done(error);
+      },
+      () => {
+        done();
+      },
+    );
+  });
+
+  it('should combine the files when merge strategy is equals to combine', done => {
+    const runner = new SchematicTestRunner('schematics', collectionPath);
+    const baseTree: Tree = Tree.empty();
+    baseTree.create('pom.xml', '<artifactId>devon4j</artifactId></project>');
+    baseTree.create('Jenkinsfile', 'stupid content');
+    const tree: Observable<UnitTestTree> = runner.runSchematicAsync(
+      'devon4j',
+      { merge: mergeStrategies[mergeStrategies.combine] },
+      baseTree,
+    );
+
+    tree.subscribe(
+      value => {
+        const content = value.readContent('/Jenkinsfile');
+        expect(value.files).toStrictEqual(['/pom.xml', '/Jenkinsfile', '/.gitignore']);
+        expect(content.startsWith('<<<<<<< HEAD')).toStrictEqual(true);
+        expect(content.endsWith('>>>>>>> new_content\n')).toStrictEqual(true);
+      },
+      error => {
+        console.log('error');
+        done(error);
+      },
+      () => {
+        done();
+      },
+    );
   });
 
   it('should generate office365ConnectorWebhooks if teams option is present', done => {

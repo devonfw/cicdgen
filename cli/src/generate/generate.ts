@@ -36,7 +36,7 @@ export function generateHandler(schematicName: string, schemaPath: string) {
         unparseArguments(argv, jsonSchemaToYargsOptions(schemaPath)),
     );
 
-    if (executionResult.code === 0 && shelljs.which('git')) {
+    if (argv.commit && executionResult.code === 0 && shelljs.which('git')) {
       shelljs.exec('git add .');
       shelljs.exec('git commit -m "Added CICD files to the project"');
     }

@@ -12,26 +12,31 @@ describe('validations', () => {
   describe('validateOptions', () => {
     it('should work if no options are passed', () => {
       expect(() => {
-        validateOptions({});
+        validateOptions({ merge: 'error' });
       }).not.toThrow();
     });
 
     it('should return an error if docker and openshift are true', () => {
-      const options: IBaseOptions = { docker: true, openshift: true };
+      const options: IBaseOptions = { docker: true, openshift: true, merge: 'error' };
       expect(() => {
         validateOptions(options);
       }).toThrow(SchematicsException);
     });
 
     it('should work if docker, registryurl and dockerurl are passed', () => {
-      const options: IBaseOptions = { docker: true, registryurl: 'fake url', dockerurl: 'fake docker url' };
+      const options: IBaseOptions = {
+        docker: true,
+        registryurl: 'fake url',
+        dockerurl: 'fake docker url',
+        merge: 'error',
+      };
       expect(() => {
         validateOptions(options);
       }).not.toThrow();
     });
 
     it('should return an error if docker is present but registryurl or dockerurl dont', () => {
-      const options: IBaseOptions = { docker: true };
+      const options: IBaseOptions = { docker: true, merge: 'error' };
       expect(() => {
         validateOptions(options);
       }).toThrow(SchematicsException);
@@ -49,14 +54,19 @@ describe('validations', () => {
     });
 
     it('should work if openshift, registryurl and ocname are passed', () => {
-      const options: IBaseOptions = { openshift: true, registryurl: 'fake url', ocname: 'fake oc name' };
+      const options: IBaseOptions = {
+        openshift: true,
+        registryurl: 'fake url',
+        ocname: 'fake oc name',
+        merge: 'error',
+      };
       expect(() => {
         validateOptions(options);
       }).not.toThrow();
     });
 
     it('should return an error if openshift is present but registryurl or ocname dont', () => {
-      const options: IBaseOptions = { openshift: true };
+      const options: IBaseOptions = { openshift: true, merge: 'error' };
       expect(() => {
         validateOptions(options);
       }).toThrow(SchematicsException);
@@ -74,14 +84,14 @@ describe('validations', () => {
     });
 
     it('should work if teams, teamsname and teamsurl are passed', () => {
-      const options: IBaseOptions = { teams: true, teamsurl: 'fake url', teamsname: 'fake name' };
+      const options: IBaseOptions = { teams: true, teamsurl: 'fake url', teamsname: 'fake name', merge: 'error' };
       expect(() => {
         validateOptions(options);
       }).not.toThrow();
     });
 
     it('should return an error if teams is present but teamsname or teamsurl dont', () => {
-      const options: IBaseOptions = { teams: true };
+      const options: IBaseOptions = { teams: true, merge: 'error' };
       expect(() => {
         validateOptions(options);
       }).toThrow(SchematicsException);

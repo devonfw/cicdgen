@@ -13,6 +13,7 @@ export interface IBaseOptions {
   openshift?: boolean;
   ocname?: string;
   ocn?: string;
+  merge: 'error' | 'keep' | 'override' | 'combine';
 }
 
 /**
