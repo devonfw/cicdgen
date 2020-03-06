@@ -219,9 +219,11 @@ pipeline{
             steps {
                 withMaven(globalMavenSettingsConfig: globalSettingsId, maven: mavenInstallation) {
                     sh "mvn deploy -Dmaven.test.skip=true"
+                    <% if (docker || openshift) { %>
                     sh """
                         cp ${dockerFileName} server/target/Dockerfile
                     """
+                    <% } %>
                 }
             }
         }

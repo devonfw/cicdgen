@@ -211,9 +211,9 @@ pipeline{
             }
             steps {
                 sh """
-                    yarn ${buildScript}
+                    yarn ${buildScript}<% if (docker || openshift) { %>
                     cp ${dockerFileName} dist/Dockerfile
-                    cp .dockerignore dist/.dockerignore
+                    cp .dockerignore dist/.dockerignore<% } %>
                 """
             }
         }
