@@ -209,11 +209,11 @@ pipeline{
             }
             steps {
                 sh """
-                    yarn ${buildScript}
+                    yarn ${buildScript}<% if (docker || openshift) { %>
                     rm Dockerfile
                     rm .dockerignore
                     mv ${dockerFileName} Dockerfile
-                    mv ${dockerIgnoreName} .dockerignore
+                    mv ${dockerIgnoreName} .dockerignore<% } %>
                 """
             }
         }
