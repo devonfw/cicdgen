@@ -26,42 +26,50 @@ When you execute the `cicdgen generate devon4j` command you can also add some ar
 * --docker
 +
 The type of this paramter if boolean. If it is present, docker related files and pipeline stage will be also generated. For more details see docker section of Jenkinsfile and xref:devon4j-docker-generated-files[files generated for docker]
-
++
 * --dockerurl
 +
 The URL of your external docker daemon. Example: tcp://127.0.0.1:2376
-
++
 * --dockercertid
 +
 The Jenkins credential id for your docker daemon certificate. It is only required when your docker daemon is secure.
-
++
 * --registryurl
 +
 Your docker registry URL. It is required when `--docker` is true, and it will be used to know where the docker image will be uploaded.
-
++
 * --openshift
 +
 The type of this paramter if boolean. If it is present, OpenShift related files and pipeline stage will be also generated. For more details see OpenShift section of Jenkinsfile and xref:devon4j-docker-generated-files[files generated for docker] (same as `--docker`)
-
++
 * --ocname
 +
 The name used for register your Openshift cluster in Jenkins.
-
++
 * --ocn
 +
 Openshift cluster namespace
-
++
 * --teams
 +
 With this argument we can add the teams notification option in the xref:jenkinsfile-teams[Jenkinsfile].
-
++
 * --teamsname
 +
 The name of the Microsft Teams webhook. It is defined at Microsoft Teams connectors.
-
++
 * --teamsurl
 +
 The url of the Microsft Teams webhook. It is returned by Microsoft Teams when you create a connector.
++
+* --merge
++
+If you have used cicdgen previously, you can choose what you want to do in case of file conflict. The default behavior is to throw an error and not modify any file. You can see the other strategies on their link:merge-strategies.asciidoc[specific page].
++
+* --commit
++
+If true, all changes will be commited at the end of the process (if possible). In order to send a false value, you need to write `--commit=false`
 
 === Devon4ng generated files
 

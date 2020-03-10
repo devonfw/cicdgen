@@ -28,8 +28,8 @@ export function executable() {
  */
 const builder = (yargsArgv: yargs.Argv) => {
   let newYargs = yargsArgv
-    .usage('Usage: $0 devonfw-cicd generate <technology> [Options]')
-    .example('$0 devonfw-cicd generate devon4ng', 'Generate all files for devon4ng')
+    .usage('Usage: $0 generate <technology> [Options]')
+    .example('$0 generate devon4ng', 'Generate all files for devon4ng')
     .version(false);
 
   const collection = JSON.parse(readFileSync(join(schematicPath, 'collection.json')).toString());

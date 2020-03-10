@@ -12,9 +12,9 @@ import { jsonSchemaToYargsOptions, unparseArguments } from '../utils/utils';
 export function generateBuilder(schematicName: string, schemaPath: string) {
   return (yargsArg: yargs.Argv) => {
     return yargsArg
-      .usage(`Usage: $0 devonfw-cicd generate ${schematicName} [Options]`)
+      .usage(`Usage: $0 generate ${schematicName} [Options]`)
       .options(jsonSchemaToYargsOptions(schemaPath))
-      .example(`$0 devonfw-cicd generate ${schematicName}`, `Generate all files for ${schematicName}`)
+      .example(`$0 generate ${schematicName}`, `Generate all files for ${schematicName}`)
       .version(false);
   };
 }
@@ -36,7 +36,7 @@ export function generateHandler(schematicName: string, schemaPath: string) {
         unparseArguments(argv, jsonSchemaToYargsOptions(schemaPath)),
     );
 
-    if (executionResult.code === 0 && shelljs.which('git')) {
+    if (argv.commit && executionResult.code === 0 && shelljs.which('git')) {
       shelljs.exec('git add .');
       shelljs.exec('git commit -m "Added CICD files to the project"');
     }

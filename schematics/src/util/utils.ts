@@ -19,7 +19,7 @@ export async function generateGitIgnore(tools: string): Promise<string> {
  * @param tools
  */
 export function generateGitIgnoreRule(tools: string): Rule {
-  return (host: Tree) => {
+  return (host: Tree): Tree | Observable<Tree> => {
     if (host.exists('.gitignore')) {
       return host;
     }

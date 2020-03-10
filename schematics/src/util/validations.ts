@@ -6,7 +6,7 @@ import { Tree, SchematicsException } from '@angular-devkit/schematics';
  *
  * @param options The options passed as arguments
  */
-export function validateOptions(options: IBaseOptions) {
+export function validateOptions(options: IBaseOptions): void {
   if (options.docker && options.openshift) {
     throw new SchematicsException('You can not use docker and openshift at the same time.');
   }
@@ -30,7 +30,7 @@ export function validateOptions(options: IBaseOptions) {
  *
  * @param tree the schematics tree that represents the current folder.
  */
-export function validateDevon4nodeProject(tree: Tree) {
+export function validateDevon4nodeProject(tree: Tree): void {
   const packageJson = tree.read('package.json');
   if (!packageJson?.toString().includes('@nestjs')) {
     throw new SchematicsException(
@@ -45,7 +45,7 @@ export function validateDevon4nodeProject(tree: Tree) {
  *
  * @param tree the schematics tree that represents the current folder.
  */
-export function validateDevon4ngProject(tree: Tree) {
+export function validateDevon4ngProject(tree: Tree): void {
   const packageJson = tree.read('package.json');
   if (!packageJson?.toString().includes('@angular')) {
     throw new SchematicsException(
@@ -60,7 +60,7 @@ export function validateDevon4ngProject(tree: Tree) {
  *
  * @param tree the schematics tree that represents the current folder.
  */
-export function validateDevon4netProject(tree: Tree) {
+export function validateDevon4netProject(tree: Tree): void {
   if (!tree.exists('devon4net.sln')) {
     throw new SchematicsException(
       'You are not inside a devon4net folder. Please change to a devon4net folder and execute the command again.',
@@ -74,7 +74,7 @@ export function validateDevon4netProject(tree: Tree) {
  *
  * @param tree the schematics tree that represents the current folder.
  */
-export function validateDevon4jProject(tree: Tree) {
+export function validateDevon4jProject(tree: Tree): void {
   if (!tree.exists('pom.xml')) {
     throw new SchematicsException(
       'You are not inside a devon4j folder. Please change to a devon4j folder and execute the command again.',

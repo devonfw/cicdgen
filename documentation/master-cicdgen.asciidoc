@@ -10,7 +10,9 @@ include::usage-example.asciidoc[leveloffset=2]
 
 == cicdgen Schematics
 
-include::cicdgen-schematics.asciidoc[leveloffset=2] 
+include::cicdgen-schematics.asciidoc[leveloffset=2]
+
+include::merge-strategies.asciidoc[leveloffset=3] 
 
 include::devon4j-schematic.asciidoc[leveloffset=2]
 

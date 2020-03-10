@@ -59,7 +59,7 @@ image:images/example/help-1.png[]
 image:images/example/help-2.png[]
 +
 ----
-$ cicdgen generate devon4ng --groupid com.devonfw --docker --registryurl docker-registry-devon.s2-eu.capgemini.com --teams --teamsname devon4ng --teamsurl https://outlook.office.com/webhook/...
+$ cicdgen generate devon4ng --groupid com.devonfw --docker --dockerurl tpc://127.0.0.1:2376 --registryurl docker-registry-devon.s2-eu.capgemini.com --teams --teamsname devon4ng --teamsurl https://outlook.office.com/webhook/...
 ----
 +
 image:images/example/cicdgen-command.png[]

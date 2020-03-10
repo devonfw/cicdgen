@@ -37,7 +37,7 @@ describe('utils', () => {
       const rule = generateGitIgnoreRule('mock');
 
       (rule(testTree, undefined as any) as Observable<Tree>).subscribe(
-        _value => {
+        () => {
           done();
         },
         error => {
