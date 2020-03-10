@@ -10,6 +10,8 @@
 * cicdgen Schematics
 
 ** link:cicdgen-schematics.asciidoc[cicdgen Schematics]
+*** link:merge-strategies.asciidoc[Merge Strategies]
 ** link:devon4j-schematic.asciidoc[devon4j Schematic] 
 ** link:devon4ng-schematic.asciidoc[devon4ng Schematic] 
+** link:devon4net-schematic.asciidoc[devon4net Schematic] 
 ** link:devon4node-schematic.asciidoc[devon4node Schematic] 

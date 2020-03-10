@@ -48,6 +48,7 @@ Available schematics that generate the code:
 
 * link:devon4j/devon4j-schematic.asciidoc[devon4j]
 * link:devon4j/devon4ng-schematic.asciidoc[devon4ng]
+* link:devon4j/devon4net-schematic.asciidoc[devon4net]
 * link:devon4j/devon4node-schematic.asciidoc[devon4node]
 
 ==== Examples

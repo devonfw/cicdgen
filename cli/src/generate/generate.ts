@@ -12,9 +12,9 @@ import { jsonSchemaToYargsOptions, unparseArguments } from '../utils/utils';
 export function generateBuilder(schematicName: string, schemaPath: string) {
   return (yargsArg: yargs.Argv) => {
     return yargsArg
-      .usage(`Usage: $0 devonfw-cicd generate ${schematicName} [Options]`)
+      .usage(`Usage: $0 generate ${schematicName} [Options]`)
       .options(jsonSchemaToYargsOptions(schemaPath))
-      .example(`$0 devonfw-cicd generate ${schematicName}`, `Generate all files for ${schematicName}`)
+      .example(`$0 generate ${schematicName}`, `Generate all files for ${schematicName}`)
       .version(false);
   };
 }
