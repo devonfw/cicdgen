@@ -1,6 +1,6 @@
 {
   "name": "@devonfw/cicdgen-schematics",
-  "version": "1.6.2",
+  "version": "1.6.4",
   "description": "Schematic collection for initialize project with CICD files.",
   "scripts": {
     "build": "tsc -p tsconfig.json",
@@ -36,7 +36,6 @@
     "node-fetch": "^2.6.0",
     "rxjs": "6.4.0"
   },
-  "devDependencies": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/devonfw/cicdgen.git"
