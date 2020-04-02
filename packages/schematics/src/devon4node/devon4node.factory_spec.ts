@@ -25,7 +25,10 @@ describe('devon4node', () => {
   it('should validate the input options', () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
     const baseTree: Tree = Tree.empty();
-    baseTree.create('package.json', '@nestjs');
+    baseTree.create(
+      'package.json',
+      '{"name": "devon4node", "scripts": {}, "dependencies": {"@nestjs/core": "^7.0.0"}}',
+    );
 
     expect(() => {
       runner.runSchematic('devon4node', { groupid: 'com.devonfw', docker: true }, baseTree);
@@ -35,7 +38,10 @@ describe('devon4node', () => {
   it('should generate files', () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
     const baseTree: Tree = Tree.empty();
-    baseTree.create('package.json', '@nestjs');
+    baseTree.create(
+      'package.json',
+      '{"name": "devon4node", "scripts": {}, "dependencies": {"@nestjs/core": "^7.0.0"}}',
+    );
     const tree: UnitTestTree = runner.runSchematic('devon4node', { groupid: 'com.devonfw' }, baseTree);
     const content = tree.readContent('/Jenkinsfile');
     expect(tree.files).toStrictEqual(['/package.json', '/Jenkinsfile']);
@@ -53,7 +59,10 @@ describe('devon4node', () => {
   it('should throw an error if there is a conflict', done => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
     const baseTree: Tree = Tree.empty();
-    baseTree.create('package.json', '@nestjs');
+    baseTree.create(
+      'package.json',
+      '{"name": "devon4node", "scripts": {}, "dependencies": {"@nestjs/core": "^7.0.0"}}',
+    );
     baseTree.create('Jenkinsfile', '');
     const tree: Observable<UnitTestTree> = runner.runSchematicAsync('devon4node', { groupid: 'com.devonfw' }, baseTree);
 
@@ -72,7 +81,10 @@ describe('devon4node', () => {
   it('should keep the files when merge strategy is equals to keep', done => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
     const baseTree: Tree = Tree.empty();
-    baseTree.create('package.json', '@nestjs');
+    baseTree.create(
+      'package.json',
+      '{"name": "devon4node", "scripts": {}, "dependencies": {"@nestjs/core": "^7.0.0"}}',
+    );
     baseTree.create('Jenkinsfile', 'stupid content');
     const tree: Observable<UnitTestTree> = runner.runSchematicAsync(
       'devon4node',
@@ -96,7 +108,10 @@ describe('devon4node', () => {
   it('should override the files when merge strategy is equals to override', done => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
     const baseTree: Tree = Tree.empty();
-    baseTree.create('package.json', '@nestjs');
+    baseTree.create(
+      'package.json',
+      '{"name": "devon4node", "scripts": {}, "dependencies": {"@nestjs/core": "^7.0.0"}}',
+    );
     baseTree.create('Jenkinsfile', 'stupid content');
     const tree: Observable<UnitTestTree> = runner.runSchematicAsync(
       'devon4node',
@@ -122,7 +137,10 @@ describe('devon4node', () => {
   it('should combine the files when merge strategy is equals to combine', done => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
     const baseTree: Tree = Tree.empty();
-    baseTree.create('package.json', '@nestjs');
+    baseTree.create(
+      'package.json',
+      '{"name": "devon4node", "scripts": {}, "dependencies": {"@nestjs/core": "^7.0.0"}}',
+    );
     baseTree.create('Jenkinsfile', 'stupid content');
     const tree: Observable<UnitTestTree> = runner.runSchematicAsync(
       'devon4node',
@@ -151,7 +169,10 @@ describe('devon4node', () => {
   it('should generate office365ConnectorWebhooks if teams option is present', () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
     const baseTree: Tree = Tree.empty();
-    baseTree.create('package.json', '@nestjs');
+    baseTree.create(
+      'package.json',
+      '{"name": "devon4node", "scripts": {}, "dependencies": {"@nestjs/core": "^7.0.0"}}',
+    );
     const tree: UnitTestTree = runner.runSchematic(
       'devon4node',
       { groupid: 'com.devonfw', teams: true, teamsname: 'jenkins', teamsurl: 'msteams.com' },
@@ -177,7 +198,10 @@ describe('devon4node', () => {
   it('should generate files and docker related files if docker option is present', () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
     const baseTree: Tree = Tree.empty();
-    baseTree.create('package.json', '@nestjs');
+    baseTree.create(
+      'package.json',
+      '{"name": "devon4node", "scripts": {}, "dependencies": {"@nestjs/core": "^7.0.0"}}',
+    );
     const tree: UnitTestTree = runner.runSchematic(
       'devon4node',
       { groupid: 'com.devonfw', docker: true, registryurl: 'registryurl', dockerurl: 'docker' },
@@ -206,7 +230,10 @@ describe('devon4node', () => {
   it('should generate files and docker related files if openshift option is present', () => {
     const runner = new SchematicTestRunner('schematics', collectionPath);
     const baseTree: Tree = Tree.empty();
-    baseTree.create('package.json', '@nestjs');
+    baseTree.create(
+      'package.json',
+      '{"name": "devon4node", "scripts": {}, "dependencies": {"@nestjs/core": "^7.0.0"}}',
+    );
     const tree: UnitTestTree = runner.runSchematic(
       'devon4node',
       { groupid: 'com.devonfw', openshift: true, registryurl: 'registryurl', ocname: 'oc' },
