@@ -1,0 +1,14 @@
+node_modules/
+src/
+test/
+.vscode/
+nodemon-debug.json
+nodemon.json
+README.md
+Dockerfile
+.dockerignore
+yarn-error.log
+.prettierrc
+docker-compose.yml
+tslint.json
+.gitignore

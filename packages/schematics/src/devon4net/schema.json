@@ -1,0 +1,85 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "id": "Devon4netInitializerSchema",
+  "title": "devon4net cicd Schema",
+  "type": "object",
+  "properties": {
+    "docker": {
+      "type": "boolean",
+      "default": false,
+      "description": "Should generate code for docker deployment?"
+    },
+    "dockerurl": {
+      "type": "string",
+      "examples": ["tcp://127.0.0.1:2376"],
+      "description": "The external docker daemon URL"
+    },
+    "dockercertid": {
+      "type": "string",
+      "examples": ["docker-certificate"],
+      "description": "The Jenkins secret id where the docker certificate is stored"
+    },
+    "registryurl": {
+      "type": "string",
+      "description": "The docker registry URL (without protocol)",
+      "examples": ["docker-registry-devon.s2-eu.capgemini.com"]
+    },
+    "openshift": {
+      "type": "boolean",
+      "default": false,
+      "description": "Should generate code for openshift deployment?"
+    },
+    "appname": {
+      "type": "string",
+      "default": "",
+      "description": "The application name"
+    },
+    "appversion": {
+      "type": "string",
+      "default": "0.0.1",
+      "description": "The application version"
+    },
+    "ocname": {
+      "type": "string",
+      "default": "",
+      "description": "Openshift cluster name defined in Jenkins",
+      "examples": ["default"]
+    },
+    "ocn": {
+      "type": "string",
+      "default": "",
+      "description": "Openshift cluster namespace",
+      "examples": ["namespace"]
+    },
+    "groupid": {
+      "type": "string",
+      "examples": ["com.devonfw"],
+      "description": "The project groupId. It will be used for store the project in Nexus3"
+    },
+    "teams": {
+      "type": "boolean",
+      "default": false,
+      "description": "Do you want MS Teams notifications?"
+    },
+    "teamsname": {
+      "type": "string",
+      "default": "jenkins",
+      "description": "The name of the MS Teams webhook. Used only if 'teams' is true.",
+      "examples": ["jenkins"]
+    },
+    "teamsurl": {
+      "type": "string",
+      "default": "jenkins",
+      "description": "The url of the MS Teams webhook. Used only if 'teams' is true.",
+      "examples": ["jenkins"]
+    },
+    "merge": {
+      "type": "string",
+      "description": "The merge strategy. Check the documentation for more information",
+      "enum": ["error", "keep", "override", "combine"],
+      "default": "error",
+      "examples": ["error"]
+    }
+  },
+  "required": ["groupid", "appname"]
+}

@@ -1,9 +1,0 @@
-FROM mcr.microsoft.com/dotnet/core/runtime:3.1 AS runtime
-WORKDIR /app
-COPY ./ ./
-
-RUN chmod 777 /app
-
-EXPOSE 8082
-
-ENTRYPOINT ["dotnet", "Devon4Net.Application.WebAPI.dll"]

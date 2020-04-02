@@ -1,0 +1,5 @@
+src/lib/**/files/**/*
+*.d.ts
+**/*.d.ts
+*_spec.ts
+**/*_spec.ts

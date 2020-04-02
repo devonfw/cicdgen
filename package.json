@@ -1,0 +1,68 @@
+{
+  "name": "cicdgen",
+  "private": true,
+  "workspaces": [
+    "packages/cli",
+    "packages/schematics"
+  ],
+  "devDependencies": {
+    "lerna": "^3.20.2",
+    "@types/shelljs": "^0.8.3",
+    "@types/yargs": "^13.0.4",
+    "prettier": "^1.19.1",
+    "@types/diff": "^4.0.2",
+    "@types/jest": "^24.0.25",
+    "@types/node": "^13.1.4",
+    "@types/node-fetch": "^2.5.4",
+    "@typescript-eslint/eslint-plugin": "^2.23.0",
+    "@typescript-eslint/parser": "^2.23.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.0",
+    "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-prettier": "^3.1.2",
+    "jest": "^24.9.0",
+    "ts-jest": "^24.2.0",
+    "ts-node": "^8.5.4",
+    "@commitlint/cli": "^8.3.5",
+    "@commitlint/config-conventional": "^8.3.4",
+    "commitizen": "^4.0.3",
+    "cz-conventional-changelog": "3.1.0",
+    "husky": "^4.2.3",
+    "lint-staged": "^10.0.8"
+  },
+  "dependencies": {
+    "@angular-devkit/schematics-cli": "^0.803.21",
+    "@devonfw/cicdgen-schematics": "~1.6.0",
+    "@types/node": "^13.1.4",
+    "shelljs": "^0.8.3",
+    "typescript": "~3.7.4",
+    "yargs": "^15.1.0",
+    "@angular-devkit/core": "^8.3.21",
+    "@angular-devkit/schematics": "^8.3.21",
+    "diff": "^4.0.2",
+    "node-fetch": "^2.6.0"
+  },
+  "version": "1.6.3",
+  "scripts": {
+    "cm": "git-cz",
+    "build": "lerna run build",
+    "prepublish": "npm run build",
+    "build:prod": "lerna run build:prod",
+    "lint": "lerna run lint",
+    "format": "lerna run format"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.ts": "eslint --cache --fix"
+  }
+}

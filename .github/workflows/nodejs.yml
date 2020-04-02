@@ -21,13 +21,13 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: install
-        working-directory: "./cli"
+        working-directory: "./packages/cli"
         run: yarn
       - name: lint
-        working-directory: "./cli"
+        working-directory: "./packages/cli"
         run: yarn lint
       - name: build
-        working-directory: "./cli"
+        working-directory: "./packages/cli"
         run: yarn build
   schematics:
     runs-on: ubuntu-latest
@@ -43,14 +43,14 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: install
-        working-directory: "./schematics"
+        working-directory: "./packages/schematics"
         run: yarn
       - name: lint
-        working-directory: "./schematics"
+        working-directory: "./packages/schematics"
         run: yarn lint
       - name: test
-        working-directory: "./schematics"
+        working-directory: "./packages/schematics"
         run: yarn test
       - name: build
-        working-directory: "./schematics"
+        working-directory: "./packages/schematics"
         run: yarn build

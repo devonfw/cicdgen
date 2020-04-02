@@ -3,7 +3,7 @@ FROM node:lts AS cli
 RUN npm install -g yarn
 
 WORKDIR /home/node
-COPY ./cli .
+COPY ./packages/cli .
 RUN chown -R node /home/node && chmod -R 755 /home/node && chmod 777 /home/node
 USER node
 RUN yarn
@@ -16,7 +16,7 @@ RUN npm install -g yarn
 
 WORKDIR /home/node
 RUN rm -rf /home/node/*
-COPY ./schematics .
+COPY ./packages/schematics .
 RUN chown -R node /home/node && chmod -R 755 /home/node && chmod 777 /home/node
 USER node
 RUN yarn
