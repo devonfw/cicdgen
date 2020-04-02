@@ -31,7 +31,7 @@
     "lint-staged": "^10.0.8"
   },
   "dependencies": {
-    "@angular-devkit/schematics-cli": "^0.803.21",
+    "@angular-devkit/schematics-cli": "^0.901.0",
     "@devonfw/cicdgen-schematics": "~1.6.0",
     "@types/node": "^13.1.4",
     "shelljs": "^0.8.3",
