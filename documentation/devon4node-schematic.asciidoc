@@ -81,6 +81,9 @@ When you execute the generate devon4node command, some files will be added/updat
 
 ==== Files
 
+* package.json
++
+The package.json is modified in order to add a script for run the linter and generate the json report. This script is called `lint:ci`.
 * Jenkinsfile
 +
 The Jenkinsfile is the file which define the Jenkins pipeline of our project. With this we can execute the test, build the application and deploy it automatically following a CICD methodology. This file is prepared to work with the Production Line default values, but it is also fully configurable to your needs.
