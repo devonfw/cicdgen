@@ -9,7 +9,7 @@
     "lerna": "^3.20.2",
     "@types/shelljs": "^0.8.3",
     "@types/yargs": "^15.0.4",
-    "prettier": "^1.19.1",
+    "prettier": "^2.0.2",
     "@types/diff": "^4.0.2",
     "@types/jest": "^24.0.25",
     "@types/node": "^13.1.4",
