@@ -2,7 +2,7 @@
 # yarn lockfile v1
 
 
-"@angular-devkit/core@8.3.26", "@angular-devkit/core@^8.3.21":
+"@angular-devkit/core@8.3.26":
   version "8.3.26"
   resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-8.3.26.tgz#a331f02603a64fe53b9527b07e04ee18c798b9a6"
   integrity sha512-b1ng9091o33s55/cwQYh1kboiJtj8y8z8xQWATDI9kRmNIQkWYVwVa/MzgPRJ4bzbEGG3zIUHCsp52A6vuGr2A==
@@ -13,7 +13,7 @@
     rxjs "6.4.0"
     source-map "0.7.3"
 
-"@angular-devkit/core@9.1.0":
+"@angular-devkit/core@9.1.0", "@angular-devkit/core@^9.1.0":
   version "9.1.0"
   resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-9.1.0.tgz#5cc89bb5d44c6fd12a3527bae0253adb60d64b07"
   integrity sha512-vHTsrB4JaVUQ95FRnKrgo79Y3F6FokImrZdrmwkQmwAThpjXeXmpUEKZS+ZSTFRgesjiIysVGOFijARP4BQ7Bg==
