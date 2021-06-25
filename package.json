@@ -38,7 +38,7 @@
     "typescript": "~3.8.3",
     "yargs": "^15.1.0",
     "@angular-devkit/core": "^9.1.0",
-    "@angular-devkit/schematics": "^8.3.21",
+    "@angular-devkit/schematics": "^12.1.0",
     "diff": "^4.0.2",
     "node-fetch": "^2.6.0"
   },
