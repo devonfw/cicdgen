@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - develop
+    paths-ignore:
+      - 'documentation/**'
   pull_request:
     branches:
       - develop
