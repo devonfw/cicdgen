@@ -17,7 +17,7 @@ toc::[]
 
 == devon4j schematic
 
-With the `cicdgen generate devon4j` command you can generate some files required for CICD. In this section we will explain the arguments of this command and also the files that will be generated.
+With the `cicdgen generate devon4j` command you will be able to generate some files required for CICD. In this section we will explain the arguments of this command and also the files that will be generated.
 
 === devon4j schematic arguments
 
