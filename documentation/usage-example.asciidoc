@@ -37,7 +37,7 @@ $ devon ng create devon4ng
 +
 . Execute cicdgen generate command
 +
-As we want to send notifications to MS Teams, we need to create de connector first:
+As we want to send notifications to MS Teams, we need to create `de-connector` first:
 +
 --
 * Go to a channel in teams and click at the connectors button. Then click at the jenkins configure button.
