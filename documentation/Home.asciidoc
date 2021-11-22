@@ -21,9 +21,9 @@ cicdgen is a devonfw tool for generate all code/files related to CICD. It will i
 
 == What is angular schematics?
 
-Schematics are generators that transform an existing filesystem. They can create files, refactor existing files, or move files from one place to another.
+Schematics are generators that transform an existing `filesystem`. They can create files, refactor existing files, or move files from one place to another.
 
-What distinguishes Schematics from other generators, such as Yeoman or Yarn Create, is that schematics are purely descriptive; no changes are applied to the actual filesystem until everything is ready to be committed. There is no side effect, by design, in Schematics.
+What distinguishes Schematics from other generators, such as Yeoman or Yarn Create, is that schematics are purely descriptive; no changes are applied to the actual `filesystem` until everything is ready to be committed. There is no side effect, by design, in Schematics.
 
 == cicdgen CLI
 
