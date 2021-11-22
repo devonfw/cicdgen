@@ -109,7 +109,7 @@ In this section we will  explain a little bit the syntax of the Jenkins, so if y
 *** agent: Here you can specify the Jenkins agent where the pipeline will be executed. The default value is any.
 *** options: Here you can set global options to the pipeline. By default, we add a build discarded to delete old artifacts/build of the pipeline and also we disable the concurrent builds.
 +
-[[`jenkinsfile-teams`]]
+`[[jenkinsfile-teams]]`
 If the teams option is passed to cicdgen, we add a new option in order to send notifications to Microsoft Teams with the status of the pipeline executions.
 +
 *** environment: Here all environment variables are defined. All values defined here matches with the Production Line defaults. If you Jenkins has other values, you need to update it manually.
