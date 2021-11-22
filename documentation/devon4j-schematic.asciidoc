@@ -154,4 +154,3 @@ This build is using a multi-stage build. First, it use a maven image in order to
 * `Dockerfile.ci`
 +
 This file contains the instructions to create a docker image for you project. The main difference with the Dockerfile is that this file will be only used in the Jenkins pipeline. Instead of compiling again the code, it takes the compiled war from Jenkins to the image.
-
