@@ -53,7 +53,7 @@ OpenShift cluster namespace
 +
 * --teams
 +
-With this argument we can add the teams notification option in the `xref:jenkinsfile-teams[Jenkinsfile]`.
+With this argument we can add the teams notification option in the xref:jenkinsfile-teams[Jenkinsfile].
 +
 * `--teamsname`
 +
@@ -77,7 +77,7 @@ When you execute the generate devon4ng command, some files will be added/updated
 
 ==== Files
 
-* `.gitignore`
+* .gitignore
 +
 Defines all files that git will ignore. e.g: compiled files, IDE configurations. It will download the content from: `https://gitignore.io/api/java,maven,eclipse,intellij,intellij+all,intellij+iml,visualstudiocode`
 +
@@ -109,7 +109,7 @@ In this section we will  explain a little bit the syntax of the Jenkins, so if y
 *** agent: Here you can specify the Jenkins agent where the pipeline will be executed. The default value is any.
 *** options: Here you can set global options to the pipeline. By default, we add a build discarded to delete old artifacts/build of the pipeline and also we disable the concurrent builds.
 +
-`[[jenkinsfile-teams]]`
+[[jenkinsfile-teams]]
 If the teams option is passed to cicdgen, we add a new option in order to send notifications to Microsoft Teams with the status of the pipeline executions.
 +
 *** environment: Here all environment variables are defined. All values defined here matches with the Production Line defaults. If you Jenkins has other values, you need to update it manually.
@@ -120,12 +120,12 @@ If the teams option is passed to cicdgen, we add a new option in order to send n
 **** SonarQube code analysis: send the project to SonarQube in order to get the static code analysis of your project.
 **** Deliver application into Nexus: build the project and send all bundle files to Nexsus3.
 +
-`[[jenkinsfile-docker]]`
+[[jenkinsfile-docker]]
 **** If `--docker` is present:
 ***** Create the Docker image: build a new docker image that contains the new version of the project.
 ***** Deploy the new image: deploy a new version of the application using the image created in the previous stage. The previous version is removed.
 +
-`[[jenkinsfile-openshift]]`
+[[jenkinsfile-openshift]]
 **** If `--openshift` is present: 
 ***** Create the Docker image: build a new docker image that contains the new version of the project using a OpenShift build config.
 ***** Deploy the new image: deploy a new version of the application in OpenShift.
