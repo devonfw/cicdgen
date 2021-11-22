@@ -87,9 +87,9 @@ The angular.json is modified in order to change the compiled files destination f
 * package.json
 +
 The package.json is modified in order to add a script for test the application using Chrome Headless instead of a regular chrome. This script is called `test:ci`.
-* karma.conf.js
+* `karma.conf.js`
 +
-The karma.conf.js is also modified in order to add the Chrome Headless as a browser to execute test. The coverage output folder is change to `./coverage` instead of `./coverage/<project-name>`
+The `karma.conf.js` is also modified in order to add the Chrome Headless as a browser to execute test. The coverage output folder is change to `./coverage` instead of `./coverage/<project-name>`
 * Jenkinsfile
 +
 The Jenkinsfile is the file which define the Jenkins pipeline of our project. With this we can execute the test, build the application and deploy it automatically following a CICD methodology. This file is prepared to work with the Production Line default values, but it is also fully configurable to your needs.
@@ -163,7 +163,7 @@ $ cd <path-to-your-project>
 $ docker build -t <project-name>/<tag> .
 ----
 +
-This build is using a multi-stage build. First, it use a node image in order to compile the source code, then it will use a nginx image as a web server for our devon4ng application. With the multi-stage build we avoid everything related to node.js in our final image, where we only have a nginx with our application compiled.
+This build is using a multi-stage build. First, it use a node image in order to compile the source code, then it will use a nginx image as a web server for our devon4ng application. With the multi-stage build we avoid everything related to `node.js` in our final image, where we only have a nginx with our application compiled.
 
 * Dockerfile.ci
 +
