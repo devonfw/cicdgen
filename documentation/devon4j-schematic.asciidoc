@@ -79,7 +79,7 @@ When you execute the generate devon4ng command, some files will be added/updated
 
 * .gitignore
 +
-Defines all files that git will ignore. e.g: compiled files, IDE configurations. It will download the content from: `https://gitignore.io/api/java,maven,eclipse,intellij,intellij+all,intellij+iml,visualstudiocode`
+Defines all files that git will ignore. e.g: compiled files, IDE configurations. It will download the content from: https://gitignore.io/api/java,maven,eclipse,intellij,intellij+all,intellij+iml,visualstudiocode
 +
 * pom.xml
 +
