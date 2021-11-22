@@ -25,17 +25,17 @@ When you execute the `cicdgen generate devon4j` command you can also add some ar
 
 * --docker
 +
-The type of this paramter if boolean. If it is present, docker related files and pipeline stage will be also generated. For more details see docker section of Jenkinsfile and xref:devon4j-docker-generated-files[files generated for docker]
+The type of this parameter if boolean. If it is present, docker related files and pipeline stage will be also generated. For more details see docker section of Jenkinsfile and xref:devon4j-docker-generated-files[files generated for docker]
 +
-* --dockerurl
+* `--dockerurl`
 +
 The URL of your external docker daemon. Example: tcp://127.0.0.1:2376
 +
-* --dockercertid
+* `--dockercertid`
 +
 The Jenkins credential id for your docker daemon certificate. It is only required when your docker daemon is secure.
 +
-* --registryurl
+* `--registryurl`
 +
 Your docker registry URL. It is required when `--docker` is true, and it will be used to know where the docker image will be uploaded.
 +
@@ -43,25 +43,25 @@ Your docker registry URL. It is required when `--docker` is true, and it will be
 +
 The type of this paramter if boolean. If it is present, OpenShift related files and pipeline stage will be also generated. For more details see OpenShift section of Jenkinsfile and xref:devon4j-docker-generated-files[files generated for docker] (same as `--docker`)
 +
-* --ocname
+* `--ocname`
 +
-The name used for register your Openshift cluster in Jenkins.
+The name used for register your OpenShift cluster in Jenkins.
 +
-* --ocn
+* `--ocn`
 +
-Openshift cluster namespace
+OpenShift cluster namespace
 +
 * --teams
 +
-With this argument we can add the teams notification option in the xref:jenkinsfile-teams[Jenkinsfile].
+With this argument we can add the teams notification option in the `xref:jenkinsfile-teams`[Jenkinsfile].
 +
-* --teamsname
+* `--teamsname`
 +
-The name of the Microsft Teams webhook. It is defined at Microsoft Teams connectors.
+The name of the Microsoft Teams `webhook`. It is defined at Microsoft Teams connectors.
 +
-* --teamsurl
+* `--teamsurl`
 +
-The url of the Microsft Teams webhook. It is returned by Microsoft Teams when you create a connector.
+The url of the Microsoft Teams `webhook`. It is returned by Microsoft Teams when you create a connector.
 +
 * --merge
 +
@@ -69,7 +69,7 @@ If you have used cicdgen previously, you can choose what you want to do in case 
 +
 * --commit
 +
-If true, all changes will be commited at the end of the process (if possible). In order to send a false value, you need to write `--commit=false`
+If true, all changes will be committed at the end of the process (if possible). In order to send a false value, you need to write `--commit=false`
 
 === Devon4ng generated files
 
@@ -83,7 +83,7 @@ Defines all files that git will ignore. e.g: compiled files, IDE configurations.
 +
 * pom.xml
 +
-The pom.xml is modified in order to add, if needed, the distributionManagement.
+The pom.xml is modified in order to add, if needed, the `distributionManagement`.
 * Jenkinsfile
 +
 The Jenkinsfile is the file which define the Jenkins pipeline of our project. With this we can execute the test, build the application and deploy it automatically following a CICD methodology. This file is prepared to work with the Production Line default values, but it is also fully configurable to your needs.
@@ -107,9 +107,9 @@ The Jenkinsfile is the file which define the Jenkins pipeline of our project. Wi
 In this section we will  explain a little bit the syntax of the Jenkins, so if you need to change something you will be able to do it properly.
 +
 *** agent: Here you can specify the Jenkins agente where the pipeline will be executed. The default value is any.
-*** options: Here you can set global options to the pipeline. By default, we add a build discarded to delete old artifacts/buils of the pipeline and also we disable the concurrent builds.
+*** options: Here you can set global options to the pipeline. By default, we add a build discarded to delete old artifacts/build of the pipeline and also we disable the concurrent builds.
 +
-[[jenkinsfile-teams]]
+[[`jenkinsfile-teams`]]
 If the teams option is passed to cicdgen, we add a new option in order to send notifications to Microsoft Teams with the status of the pipeline executions.
 +
 *** environment: Here all environment variables are defined. All values defined here matches with the Production Line defaults. If you Jenkins has other values, you need to update it manually.
@@ -118,14 +118,14 @@ If the teams option is passed to cicdgen, we add a new option in order to send n
 **** Fresh Dependency Installation: install all packages need to build/run your java project.
 **** Unit Tests: execute the `mvn test` command.
 **** SonarQube code analysis: send the project to SonarQube in order to get the static code analysis of your project.
-**** Deliver application into Nexus: build the project and send all bundle files to Nexsu3.
+**** Deliver application into Nexus: build the project and send all bundle files to Nexsus3.
 +
-[[jenkinsfile-docker]]
+[[`jenkinsfile-docker`]]
 **** If `--docker` is present:
 ***** Create the Docker image: build a new docker image that contains the new version of the project.
 ***** Deploy the new image: deploy a new version of the application using the image created in the previous stage. The previous version is removed.
 +
-[[jenkinsfile-openshift]]
+[[`jenkinsfile-openshift`]]
 **** If `--openshift` is present: 
 ***** Create the Docker image: build a new docker image that contains the new version of the project using a OpenShift build config.
 ***** Deploy the new image: deploy a new version of the application in OpenShift.
@@ -136,7 +136,7 @@ If the teams option is passed to cicdgen, we add a new option in order to send n
 
 When you generate the files for a devon4ng you can also pass the option `--docker`. It will generate also some extra files related to docker.
 
-NOTE: If you pass the `--docker` option the option `--registryurl` is also required. It will be used to upload the images to a docker registry. Example: if your registry url is `docker-registry-test.s2-eu.capgemini.com` you should execute the command in this way: `cicdgen generate devon4node --groupid com.devonfw --docker --registryurl docker-registry-test.s2-eu.capgemini.com`.
+NOTE: If you pass the `--docker` option the option `--registryurl` is also required. It will be used to upload the images to a docker registry. Example: if your registry url is `docker-registry-test.s2-eu.capgemini.com` you should execute the command in this way: `cicdgen generate devon4node --groupid com.devonfw --docker `--registryurl` docker-registry-test.s2-eu.capgemini.com`.
 
 ==== Files
 

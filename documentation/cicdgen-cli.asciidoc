@@ -17,7 +17,7 @@ toc::[]
 
 == CICDGEN CLI
 
-cicdgen is a command line interface that helps you with some CICD in a devonfw project. At this moment we can only generate files related to CICD in a project but we plan to add more functionlity in a future.
+cicdgen is a command line interface that helps you with some CICD in a devonfw project. At this moment we can only generate files related to CICD in a project but we plan to add more functionality in a future.
 
 === Installation
 

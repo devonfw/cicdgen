@@ -29,7 +29,7 @@ $ npm i -g cicdgen
 +
 . Generate a new devon4ng project using devonfw ide.
 +
-Inside a devonfw ide distrubution execute the command (`devon ng create <app-name>`):
+Inside a devonfw ide distribution execute the command (`devon ng create <app-name>`):
 +
 ----
 $ devon ng create devon4ng
@@ -89,23 +89,23 @@ When you push the save button, it will download the repository and execute the p
 +
 image:images/example/chrome-stable.png[]
 +
-* sonarTool
+* `sonarTool`
 +
 image:images/example/sonar-tool.png[]
 +
-* sonarEnv
+* `sonarEnv`
 +
 image:images/example/sonar-env.png[]
 +
-* repositoryId
+* `repositoryId`
 +
 image:images/example/repository-id.png[]
 +
-* globalSettingsId
+* `globalSettingsId`
 +
 image:images/example/global-settings-id.png[]
 +
-* mavenInstallation
+* `mavenInstallation`
 +
 image:images/example/maven-installation.png[]
 +
@@ -114,7 +114,7 @@ image:images/example/maven-installation.png[]
 image:images/example/docker-global.png[]
 --
 +
-. Add a webhook in GitLab
+. Add a `webhook` in GitLab
 +
 In order to run the pipeline every time that you push code to GitLab, you need to configure a webhook in your repository.
 +
@@ -122,4 +122,4 @@ image:images/example/gitlab-webhook.png[]
 
 Now your project is ready to work following a CICD strategy. 
 
-The last thing to take into account is the branch naming. We prepare the pipeline in order to work following the git-flow strategy. So all stages of the pipeline will be executed for the branchs: develop, release/{asterisk}, master. For the branchs: feature/{asterisk}, hotfix/{asterisk}, bugfix/{asterisk} only the steps related to unit testing will be executed.
+The last thing to take into account is the branch naming. We prepare the pipeline in order to work following the git-flow strategy. So all stages of the pipeline will be executed for the branches: develop, release/{asterisk}, master. For the branches: feature/{asterisk}, `hotfix`/{asterisk}, bugfix/{asterisk} only the steps related to unit testing will be executed.

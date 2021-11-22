@@ -25,47 +25,47 @@ When you execute the `cicdgen generate devon4node` command you can also add some
 
 * --docker
 +
-The type of this paramter if boolean. If it is present, docker related files and pipeline stage will be also generated. For more details see docker section of Jenkinsfile and xref:devon4node-docker-generated-files[files generated for docker]
+The type of this parameter if boolean. If it is present, docker related files and pipeline stage will be also generated. For more details see docker section of Jenkinsfile and xref:devon4node-docker-generated-files[files generated for docker]
 +
-* --dockerurl
+* `--dockerurl`
 +
 The URL of your external docker daemon. Example: tcp://127.0.0.1:2376
 +
-* --dockercertid
+* `--dockercertid`
 +
 The Jenkins credential id for your docker daemon certificate. It is only required when your docker daemon is secure.
 +
-* --registryurl
+* `--registryurl`
 +
 Your docker registry URL. It is required when `--docker` is true, and it will be used to know where the docker image will be uploaded.
 +
 * --openshift
 +
-The type of this paramter if boolean. If it is present, OpenShift related files and pipeline stage will be also generated. For more details see OpenShift section of Jenkinsfile and xref:devon4node-docker-generated-files[files generated for OpenShift] (same as `--docker`)
+The type of this parameter if boolean. If it is present, OpenShift related files and pipeline stage will be also generated. For more details see OpenShift section of Jenkinsfile and xref:devon4node-docker-generated-files[files generated for OpenShift] (same as `--docker`)
 +
-* --ocname
+* `--ocname`
 +
-The name used for register your Openshift cluster in Jenkins.
+The name used for register your OpenShift cluster in Jenkins.
 +
-* --ocn
+* `--ocn`
 +
-Openshift cluster namespace
+OpenShift cluster namespace
 +
 * --groupid
 +
-The project groupId. This argument is required. It will be used for store the project in a maven repository at Nexus 3. Why maven? Because is the kind of repository where we can upload/download a zip file easily. Npm repository needs a package.json file but, as we compile the angular application to static javascript and html files, the package.json is no needed anymore.
+The project `groupId`. This argument is required. It will be used for store the project in a maven repository at Nexus 3. Why maven? Because is the kind of repository where we can upload/download a zip file easily. Npm repository needs a package.json file but, as we compile the angular application to static javascript and html files, the package.json is no needed anymore.
 +
 * --teams
 +
-With this argument we can add the teams notification option in the xref:jenkinsfile-teams[Jenkinsfile].
+With this argument we can add the teams notification option in the `xref:jenkinsfile-teams`[Jenkinsfile].
 +
-* --teamsname
+* `--teamsname`
 +
-The name of the Microsft Teams webhook. It is defined at Microsoft Teams connectors.
+The name of the Microsoft Teams `webhook`. It is defined at Microsoft Teams connectors.
 +
-* --teamsurl
+* `--teamsurl`
 +
-The url of the Microsft Teams webhook. It is returned by Microsoft Teams when you create a connector.
+The url of the Microsoft Teams `webhook`. It is returned by Microsoft Teams when you create a connector.
 +
 * --merge
 +
@@ -73,7 +73,7 @@ If you have used cicdgen previously, you can choose what you want to do in case 
 +
 * --commit
 +
-If true, all changes will be commited at the end of the process (if possible). In order to send a false value, you need to write `--commit=false`
+If true, all changes will be committed at the end of the process (if possible). In order to send a false value, you need to write `--commit=false`
 
 === devon4node generated files
 
@@ -105,10 +105,10 @@ The Jenkinsfile is the file which define the Jenkins pipeline of our project. Wi
 + 
 In this section we will  explain a little bit the syntax of the Jenkins, so if you need to change something you will be able to do it properly.
 +
-*** agent: Here you can specify the Jenkins agente where the pipeline will be executed. The default value is any.
-*** options: Here you can set global options for the pipeline. By default, we add a build discarded to delete old artifacts/buils of the pipeline and also we disable the concurrent builds.
+*** agent: Here you can specify the Jenkins agent where the pipeline will be executed. The default value is any.
+*** options: Here you can set global options for the pipeline. By default, we add a build discarded to delete old artifacts/build of the pipeline and also we disable the concurrent builds.
 +
-[[jenkinsfile-teams]]
+[[`jenkinsfile-teams`]]
 If the teams option is passed to cicdgen, we add a new option in order to send notifications to Microsoft Teams with the status of the pipeline executions.
 +
 *** tools: Here we define the global tools configurations. By default a version of nodejs is added here.
@@ -122,12 +122,12 @@ If the teams option is passed to cicdgen, we add a new option in order to send n
 **** Build Application: compile the application to be ready to deploy in a web server.
 **** Deliver application into Nexus: store all compiled files in Nexus3 as a zip file.
 +
-[[jenkinsfile-docker]]
+[[`jenkinsfile-docker`]]
 **** If `--docker` is present:
 ***** Create the Docker image: build a new docker image that contains the new version of the project.
 ***** Deploy the new image: deploy a new version of the application using the image created in the previous stage. The previous version is removed.
 +
-[[jenkinsfile-openshift]]
+[[`jenkinsfile-openshift`]]
 **** If `--openshift` is present: 
 ***** Create the Docker image: build a new docker image that contains the new version of the project using a OpenShift build config.
 ***** Deploy the new image: deploy a new version of the application in OpenShift.
@@ -138,7 +138,7 @@ If the teams option is passed to cicdgen, we add a new option in order to send n
 
 When you generate the files for a devon4node you can also pass the option `--docker`. It will generate also some extra files related to docker.
 
-NOTE: If you pass the `--docker` option the option `--registryurl` is also required. It will be used to upload the images to a docker registry. Example: if your registry url is `docker-registry-test.s2-eu.capgemini.com` you should execute the command in this way: `cicdgen generate devon4node --groupid com.devonfw --docker --registryurl docker-registry-test.s2-eu.capgemini.com`.
+NOTE: If you pass the `--docker` option the option `--registryurl` is also required. It will be used to upload the images to a docker registry. Example: if your registry url is `docker-registry-test.s2-eu.capgemini.com` you should execute the command in this way: `cicdgen generate devon4node --groupid com.devonfw --docker `--registryurl` docker-registry-test.s2-eu.capgemini.com`.
 
 ==== Files
 
