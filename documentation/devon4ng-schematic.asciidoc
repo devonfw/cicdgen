@@ -39,9 +39,9 @@ The Jenkins credential id for your docker daemon certificate. It is only require
 +
 Your docker registry URL. It is required when `--docker` is true, and it will be used to know where the docker image will be uploaded.
 +
-* --openshift
+* `--openshift`
 +
-The type of this paramter if boolean. If it is present, OpenShift related files and pipeline stage will be also generated. For more details see OpenShift section of Jenkinsfile and xref:devon4ng-docker-generated-files[files generated for OpenShift] (same as `--docker`)
+The type of this parameter if boolean. If it is present, OpenShift related files and pipeline stage will be also generated. For more details see OpenShift section of Jenkinsfile and xref:devon4ng-docker-generated-files[files generated for OpenShift] (same as `--docker`)
 +
 * `--ocname`
 +

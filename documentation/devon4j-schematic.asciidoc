@@ -39,9 +39,9 @@ The Jenkins credential id for your docker daemon certificate. It is only require
 +
 Your docker registry URL. It is required when `--docker` is true, and it will be used to know where the docker image will be uploaded.
 +
-* --openshift
+* `--openshift`
 +
-The type of this paramter if boolean. If it is present, OpenShift related files and pipeline stage will be also generated. For more details see OpenShift section of Jenkinsfile and xref:devon4j-docker-generated-files[files generated for docker] (same as `--docker`)
+The type of this parameter if boolean. If it is present, OpenShift related files and pipeline stage will be also generated. For more details see OpenShift section of Jenkinsfile and xref:devon4j-docker-generated-files[files generated for docker] (same as `--docker`)
 +
 * `--ocname`
 +
@@ -77,9 +77,9 @@ When you execute the generate devon4ng command, some files will be added/updated
 
 ==== Files
 
-* .gitignore
+* `.gitignore`
 +
-Defines all files that git will ignore. e.g: compiled files, IDE configurations. It will download the content from: https://gitignore.io/api/java,maven,eclipse,intellij,intellij+all,intellij+iml,visualstudiocode
+Defines all files that git will ignore. e.g: compiled files, IDE configurations. It will download the content from: `https://gitignore.io/api/java,maven,eclipse,intellij,intellij+all,intellij+iml,visualstudiocode`
 +
 * pom.xml
 +
@@ -106,7 +106,7 @@ The Jenkinsfile is the file which define the Jenkins pipeline of our project. Wi
 + 
 In this section we will  explain a little bit the syntax of the Jenkins, so if you need to change something you will be able to do it properly.
 +
-*** agent: Here you can specify the Jenkins agente where the pipeline will be executed. The default value is any.
+*** agent: Here you can specify the Jenkins agent where the pipeline will be executed. The default value is any.
 *** options: Here you can set global options to the pipeline. By default, we add a build discarded to delete old artifacts/build of the pipeline and also we disable the concurrent builds.
 +
 [[`jenkinsfile-teams`]]
