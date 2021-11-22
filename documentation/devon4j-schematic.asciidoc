@@ -53,7 +53,7 @@ OpenShift cluster namespace
 +
 * --teams
 +
-With this argument we can add the teams notification option in the `xref:jenkinsfile-teams`[Jenkinsfile].
+With this argument we can add the teams notification option in the `xref:jenkinsfile-teams[Jenkinsfile]`.
 +
 * `--teamsname`
 +
@@ -136,7 +136,7 @@ If the teams option is passed to cicdgen, we add a new option in order to send n
 
 When you generate the files for a devon4ng you can also pass the option `--docker`. It will generate also some extra files related to docker.
 
-NOTE: If you pass the `--docker` option the option `--registryurl` is also required. It will be used to upload the images to a docker registry. Example: if your registry url is `docker-registry-test.s2-eu.capgemini.com` you should execute the command in this way: `cicdgen generate devon4node --groupid com.devonfw --docker `--registryurl` docker-registry-test.s2-eu.capgemini.com`.
+NOTE: If you pass the `--docker` option the option `--registryurl` is also required. It will be used to upload the images to a docker registry. Example: if your registry url is `docker-registry-test.s2-eu.capgemini.com` you should execute the command in this way: `cicdgen generate devon4node --groupid com.devonfw --docker `--registryurl` `docker-registry-test.s2-eu.capgemini.com`.
 
 ==== Files
 
