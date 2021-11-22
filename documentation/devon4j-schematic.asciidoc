@@ -45,11 +45,11 @@ The type of this paramter if boolean. If it is present, OpenShift related files 
 +
 * `--ocname`
 +
-The name used for register your Openshift cluster in Jenkins.
+The name used for register your OpenShift cluster in Jenkins.
 +
 * `--ocn`
 +
-Openshift cluster namespace
+OpenShift cluster namespace
 +
 * --teams
 +
