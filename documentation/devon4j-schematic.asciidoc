@@ -120,12 +120,12 @@ If the teams option is passed to cicdgen, we add a new option in order to send n
 **** SonarQube code analysis: send the project to SonarQube in order to get the static code analysis of your project.
 **** Deliver application into Nexus: build the project and send all bundle files to Nexsus3.
 +
-[[`jenkinsfile-docker`]]
+`[[jenkinsfile-docker]]`
 **** If `--docker` is present:
 ***** Create the Docker image: build a new docker image that contains the new version of the project.
 ***** Deploy the new image: deploy a new version of the application using the image created in the previous stage. The previous version is removed.
 +
-[[`jenkinsfile-openshift`]]
+`[[jenkinsfile-openshift]]`
 **** If `--openshift` is present: 
 ***** Create the Docker image: build a new docker image that contains the new version of the project using a OpenShift build config.
 ***** Deploy the new image: deploy a new version of the application in OpenShift.
@@ -151,7 +151,7 @@ $ docker build -t <project-name>/<tag> .
 +
 This build is using a multi-stage build. First, it use a maven image in order to compile the source code, then it will use a java image to run the application. With the multi-stage build we keep the final image as clean as possible.
 
-* Dockerfile.ci
+* `Dockerfile.ci`
 +
 This file contains the instructions to create a docker image for you project. The main difference with the Dockerfile is that this file will be only used in the Jenkins pipeline. Instead of compiling again the code, it takes the compiled war from Jenkins to the image.
 
