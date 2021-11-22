@@ -125,7 +125,7 @@ If the teams option is passed to cicdgen, we add a new option in order to send n
 ***** Create the Docker image: build a new docker image that contains the new version of the project.
 ***** Deploy the new image: deploy a new version of the application using the image created in the previous stage. The previous version is removed.
 +
-[[jenkinsfile-openshift]]
+`[[jenkinsfile-openshift]]`
 **** If `--openshift` is present: 
 ***** Create the Docker image: build a new docker image that contains the new version of the project using a OpenShift build config.
 ***** Deploy the new image: deploy a new version of the application in OpenShift.
