@@ -37,7 +37,7 @@ $ devon ng create devon4ng
 +
 . Execute cicdgen generate command
 +
-As we want to send notifications to MS Teams, we need to create de connector first:
+As we want to send notifications to MS Teams, we need to create the connector first:
 +
 --
 * Go to a channel in teams and click at the connectors button. Then click at the jenkins configure button.
@@ -59,7 +59,7 @@ image:images/example/help-1.png[]
 image:images/example/help-2.png[]
 +
 ----
-$ cicdgen generate devon4ng --groupid com.devonfw --docker --dockerurl tpc://127.0.0.1:2376 --registryurl docker-registry-devon.s2-eu.capgemini.com --teams --teamsname devon4ng --teamsurl https://outlook.office.com/webhook/...
+$ cicdgen generate devon4ng --groupid com.devonfw --docker --dockerurl tpc://127.0.0.1:2376 `--registryurl docker-registry-devon.s2-eu.capgemini.com --teams --teamsname devon4ng --teamsurl https://outlook.office.com/webhook/...`
 ----
 +
 image:images/example/cicdgen-command.png[]
@@ -109,14 +109,14 @@ image:images/example/global-settings-id.png[]
 +
 image:images/example/maven-installation.png[]
 +
-* dockerTool
+* `dockerTool`
 +
 image:images/example/docker-global.png[]
 --
 +
 . Add a `webhook` in GitLab
 +
-In order to run the pipeline every time that you push code to GitLab, you need to configure a webhook in your repository.
+In order to run the pipeline every time that you push code to GitLab, you need to configure a `webhook` in your repository.
 +
 image:images/example/gitlab-webhook.png[]
 
