@@ -37,7 +37,7 @@ $ devon ng create devon4ng
 +
 . Execute cicdgen generate command
 +
-As we want to send notifications to MS Teams, we need to create `de-connector` first:
+As we want to send notifications to MS Teams, we need to create the connector first:
 +
 --
 * Go to a channel in teams and click at the connectors button. Then click at the jenkins configure button.
@@ -118,7 +118,7 @@ image:images/example/docker-global.png[]
 +
 In order to run the pipeline every time that you push code to GitLab, you need to configure a `webhook` in your repository.
 +
-`image:images/example/gitlab-webhook.png[]`
+image:images/example/gitlab-webhook.png[]
 
 Now your project is ready to work following a CICD strategy. 
 
