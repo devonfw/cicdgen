@@ -1,3 +1,6 @@
+= Archived
+This repository has been archived. Take a look at https://github.com/devonfw/hangar for the next generation of CI/CD tool.
+
 == CICDGEN
 
 cicdgen is a devonfw tool to generate all code/files related to CICD. It's based on link:https://blog.angular.io/schematics-an-introduction-dc1dfbc2a2b2[angular schematics], so you can add it as a dependency into your project and generate the code using ng generate. In addition, it has its own CLI for those projects that are not angular based.
